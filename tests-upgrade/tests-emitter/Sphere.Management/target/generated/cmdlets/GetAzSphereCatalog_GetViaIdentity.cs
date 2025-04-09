@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
 namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
 {
     using static Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Extensions;
@@ -33,7 +36,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         private global::System.Threading.CancellationTokenSource _cancellationTokenSource = new global::System.Threading.CancellationTokenSource();
 
         /// <summary>A dictionary to carry over additional data for pipeline.</summary>
-        private global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object> _extensibleParameters = new System.Collections.Generic.Dictionary<string, object>();
+        private global::System.Collections.Generic.Dictionary<global::System.String,global::System.Object> _extensibleParameters = new System.Collections.Generic.Dictionary<string, object>();
 
         /// <summary>A buffer to record first returned object in response.</summary>
         private object _firstResponse = null;
@@ -50,7 +53,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         public global::System.Management.Automation.SwitchParameter Break { get; set; }
 
         /// <summary>Accessor for cancellationTokenSource.</summary>
-        public global::System.Threading.CancellationTokenSource CancellationTokenSource { get => _cancellationTokenSource; set { _cancellationTokenSource = value; } }
+        public global::System.Threading.CancellationTokenSource CancellationTokenSource { get => _cancellationTokenSource ; set { _cancellationTokenSource = value; } }
 
         /// <summary>The reference to the client API class.</summary>
         public Microsoft.Azure.PowerShell.Cmdlets.Sphere.Sphere Client => Microsoft.Azure.PowerShell.Cmdlets.Sphere.Module.Instance.ClientAPI;
@@ -66,7 +69,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         public global::System.Management.Automation.PSObject DefaultProfile { get; set; }
 
         /// <summary>Accessor for extensibleParameters.</summary>
-        public global::System.Collections.Generic.IDictionary<global::System.String, global::System.Object> ExtensibleParameters { get => _extensibleParameters; }
+        public global::System.Collections.Generic.IDictionary<global::System.String,global::System.Object> ExtensibleParameters { get => _extensibleParameters ; }
 
         /// <summary>SendAsync Pipeline Steps to be appended to the front of the pipeline</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline")]
@@ -89,7 +92,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         public Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ISphereIdentity InputObject { get => this._inputObject; set => this._inputObject = value; }
 
         /// <summary>Accessor for our copy of the InvocationInfo.</summary>
-        public global::System.Management.Automation.InvocationInfo InvocationInformation { get => __invocationInfo = __invocationInfo ?? this.MyInvocation; set { __invocationInfo = value; } }
+        public global::System.Management.Automation.InvocationInfo InvocationInformation { get => __invocationInfo = __invocationInfo ?? this.MyInvocation ; set { __invocationInfo = value; } }
 
         /// <summary>
         /// <see cref="Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener" /> cancellation delegate. Stops the cmdlet when called.
@@ -159,13 +162,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
             {
                 Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.AttachDebugger.Break();
             }
-            ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletBeginProcessing).Wait(); if (((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested) { return; }
+            ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletBeginProcessing).Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
         }
 
         /// <summary>Performs clean-up after the command execution</summary>
         protected override void EndProcessing()
         {
-            if (1 == _responseSize)
+            if (1 ==_responseSize)
             {
                 // Flush buffer
                 WriteObject(_firstResponse);
@@ -205,73 +208,73 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the message is completed.
         /// </returns>
-        async global::System.Threading.Tasks.Task Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener.Signal(string id, global::System.Threading.CancellationToken token, global::System.Func<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.EventData> messageData)
+         async global::System.Threading.Tasks.Task Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener.Signal(string id, global::System.Threading.CancellationToken token, global::System.Func<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.EventData> messageData)
         {
-            using (NoSynchronizationContext)
+            using( NoSynchronizationContext )
             {
                 if (token.IsCancellationRequested)
                 {
-                    return;
+                    return ;
                 }
 
-                switch (id)
+                switch ( id )
                 {
                     case Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.Verbose:
-                        {
-                            WriteVerbose($"{(messageData().Message ?? global::System.String.Empty)}");
-                            return;
-                        }
+                    {
+                        WriteVerbose($"{(messageData().Message ?? global::System.String.Empty)}");
+                        return ;
+                    }
                     case Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.Warning:
-                        {
-                            WriteWarning($"{(messageData().Message ?? global::System.String.Empty)}");
-                            return;
-                        }
+                    {
+                        WriteWarning($"{(messageData().Message ?? global::System.String.Empty)}");
+                        return ;
+                    }
                     case Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.Information:
-                        {
-                            var data = messageData();
-                            WriteInformation(data.Message, new string[] { });
-                            return;
-                        }
+                    {
+                        var data = messageData();
+                        WriteInformation(data.Message, new string[]{});
+                        return ;
+                    }
                     case Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.Debug:
-                        {
-                            WriteDebug($"{(messageData().Message ?? global::System.String.Empty)}");
-                            return;
-                        }
+                    {
+                        WriteDebug($"{(messageData().Message ?? global::System.String.Empty)}");
+                        return ;
+                    }
                     case Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.Error:
-                        {
-                            WriteError(new global::System.Management.Automation.ErrorRecord(new global::System.Exception(messageData().Message), string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null));
-                            return;
-                        }
+                    {
+                        WriteError(new global::System.Management.Automation.ErrorRecord( new global::System.Exception(messageData().Message), string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null ) );
+                        return ;
+                    }
                     case Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.Progress:
+                    {
+                        var data = messageData();
+                        int progress = (int)data.Value;
+                        string activityMessage, statusDescription;
+                        global::System.Management.Automation.ProgressRecordType recordType;
+                        if (progress < 100)
                         {
-                            var data = messageData();
-                            int progress = (int)data.Value;
-                            string activityMessage, statusDescription;
-                            global::System.Management.Automation.ProgressRecordType recordType;
-                            if (progress < 100)
-                            {
-                                activityMessage = "In progress";
-                                statusDescription = "Checking operation status";
-                                recordType = System.Management.Automation.ProgressRecordType.Processing;
-                            }
-                            else
-                            {
-                                activityMessage = "Completed";
-                                statusDescription = "Completed";
-                                recordType = System.Management.Automation.ProgressRecordType.Completed;
-                            }
-                            WriteProgress(new global::System.Management.Automation.ProgressRecord(1, activityMessage, statusDescription)
-                            {
-                                PercentComplete = progress,
-                                RecordType = recordType
-                            });
-                            return;
+                            activityMessage = "In progress";
+                            statusDescription = "Checking operation status";
+                            recordType = System.Management.Automation.ProgressRecordType.Processing;
                         }
+                        else
+                        {
+                            activityMessage = "Completed";
+                            statusDescription = "Completed";
+                            recordType = System.Management.Automation.ProgressRecordType.Completed;
+                        }
+                        WriteProgress(new global::System.Management.Automation.ProgressRecord(1, activityMessage, statusDescription)
+                        {
+                            PercentComplete = progress,
+                        RecordType = recordType
+                        });
+                        return ;
+                    }
                 }
-                await Microsoft.Azure.PowerShell.Cmdlets.Sphere.Module.Instance.Signal(id, token, messageData, (i, t, m) => ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(i, t, () => Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.EventDataConverter.ConvertFrom(m()) as Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.EventData), InvocationInformation, this.ParameterSetName, __correlationId, __processRecordId, null);
+                await Microsoft.Azure.PowerShell.Cmdlets.Sphere.Module.Instance.Signal(id, token, messageData, (i, t, m) => ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(i, t, () => Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.EventDataConverter.ConvertFrom(m()) as Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.EventData), InvocationInformation, this.ParameterSetName, __correlationId, __processRecordId, null );
                 if (token.IsCancellationRequested)
                 {
-                    return;
+                    return ;
                 }
                 WriteDebug($"{id}: {(messageData().Message ?? global::System.String.Empty)}");
             }
@@ -280,31 +283,31 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         /// <summary>Performs execution of the command.</summary>
         protected override void ProcessRecord()
         {
-            ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletProcessRecordStart).Wait(); if (((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested) { return; }
+            ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletProcessRecordStart).Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
             __processRecordId = System.Guid.NewGuid().ToString();
             try
             {
                 // work
-                using (var asyncCommandRuntime = new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.PowerShell.AsyncCommandRuntime(this, ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token))
+                using( var asyncCommandRuntime = new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.PowerShell.AsyncCommandRuntime(this, ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token) )
                 {
-                    asyncCommandRuntime.Wait(ProcessRecordAsync(), ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token);
+                    asyncCommandRuntime.Wait( ProcessRecordAsync(),((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token);
                 }
             }
             catch (global::System.AggregateException aggregateException)
             {
                 // unroll the inner exceptions to get the root cause
-                foreach (var innerException in aggregateException.Flatten().InnerExceptions)
+                foreach( var innerException in aggregateException.Flatten().InnerExceptions )
                 {
-                    ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletException, $"{innerException.GetType().Name} - {innerException.Message} : {innerException.StackTrace}").Wait(); if (((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested) { return; }
+                    ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletException, $"{innerException.GetType().Name} - {innerException.Message} : {innerException.StackTrace}").Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                     // Write exception out to error channel.
-                    WriteError(new global::System.Management.Automation.ErrorRecord(innerException, string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null));
+                    WriteError( new global::System.Management.Automation.ErrorRecord(innerException,string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null) );
                 }
             }
-            catch (global::System.Exception exception) when ((exception as System.Management.Automation.PipelineStoppedException) == null || (exception as System.Management.Automation.PipelineStoppedException).InnerException != null)
+            catch (global::System.Exception exception) when ((exception as System.Management.Automation.PipelineStoppedException)== null || (exception as System.Management.Automation.PipelineStoppedException).InnerException != null)
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletException, $"{exception.GetType().Name} - {exception.Message} : {exception.StackTrace}").Wait(); if (((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested) { return; }
+                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletException, $"{exception.GetType().Name} - {exception.Message} : {exception.StackTrace}").Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 // Write exception out to error channel.
-                WriteError(new global::System.Management.Automation.ErrorRecord(exception, string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null));
+                WriteError( new global::System.Management.Automation.ErrorRecord(exception,string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null) );
             }
             finally
             {
@@ -318,9 +321,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         /// </returns>
         protected async global::System.Threading.Tasks.Task ProcessRecordAsync()
         {
-            using (NoSynchronizationContext)
+            using( NoSynchronizationContext )
             {
-                await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletGetPipeline); if (((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested) { return; }
+                await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletGetPipeline); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 Pipeline = Microsoft.Azure.PowerShell.Cmdlets.Sphere.Module.Instance.CreatePipeline(InvocationInformation, __correlationId, __processRecordId, this.ParameterSetName, this.ExtensibleParameters);
                 if (null != HttpPipelinePrepend)
                 {
@@ -333,7 +336,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
                 // get the client instance
                 try
                 {
-                    await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletBeforeAPICall); if (((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested) { return; }
+                    await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                     if (InputObject?.Id != null)
                     {
                         await this.Client.CatalogsGetViaIdentity(InputObject.Id, onOk, onDefault, this, Pipeline);
@@ -343,25 +346,25 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
                         // try to call with PATH parameters from Input Object
                         if (null == InputObject.SubscriptionId)
                         {
-                            ThrowTerminatingError(new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.SubscriptionId"), string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject));
+                            ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.SubscriptionId"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject) );
                         }
                         if (null == InputObject.ResourceGroupName)
                         {
-                            ThrowTerminatingError(new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.ResourceGroupName"), string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject));
+                            ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.ResourceGroupName"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject) );
                         }
                         if (null == InputObject.CatalogName)
                         {
-                            ThrowTerminatingError(new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.CatalogName"), string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject));
+                            ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.CatalogName"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject) );
                         }
                         await this.Client.CatalogsGet(InputObject.SubscriptionId ?? null, InputObject.ResourceGroupName ?? null, InputObject.CatalogName ?? null, onOk, onDefault, this, Pipeline);
                     }
-                    await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletAfterAPICall); if (((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested) { return; }
+                    await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }
                 catch (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.UndeclaredResponseException urexception)
                 {
                     WriteError(new global::System.Management.Automation.ErrorRecord(urexception, urexception.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { })
                     {
-                        ErrorDetails = new global::System.Management.Automation.ErrorDetails(urexception.Message) { RecommendedAction = urexception.Action }
+                      ErrorDetails = new global::System.Management.Automation.ErrorDetails(urexception.Message) { RecommendedAction = urexception.Action }
                     });
                 }
                 finally
@@ -404,14 +407,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         /// </returns>
         private async global::System.Threading.Tasks.Task onDefault(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse> response)
         {
-            using (NoSynchronizationContext)
+            using( NoSynchronizationContext )
             {
                 var _returnNow = global::System.Threading.Tasks.Task<bool>.FromResult(false);
                 overrideOnDefault(responseMessage, response, ref _returnNow);
                 // if overrideOnDefault has returned true, then return right away.
                 if ((null != _returnNow && await _returnNow))
                 {
-                    return;
+                    return ;
                 }
                 // Error Response : default
                 var code = (await response)?.Code;
@@ -420,16 +423,16 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
                 {
                     // Unrecognized Response. Create an error record based on what we have.
                     var ex = new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.RestException<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>(responseMessage, await response);
-                    WriteError(new global::System.Management.Automation.ErrorRecord(ex, ex.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new { })
+                    WriteError( new global::System.Management.Automation.ErrorRecord(ex, ex.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new {  })
                     {
-                        ErrorDetails = new global::System.Management.Automation.ErrorDetails(ex.Message) { RecommendedAction = ex.Action }
+                      ErrorDetails = new global::System.Management.Automation.ErrorDetails(ex.Message) { RecommendedAction = ex.Action }
                     });
                 }
                 else
                 {
-                    WriteError(new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{code}] : {message}"), code?.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { })
+                    WriteError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{code}] : {message}"), code?.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new {  })
                     {
-                        ErrorDetails = new global::System.Management.Automation.ErrorDetails(message) { RecommendedAction = global::System.String.Empty }
+                      ErrorDetails = new global::System.Management.Automation.ErrorDetails(message) { RecommendedAction = global::System.String.Empty }
                     });
                 }
             }
@@ -444,14 +447,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         /// </returns>
         private async global::System.Threading.Tasks.Task onOk(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalog> response)
         {
-            using (NoSynchronizationContext)
+            using( NoSynchronizationContext )
             {
                 var _returnNow = global::System.Threading.Tasks.Task<bool>.FromResult(false);
                 overrideOnOk(responseMessage, response, ref _returnNow);
                 // if overrideOnOk has returned true, then return right away.
                 if ((null != _returnNow && await _returnNow))
                 {
-                    return;
+                    return ;
                 }
                 // onOk - response for 200 / application/json
                 // (await response) // should be Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalog
@@ -465,7 +468,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
                     }
                     else
                     {
-                        if (1 == _responseSize)
+                        if (1 ==_responseSize)
                         {
                             // Flush buffer
                             WriteObject(_firstResponse.AddMultipleTypeNameIntoPSObject());
