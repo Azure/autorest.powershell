@@ -30,8 +30,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// values are: **CacheDisk,** **ResourceDisk.** The defaulting behavior is:
         /// **CacheDisk** if one is configured for the VM size otherwise **ResourceDisk**
         /// is used. Refer to the VM size documentation for Windows VM at
-        /// https://docs.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
-        /// https://docs.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
+        /// https://learn.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
+        /// https://learn.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
         /// sizes exposes a cache disk.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
@@ -66,8 +66,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// values are: **CacheDisk,** **ResourceDisk.** The defaulting behavior is:
         /// **CacheDisk** if one is configured for the VM size otherwise **ResourceDisk**
         /// is used. Refer to the VM size documentation for Windows VM at
-        /// https://docs.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
-        /// https://docs.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
+        /// https://learn.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
+        /// https://learn.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
         /// sizes exposes a cache disk.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
@@ -80,8 +80,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         values are: **CacheDisk,** **ResourceDisk.** The defaulting behavior is:
         **CacheDisk** if one is configured for the VM size otherwise **ResourceDisk**
         is used. Refer to the VM size documentation for Windows VM at
-        https://docs.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
-        https://docs.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
+        https://learn.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
+        https://learn.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
         sizes exposes a cache disk.",
         SerializedName = @"placement",
         PossibleTypes = new [] { typeof(string) })]
@@ -103,8 +103,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// values are: **CacheDisk,** **ResourceDisk.** The defaulting behavior is:
         /// **CacheDisk** if one is configured for the VM size otherwise **ResourceDisk**
         /// is used. Refer to the VM size documentation for Windows VM at
-        /// https://docs.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
-        /// https://docs.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
+        /// https://learn.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
+        /// https://learn.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
         /// sizes exposes a cache disk.
         /// </summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PSArgumentCompleterAttribute("CacheDisk", "ResourceDisk", "NvmeDisk")]

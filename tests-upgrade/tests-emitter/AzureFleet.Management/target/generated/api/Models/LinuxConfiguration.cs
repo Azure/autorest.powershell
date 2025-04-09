@@ -8,7 +8,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
     /// <summary>
     /// Specifies the Linux operating system settings on the virtual machine. For a
     /// list of supported Linux distributions, see [Linux on Azure-Endorsed
-    /// Distributions](https://docs.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
+    /// Distributions](https://learn.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
     /// </summary>
     public partial class LinuxConfiguration :
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ILinuxConfiguration,
@@ -111,7 +111,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
     }
     /// Specifies the Linux operating system settings on the virtual machine. For a
     /// list of supported Linux distributions, see [Linux on Azure-Endorsed
-    /// Distributions](https://docs.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
+    /// Distributions](https://learn.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
     public partial interface ILinuxConfiguration :
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.IJsonSerializable
     {
@@ -248,7 +248,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
     }
     /// Specifies the Linux operating system settings on the virtual machine. For a
     /// list of supported Linux distributions, see [Linux on Azure-Endorsed
-    /// Distributions](https://docs.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
+    /// Distributions](https://learn.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
     internal partial interface ILinuxConfigurationInternal
 
     {

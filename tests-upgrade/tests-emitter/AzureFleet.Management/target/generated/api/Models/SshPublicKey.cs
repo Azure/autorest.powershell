@@ -21,7 +21,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// SSH public key certificate used to authenticate with the VM through ssh. The
         /// key needs to be at least 2048-bit and in ssh-rsa format. For creating ssh keys,
         /// see [Create SSH keys on Linux and Mac for Linux VMs in
-        /// Azure]https://docs.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed).
+        /// Azure]https://learn.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
         public string KeyData { get => this._keyData; set => this._keyData = value; }
@@ -52,7 +52,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// SSH public key certificate used to authenticate with the VM through ssh. The
         /// key needs to be at least 2048-bit and in ssh-rsa format. For creating ssh keys,
         /// see [Create SSH keys on Linux and Mac for Linux VMs in
-        /// Azure]https://docs.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed).
+        /// Azure]https://learn.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -63,7 +63,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Description = @"SSH public key certificate used to authenticate with the VM through ssh. The
         key needs to be at least 2048-bit and in ssh-rsa format. For creating ssh keys,
         see [Create SSH keys on Linux and Mac for Linux VMs in
-        Azure]https://docs.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed).",
+        Azure]https://learn.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed).",
         SerializedName = @"keyData",
         PossibleTypes = new [] { typeof(string) })]
         string KeyData { get; set; }
@@ -95,7 +95,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// SSH public key certificate used to authenticate with the VM through ssh. The
         /// key needs to be at least 2048-bit and in ssh-rsa format. For creating ssh keys,
         /// see [Create SSH keys on Linux and Mac for Linux VMs in
-        /// Azure]https://docs.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed).
+        /// Azure]https://learn.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed).
         /// </summary>
         string KeyData { get; set; }
         /// <summary>

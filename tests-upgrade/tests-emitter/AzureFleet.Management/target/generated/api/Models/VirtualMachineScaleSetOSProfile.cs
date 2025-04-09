@@ -25,10 +25,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// "P@ssword123", "Pa$$word", "pass@word1", "Password!", "Password1",
         /// "Password22", "iloveyou!" <br><br> For resetting the password, see [How to
         /// reset the Remote Desktop service or its login password in a Windows
-        /// VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp)
+        /// VM](https://learn.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp)
         /// <br><br> For resetting root password, see [Manage users, SSH, and check or
         /// repair disks on Azure Linux VMs using the VMAccess
-        /// Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)
+        /// Extension](https://learn.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
         public System.Security.SecureString AdminPassword { get => this._adminPassword; set => this._adminPassword = value; }
@@ -78,7 +78,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// is decoded to a binary array that is saved as a file on the Virtual Machine.
         /// The maximum length of the binary array is 65535 bytes. For using cloud-init for
         /// your VM, see [Using cloud-init to customize a Linux VM during
-        /// creation](https://docs.microsoft.com/azure/virtual-machines/linux/using-cloud-init)
+        /// creation](https://learn.microsoft.com/azure/virtual-machines/linux/using-cloud-init)
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
         public System.Security.SecureString CustomData { get => this._customData; set => this._customData = value; }
@@ -89,7 +89,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// <summary>
         /// Specifies the Linux operating system settings on the virtual machine. For a
         /// list of supported Linux distributions, see [Linux on Azure-Endorsed
-        /// Distributions](https://docs.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
+        /// Distributions](https://learn.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
         internal Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ILinuxConfiguration LinuxConfiguration { get => (this._linuxConfiguration = this._linuxConfiguration ?? new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.LinuxConfiguration()); set => this._linuxConfiguration = value; }
@@ -194,9 +194,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// Specifies set of certificates that should be installed onto the virtual
         /// machines in the scale set. To install certificates on a virtual machine it is
         /// recommended to use the [Azure Key Vault virtual machine extension for
-        /// Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux)
+        /// Linux](https://learn.microsoft.com/azure/virtual-machines/extensions/key-vault-linux)
         /// or the [Azure Key Vault virtual machine extension for
-        /// Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).
+        /// Windows](https://learn.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
         public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVaultSecretGroup> Secret { get => this._secret; set => this._secret = value; }
@@ -243,9 +243,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// <summary>
         /// Specifies the time zone of the virtual machine. e.g. "Pacific Standard Time".
         /// Possible values can be
-        /// [TimeZoneInfo.Id](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id?#System_TimeZoneInfo_Id)
+        /// [TimeZoneInfo.Id](https://learn.microsoft.com/dotnet/api/system.timezoneinfo.id?#System_TimeZoneInfo_Id)
         /// value from time zones returned by
-        /// [TimeZoneInfo.GetSystemTimeZones](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones).
+        /// [TimeZoneInfo.GetSystemTimeZones](https://learn.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
         public string WindowConfigurationTimeZone { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)WindowsConfiguration).TimeZone; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)WindowsConfiguration).TimeZone = value ?? null; }
@@ -315,10 +315,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// "P@ssword123", "Pa$$word", "pass@word1", "Password!", "Password1",
         /// "Password22", "iloveyou!" <br><br> For resetting the password, see [How to
         /// reset the Remote Desktop service or its login password in a Windows
-        /// VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp)
+        /// VM](https://learn.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp)
         /// <br><br> For resetting root password, see [Manage users, SSH, and check or
         /// repair disks on Azure Linux VMs using the VMAccess
-        /// Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)
+        /// Extension](https://learn.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -336,10 +336,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         ""P@ssword123"", ""Pa$$word"", ""pass@word1"", ""Password!"", ""Password1"",
         ""Password22"", ""iloveyou!"" <br><br> For resetting the password, see [How to
         reset the Remote Desktop service or its login password in a Windows
-        VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp)
+        VM](https://learn.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp)
         <br><br> For resetting root password, see [Manage users, SSH, and check or
         repair disks on Azure Linux VMs using the VMAccess
-        Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)",
+        Extension](https://learn.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)",
         SerializedName = @"adminPassword",
         PossibleTypes = new [] { typeof(System.Security.SecureString) })]
         System.Security.SecureString AdminPassword { get; set; }
@@ -407,7 +407,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// is decoded to a binary array that is saved as a file on the Virtual Machine.
         /// The maximum length of the binary array is 65535 bytes. For using cloud-init for
         /// your VM, see [Using cloud-init to customize a Linux VM during
-        /// creation](https://docs.microsoft.com/azure/virtual-machines/linux/using-cloud-init)
+        /// creation](https://learn.microsoft.com/azure/virtual-machines/linux/using-cloud-init)
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -419,7 +419,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         is decoded to a binary array that is saved as a file on the Virtual Machine.
         The maximum length of the binary array is 65535 bytes. For using cloud-init for
         your VM, see [Using cloud-init to customize a Linux VM during
-        creation](https://docs.microsoft.com/azure/virtual-machines/linux/using-cloud-init)",
+        creation](https://learn.microsoft.com/azure/virtual-machines/linux/using-cloud-init)",
         SerializedName = @"customData",
         PossibleTypes = new [] { typeof(System.Security.SecureString) })]
         System.Security.SecureString CustomData { get; set; }
@@ -573,9 +573,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// Specifies set of certificates that should be installed onto the virtual
         /// machines in the scale set. To install certificates on a virtual machine it is
         /// recommended to use the [Azure Key Vault virtual machine extension for
-        /// Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux)
+        /// Linux](https://learn.microsoft.com/azure/virtual-machines/extensions/key-vault-linux)
         /// or the [Azure Key Vault virtual machine extension for
-        /// Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).
+        /// Windows](https://learn.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -586,9 +586,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Description = @"Specifies set of certificates that should be installed onto the virtual
         machines in the scale set. To install certificates on a virtual machine it is
         recommended to use the [Azure Key Vault virtual machine extension for
-        Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux)
+        Linux](https://learn.microsoft.com/azure/virtual-machines/extensions/key-vault-linux)
         or the [Azure Key Vault virtual machine extension for
-        Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).",
+        Windows](https://learn.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).",
         SerializedName = @"secrets",
         PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVaultSecretGroup) })]
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVaultSecretGroup> Secret { get; set; }
@@ -683,9 +683,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// <summary>
         /// Specifies the time zone of the virtual machine. e.g. "Pacific Standard Time".
         /// Possible values can be
-        /// [TimeZoneInfo.Id](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id?#System_TimeZoneInfo_Id)
+        /// [TimeZoneInfo.Id](https://learn.microsoft.com/dotnet/api/system.timezoneinfo.id?#System_TimeZoneInfo_Id)
         /// value from time zones returned by
-        /// [TimeZoneInfo.GetSystemTimeZones](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones).
+        /// [TimeZoneInfo.GetSystemTimeZones](https://learn.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -695,9 +695,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Specifies the time zone of the virtual machine. e.g. ""Pacific Standard Time"".
         Possible values can be
-        [TimeZoneInfo.Id](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id?#System_TimeZoneInfo_Id)
+        [TimeZoneInfo.Id](https://learn.microsoft.com/dotnet/api/system.timezoneinfo.id?#System_TimeZoneInfo_Id)
         value from time zones returned by
-        [TimeZoneInfo.GetSystemTimeZones](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones).",
+        [TimeZoneInfo.GetSystemTimeZones](https://learn.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones).",
         SerializedName = @"timeZone",
         PossibleTypes = new [] { typeof(string) })]
         string WindowConfigurationTimeZone { get; set; }
@@ -801,10 +801,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// "P@ssword123", "Pa$$word", "pass@word1", "Password!", "Password1",
         /// "Password22", "iloveyou!" <br><br> For resetting the password, see [How to
         /// reset the Remote Desktop service or its login password in a Windows
-        /// VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp)
+        /// VM](https://learn.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp)
         /// <br><br> For resetting root password, see [Manage users, SSH, and check or
         /// repair disks on Azure Linux VMs using the VMAccess
-        /// Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)
+        /// Extension](https://learn.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)
         /// </summary>
         System.Security.SecureString AdminPassword { get; set; }
         /// <summary>
@@ -834,13 +834,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// is decoded to a binary array that is saved as a file on the Virtual Machine.
         /// The maximum length of the binary array is 65535 bytes. For using cloud-init for
         /// your VM, see [Using cloud-init to customize a Linux VM during
-        /// creation](https://docs.microsoft.com/azure/virtual-machines/linux/using-cloud-init)
+        /// creation](https://learn.microsoft.com/azure/virtual-machines/linux/using-cloud-init)
         /// </summary>
         System.Security.SecureString CustomData { get; set; }
         /// <summary>
         /// Specifies the Linux operating system settings on the virtual machine. For a
         /// list of supported Linux distributions, see [Linux on Azure-Endorsed
-        /// Distributions](https://docs.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
+        /// Distributions](https://learn.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
         /// </summary>
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ILinuxConfiguration LinuxConfiguration { get; set; }
         /// <summary>Specifies whether password authentication should be disabled.</summary>
@@ -905,9 +905,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// Specifies set of certificates that should be installed onto the virtual
         /// machines in the scale set. To install certificates on a virtual machine it is
         /// recommended to use the [Azure Key Vault virtual machine extension for
-        /// Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux)
+        /// Linux](https://learn.microsoft.com/azure/virtual-machines/extensions/key-vault-linux)
         /// or the [Azure Key Vault virtual machine extension for
-        /// Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).
+        /// Windows](https://learn.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).
         /// </summary>
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVaultSecretGroup> Secret { get; set; }
         /// <summary>The list of SSH public keys used to authenticate with linux based VMs.</summary>
@@ -942,9 +942,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// <summary>
         /// Specifies the time zone of the virtual machine. e.g. "Pacific Standard Time".
         /// Possible values can be
-        /// [TimeZoneInfo.Id](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id?#System_TimeZoneInfo_Id)
+        /// [TimeZoneInfo.Id](https://learn.microsoft.com/dotnet/api/system.timezoneinfo.id?#System_TimeZoneInfo_Id)
         /// value from time zones returned by
-        /// [TimeZoneInfo.GetSystemTimeZones](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones).
+        /// [TimeZoneInfo.GetSystemTimeZones](https://learn.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones).
         /// </summary>
         string WindowConfigurationTimeZone { get; set; }
         /// <summary>
