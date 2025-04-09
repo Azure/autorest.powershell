@@ -35,6 +35,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         /// <summary>Internal Acessors for Name</summary>
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaName Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaInternal.Name { get => (this._name = this._name ?? new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.QuotaName()); set { {_name = value;} } }
 
+        /// <summary>Internal Acessors for NameLocalizedValue</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaInternal.NameLocalizedValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).LocalizedValue; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).LocalizedValue = value; }
+
+        /// <summary>Internal Acessors for NameValue</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaInternal.NameValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).Value; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).Value = value; }
+
         /// <summary>Backing field for <see cref="Name" /> property.</summary>
         private Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaName _name;
 
@@ -44,11 +50,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
 
         /// <summary>The localized name of the resource.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inlined)]
-        public string NameLocalizedValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).LocalizedValue; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).LocalizedValue = value ?? null; }
+        public string NameLocalizedValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).LocalizedValue; }
 
         /// <summary>The name of the resource.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inlined)]
-        public string NameValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).Value; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).Value = value ?? null; }
+        public string NameValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).Value; }
 
         /// <summary>Backing field for <see cref="Unit" /> property.</summary>
         private string _unit;

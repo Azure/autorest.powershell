@@ -186,7 +186,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             }
             if (content.Contains("SecretManagementSettingKeyExportable"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingKeyExportable = (bool) content.GetValueForProperty("SecretManagementSettingKeyExportable",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingKeyExportable, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingKeyExportable = (bool?) content.GetValueForProperty("SecretManagementSettingKeyExportable",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingKeyExportable, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
             AfterDeserializeDictionary(content);
         }
@@ -267,7 +267,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             }
             if (content.Contains("SecretManagementSettingKeyExportable"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingKeyExportable = (bool) content.GetValueForProperty("SecretManagementSettingKeyExportable",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingKeyExportable, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingKeyExportable = (bool?) content.GetValueForProperty("SecretManagementSettingKeyExportable",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingKeyExportable, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
             AfterDeserializePSObject(content);
         }
