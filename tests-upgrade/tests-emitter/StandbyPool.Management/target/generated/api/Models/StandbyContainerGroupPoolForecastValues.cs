@@ -37,7 +37,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         /// Displays the predicted count of instances to be requested from the standby pool.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,

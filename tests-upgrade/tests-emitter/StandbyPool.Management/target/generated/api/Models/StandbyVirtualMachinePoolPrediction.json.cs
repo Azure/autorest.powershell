@@ -107,7 +107,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
             }
             if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.SerializationMode.IncludeRead))
             {
-                AddIf( (Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Json.JsonString(this._forecastStartTime.ToString(@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK",global::System.Globalization.CultureInfo.InvariantCulture)), "forecastStartTime" ,container.Add );
+                AddIf( null != this._forecastStartTime ? (Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Json.JsonString(this._forecastStartTime?.ToString(@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK",global::System.Globalization.CultureInfo.InvariantCulture)) : null, "forecastStartTime" ,container.Add );
             }
             if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.SerializationMode.IncludeRead))
             {

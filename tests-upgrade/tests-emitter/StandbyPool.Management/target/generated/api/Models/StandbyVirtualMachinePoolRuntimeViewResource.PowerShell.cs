@@ -188,7 +188,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
             }
             if (content.Contains("PredictionForecastStartTime"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal)this).PredictionForecastStartTime = (global::System.DateTime) content.GetValueForProperty("PredictionForecastStartTime",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal)this).PredictionForecastStartTime, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+                ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal)this).PredictionForecastStartTime = (global::System.DateTime?) content.GetValueForProperty("PredictionForecastStartTime",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal)this).PredictionForecastStartTime, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
             }
             if (content.Contains("PredictionForecastInfo"))
             {
@@ -289,7 +289,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
             }
             if (content.Contains("PredictionForecastStartTime"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal)this).PredictionForecastStartTime = (global::System.DateTime) content.GetValueForProperty("PredictionForecastStartTime",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal)this).PredictionForecastStartTime, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+                ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal)this).PredictionForecastStartTime = (global::System.DateTime?) content.GetValueForProperty("PredictionForecastStartTime",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal)this).PredictionForecastStartTime, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
             }
             if (content.Contains("PredictionForecastInfo"))
             {
