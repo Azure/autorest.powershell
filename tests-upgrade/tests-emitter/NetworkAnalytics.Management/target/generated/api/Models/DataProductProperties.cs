@@ -425,7 +425,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
         string KeyVaultUrl { get;  }
         /// <summary>Major version of data product.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,
@@ -528,7 +528,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
         string PrivateLinksEnabled { get; set; }
         /// <summary>Product name of data product.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,
@@ -563,7 +563,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
         string PublicNetworkAccess { get; set; }
         /// <summary>Data product publisher name.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,
