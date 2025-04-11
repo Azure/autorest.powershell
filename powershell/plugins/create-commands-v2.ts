@@ -211,7 +211,8 @@ export /* @internal */ class Inferrer {
         if (!disableTransformIdentityType && supportsCombineGetPutOperation &&
           (hasPatch && patchOperation && this.IsManagedIdentityOperation(patchOperation)
             || !hasPatch && putOperation && this.IsManagedIdentityOperation(putOperation))) {
-          await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.ManagedIdentityUpdate);
+          const variant = (await this.inferCommandNames(getOperation, operationGroup.$key, this.state))[0];
+          await this.addVariants(putOperation.parameters, putOperation, variant, '', this.state, [getOperation], CommandType.ManagedIdentityUpdate);
         } else if (!disableTransformIdentityType && !supportsCombineGetPutOperation && hasPatch && patchOperation && this.IsManagedIdentityOperation(patchOperation)) {
           if (!optsToExclude.includes(patchOperation.operationId ?? '')) {
             const transformIdentityTypeErrorMessage = `Parameter IdentityType in operation '${patchOperation.operationId}' can not be transformed as the best practice design. See https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/design-guidelines/managed-identity-best-practices.md#frequently-asked-question to mitigate this issue.`;
@@ -230,7 +231,8 @@ export /* @internal */ class Inferrer {
            - there is only one put request schema
            - get operation response schema type is the same as put operation request schema type
            */
-          await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.GetPut);
+          const variant = (await this.inferCommandNames(getOperation, operationGroup.$key, this.state))[0];
+          await this.addVariants(putOperation.parameters, putOperation, variant, '', this.state, [getOperation], CommandType.GetPut);
         }
       } else if (this.isAzure && !disableTransformIdentityType && patchOperation && this.IsManagedIdentityOperation(patchOperation)) {
         if (!optsToExclude.includes(patchOperation.operationId ?? '')) {
