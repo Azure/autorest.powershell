@@ -135,7 +135,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
     {
         /// <summary>Display name of the Azure Extended Zone.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
@@ -146,7 +146,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
         string DisplayName { get;  }
         /// <summary>Geography of the Azure Extended Zone.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
@@ -157,7 +157,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
         string Geography { get;  }
         /// <summary>The Geography Group of the Azure Extended Zone.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
@@ -168,7 +168,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
         string GeographyGroup { get;  }
         /// <summary>The Home Location of the Azure Extended Zone.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
@@ -179,7 +179,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
         string HomeLocation { get;  }
         /// <summary>The Latitude of the Azure Extended Zone.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
@@ -190,7 +190,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
         string Latitude { get;  }
         /// <summary>The Longitude of the Azure Extended Zone.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
@@ -215,7 +215,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
         string ProvisioningState { get;  }
         /// <summary>Category of region for the Azure Extended Zone.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
@@ -226,7 +226,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
         string RegionCategory { get;  }
         /// <summary>Type of region for the Azure Extended Zone.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
@@ -237,7 +237,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
         string RegionType { get;  }
         /// <summary>Regional display name of the Azure Extended Zone.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,

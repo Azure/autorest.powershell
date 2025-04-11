@@ -19,13 +19,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         public string ForecastInfo { get => this._forecastInfo; }
 
         /// <summary>Backing field for <see cref="ForecastStartTime" /> property.</summary>
-        private global::System.DateTime _forecastStartTime;
+        private global::System.DateTime? _forecastStartTime;
 
         /// <summary>
         /// Displays the UTC timestamp of when the prediction was retrieved for the standby pool.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Owned)]
-        public global::System.DateTime ForecastStartTime { get => this._forecastStartTime; }
+        public global::System.DateTime? ForecastStartTime { get => this._forecastStartTime; }
 
         /// <summary>Backing field for <see cref="ForecastValue" /> property.</summary>
         private Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolForecastValues _forecastValue;
@@ -44,7 +44,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         string Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolPredictionInternal.ForecastInfo { get => this._forecastInfo; set { {_forecastInfo = value;} } }
 
         /// <summary>Internal Acessors for ForecastStartTime</summary>
-        global::System.DateTime Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolPredictionInternal.ForecastStartTime { get => this._forecastStartTime; set { {_forecastStartTime = value;} } }
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolPredictionInternal.ForecastStartTime { get => this._forecastStartTime; set { {_forecastStartTime = value;} } }
 
         /// <summary>Internal Acessors for ForecastValue</summary>
         Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolForecastValues Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolPredictionInternal.ForecastValue { get => (this._forecastValue = this._forecastValue ?? new Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.StandbyVirtualMachinePoolForecastValues()); set { {_forecastValue = value;} } }
@@ -64,7 +64,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
     {
         /// <summary>Displays additional information for the prediction of the standby pool.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
@@ -77,7 +77,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         /// Displays the UTC timestamp of when the prediction was retrieved for the standby pool.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
@@ -85,7 +85,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         Description = @"Displays the UTC timestamp of when the prediction was retrieved for the standby pool.",
         SerializedName = @"forecastStartTime",
         PossibleTypes = new [] { typeof(global::System.DateTime) })]
-        global::System.DateTime ForecastStartTime { get;  }
+        global::System.DateTime? ForecastStartTime { get;  }
         /// <summary>
         /// Displays the predicted count of instances to be requested from the standby pool.
         /// </summary>
@@ -110,7 +110,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         /// <summary>
         /// Displays the UTC timestamp of when the prediction was retrieved for the standby pool.
         /// </summary>
-        global::System.DateTime ForecastStartTime { get; set; }
+        global::System.DateTime? ForecastStartTime { get; set; }
         /// <summary>Displays the forecast information of the standby pool.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolForecastValues ForecastValue { get; set; }
         /// <summary>

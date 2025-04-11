@@ -203,14 +203,15 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         }
         const actualProperty = virtualProperty.property;
         let n = 0;
-        const decl = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>actualProperty.schema, actualProperty.language.csharp?.required, this.state.path('schema'));
+        const isRequired = !!(virtualProperty.required && virtualProperty.read && virtualProperty.create && virtualProperty.update);
+        const decl = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>actualProperty.schema, isRequired, this.state.path('schema'));
 
         /* public property */
-        const myProperty = new ModelProperty(virtualProperty.name, <NewSchema>actualProperty.schema, actualProperty.language.csharp?.required, actualProperty.serializedName, actualProperty.language.csharp?.description || '', this.state.path('properties', n++), {
+        const myProperty = new ModelProperty(virtualProperty.name, <NewSchema>actualProperty.schema, isRequired, actualProperty.serializedName, actualProperty.language.csharp?.description || '', this.state.path('properties', n++), {
           initializer: actualProperty.language.csharp?.constantValue ? typeof actualProperty.language.csharp.constantValue === 'string' ? new StringExpression(actualProperty.language.csharp.constantValue) : new LiteralExpression(actualProperty.language.csharp.constantValue) : undefined
         });
 
-        if (actualProperty.language.csharp?.readOnly || actualProperty.readOnly) {
+        if (virtualProperty.readOnly || actualProperty.language.csharp?.readOnly || actualProperty.readOnly) {
           myProperty.set = undefined;
         }
         myProperty.language = virtualProperty.property.language;
@@ -258,13 +259,14 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         // has to be accessed via the field in this.backingFields
         const parentField = <BackingField>this.backingFields.find(each => virtualProperty.accessViaSchema ? virtualProperty.accessViaSchema.language.csharp?.interfaceImplementation.fullName === each.typeDeclaration.declaration : false);
 
-        const propertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, !!virtualProperty.required, this.state);
+        const isRequired = !!(virtualProperty.required && virtualProperty.read && virtualProperty.create && virtualProperty.update);
+        const propertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, isRequired, this.state);
         const requiredPropertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, true, this.state);
         const opsType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.originalContainingSchema, false, this.state);
         const via = <NewVirtualProperty>virtualProperty.accessViaProperty;
         const parentCast = `(${virtualProperty.originalContainingSchema.language.csharp?.internalInterfaceImplementation.fullName})`;
         let getFunc = toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)}`);
-        let setFunc = (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = value ${virtualProperty.required ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`);
+        let setFunc = (virtualProperty.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = value ${isRequired ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`);
         let isConstant = false;
         if (virtualProperty.property.isDiscriminator && this.schema.discriminatorValue) {
           for (const parent of values(this.schema.parents?.all)) {
@@ -272,7 +274,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
               getFunc = toExpression(`"${this.schema.discriminatorValue}"`);
               setFunc = toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = "${this.schema.discriminatorValue}"`);
               isConstant = true;
-              if (virtualProperty.property.language.csharp?.constantValue === undefined && !virtualProperty.property.readOnly) {
+              if (virtualProperty.property.language.csharp?.constantValue === undefined && !virtualProperty.readOnly) {
                 this.constructorMethod?.add(`this.${parentField.field.name}.${this.accessor(virtualProperty)} = "${this.schema.discriminatorValue}";`);
               }
               break;
@@ -321,19 +323,19 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           // can't remove it, it has to be either public or internally implemented.
           isPolymorphic = true;
         }
-
+        const isRequired = !!(virtualProperty.required && virtualProperty.read && virtualProperty.create && virtualProperty.update);
         if (virtualProperty.accessViaProperty) {
           const containingProperty = this.pMap.get(virtualProperty.accessViaProperty);
           if (containingProperty) {
 
-            const propertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, !!virtualProperty.required, this.state);
+            const propertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, isRequired, this.state);
             const requiredPropertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, true, this.state);
 
             // regular inlined property
             const vp = new Property(virtualProperty.name, propertyType, {
               description: virtualProperty.property.language.csharp?.description,
               get: toExpression(`${this.accessor(virtualProperty)}`),
-              set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value ${virtualProperty.required ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
+              set: (virtualProperty.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value ${isRequired ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
             });
 
             if (!virtualProperty.private || isPolymorphic) {

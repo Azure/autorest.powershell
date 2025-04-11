@@ -8,7 +8,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
     /// <summary>
     /// Specifies the Linux operating system settings on the virtual machine. For a
     /// list of supported Linux distributions, see [Linux on Azure-Endorsed
-    /// Distributions](https://docs.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
+    /// Distributions](https://learn.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
     /// </summary>
     [System.ComponentModel.TypeConverter(typeof(LinuxConfigurationTypeConverter))]
     public partial class LinuxConfiguration
@@ -238,7 +238,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
     }
     /// Specifies the Linux operating system settings on the virtual machine. For a
     /// list of supported Linux distributions, see [Linux on Azure-Endorsed
-    /// Distributions](https://docs.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
+    /// Distributions](https://learn.microsoft.com/azure/virtual-machines/linux/endorsed-distros).
     [System.ComponentModel.TypeConverter(typeof(LinuxConfigurationTypeConverter))]
     public partial interface ILinuxConfiguration
 

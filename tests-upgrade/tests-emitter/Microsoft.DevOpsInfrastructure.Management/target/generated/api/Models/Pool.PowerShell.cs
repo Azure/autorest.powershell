@@ -191,7 +191,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             }
             if (content.Contains("MaximumConcurrency"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).MaximumConcurrency = (int) content.GetValueForProperty("MaximumConcurrency",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).MaximumConcurrency, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).MaximumConcurrency = (int?) content.GetValueForProperty("MaximumConcurrency",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).MaximumConcurrency, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
             }
             if (content.Contains("DevCenterProjectResourceId"))
             {
@@ -332,7 +332,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             }
             if (content.Contains("MaximumConcurrency"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).MaximumConcurrency = (int) content.GetValueForProperty("MaximumConcurrency",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).MaximumConcurrency, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).MaximumConcurrency = (int?) content.GetValueForProperty("MaximumConcurrency",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).MaximumConcurrency, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
             }
             if (content.Contains("DevCenterProjectResourceId"))
             {

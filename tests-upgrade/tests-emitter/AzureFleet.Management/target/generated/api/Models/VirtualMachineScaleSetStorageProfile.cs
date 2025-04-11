@@ -18,7 +18,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// Specifies the parameters that are used to add data disks to the virtual
         /// machines in the scale set. For more information about disks, see [About disks
         /// and VHDs for Azure virtual
-        /// machines](https://docs.microsoft.com/azure/virtual-machines/managed-disks-overview).
+        /// machines](https://learn.microsoft.com/azure/virtual-machines/managed-disks-overview).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
         public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetDataDisk> DataDisk { get => this._dataDisk; set => this._dataDisk = value; }
@@ -32,8 +32,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// values are: **CacheDisk,** **ResourceDisk.** The defaulting behavior is:
         /// **CacheDisk** if one is configured for the VM size otherwise **ResourceDisk**
         /// is used. Refer to the VM size documentation for Windows VM at
-        /// https://docs.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
-        /// https://docs.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
+        /// https://learn.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
+        /// https://learn.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
         /// sizes exposes a cache disk.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
@@ -165,7 +165,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// Specifies information about the operating system disk used by the virtual
         /// machines in the scale set. For more information about disks, see [About disks
         /// and VHDs for Azure virtual
-        /// machines](https://docs.microsoft.com/azure/virtual-machines/managed-disks-overview).
+        /// machines](https://learn.microsoft.com/azure/virtual-machines/managed-disks-overview).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
         internal Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSDisk OSDisk { get => (this._oSDisk = this._oSDisk ?? new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VirtualMachineScaleSetOSDisk()); set => this._oSDisk = value; }
@@ -261,7 +261,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// Specifies the parameters that are used to add data disks to the virtual
         /// machines in the scale set. For more information about disks, see [About disks
         /// and VHDs for Azure virtual
-        /// machines](https://docs.microsoft.com/azure/virtual-machines/managed-disks-overview).
+        /// machines](https://learn.microsoft.com/azure/virtual-machines/managed-disks-overview).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -272,7 +272,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Description = @"Specifies the parameters that are used to add data disks to the virtual
         machines in the scale set. For more information about disks, see [About disks
         and VHDs for Azure virtual
-        machines](https://docs.microsoft.com/azure/virtual-machines/managed-disks-overview).",
+        machines](https://learn.microsoft.com/azure/virtual-machines/managed-disks-overview).",
         SerializedName = @"dataDisks",
         PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetDataDisk) })]
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetDataDisk> DataDisk { get; set; }
@@ -293,8 +293,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// values are: **CacheDisk,** **ResourceDisk.** The defaulting behavior is:
         /// **CacheDisk** if one is configured for the VM size otherwise **ResourceDisk**
         /// is used. Refer to the VM size documentation for Windows VM at
-        /// https://docs.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
-        /// https://docs.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
+        /// https://learn.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
+        /// https://learn.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
         /// sizes exposes a cache disk.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
@@ -307,8 +307,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         values are: **CacheDisk,** **ResourceDisk.** The defaulting behavior is:
         **CacheDisk** if one is configured for the VM size otherwise **ResourceDisk**
         is used. Refer to the VM size documentation for Windows VM at
-        https://docs.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
-        https://docs.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
+        https://learn.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
+        https://learn.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
         sizes exposes a cache disk.",
         SerializedName = @"placement",
         PossibleTypes = new [] { typeof(string) })]
@@ -677,7 +677,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// Specifies the parameters that are used to add data disks to the virtual
         /// machines in the scale set. For more information about disks, see [About disks
         /// and VHDs for Azure virtual
-        /// machines](https://docs.microsoft.com/azure/virtual-machines/managed-disks-overview).
+        /// machines](https://learn.microsoft.com/azure/virtual-machines/managed-disks-overview).
         /// </summary>
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetDataDisk> DataDisk { get; set; }
         /// <summary>Specifies the ephemeral disk settings for operating system disk.</summary>
@@ -688,8 +688,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// values are: **CacheDisk,** **ResourceDisk.** The defaulting behavior is:
         /// **CacheDisk** if one is configured for the VM size otherwise **ResourceDisk**
         /// is used. Refer to the VM size documentation for Windows VM at
-        /// https://docs.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
-        /// https://docs.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
+        /// https://learn.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at
+        /// https://learn.microsoft.com/azure/virtual-machines/linux/sizes to check which VM
         /// sizes exposes a cache disk.
         /// </summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PSArgumentCompleterAttribute("CacheDisk", "ResourceDisk", "NvmeDisk")]
@@ -767,7 +767,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// Specifies information about the operating system disk used by the virtual
         /// machines in the scale set. For more information about disks, see [About disks
         /// and VHDs for Azure virtual
-        /// machines](https://docs.microsoft.com/azure/virtual-machines/managed-disks-overview).
+        /// machines](https://learn.microsoft.com/azure/virtual-machines/managed-disks-overview).
         /// </summary>
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSDisk OSDisk { get; set; }
         /// <summary>

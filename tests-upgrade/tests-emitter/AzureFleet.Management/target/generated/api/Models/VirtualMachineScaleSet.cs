@@ -13,11 +13,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
 
         /// <summary>The error code.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public string Code { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Code; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Code = value ?? null; }
+        public string Code { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Code; }
 
         /// <summary>The API error details</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorBase> Detail { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Detail; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Detail = value ?? null /* arrayOf */; }
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorBase> Detail { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Detail; }
 
         /// <summary>Backing field for <see cref="Error" /> property.</summary>
         private Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiError _error;
@@ -38,15 +38,21 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
 
         /// <summary>The internal error message or exception dump.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public string InnererrorErrorDetail { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).InnererrorErrorDetail; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).InnererrorErrorDetail = value ?? null; }
+        public string InnererrorErrorDetail { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).InnererrorErrorDetail; }
 
         /// <summary>The exception type.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public string InnererrorExceptionType { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).InnererrorExceptionType; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).InnererrorExceptionType = value ?? null; }
+        public string InnererrorExceptionType { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).InnererrorExceptionType; }
 
         /// <summary>The error message.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public string Message { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Message; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Message = value ?? null; }
+        public string Message { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Message; }
+
+        /// <summary>Internal Acessors for Code</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal.Code { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Code; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Code = value; }
+
+        /// <summary>Internal Acessors for Detail</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorBase> Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal.Detail { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Detail; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Detail = value; }
 
         /// <summary>Internal Acessors for Error</summary>
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiError Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal.Error { get => (this._error = this._error ?? new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ApiError()); set { {_error = value;} } }
@@ -57,8 +63,20 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// <summary>Internal Acessors for Innererror</summary>
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IInnerError Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal.Innererror { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Innererror; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Innererror = value; }
 
+        /// <summary>Internal Acessors for InnererrorErrorDetail</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal.InnererrorErrorDetail { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).InnererrorErrorDetail; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).InnererrorErrorDetail = value; }
+
+        /// <summary>Internal Acessors for InnererrorExceptionType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal.InnererrorExceptionType { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).InnererrorExceptionType; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).InnererrorExceptionType = value; }
+
+        /// <summary>Internal Acessors for Message</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal.Message { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Message; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Message = value; }
+
         /// <summary>Internal Acessors for OperationStatus</summary>
         string Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal.OperationStatus { get => this._operationStatus; set { {_operationStatus = value;} } }
+
+        /// <summary>Internal Acessors for Target</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal.Target { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Target; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Target = value; }
 
         /// <summary>Internal Acessors for Type</summary>
         string Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal.Type { get => this._type; set { {_type = value;} } }
@@ -75,7 +93,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
 
         /// <summary>The target of the particular error.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public string Target { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Target; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Target = value ?? null; }
+        public string Target { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorInternal)Error).Target; }
 
         /// <summary>Backing field for <see cref="Type" /> property.</summary>
         private string _type;
@@ -121,7 +139,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// "subscriptions/{subId}/resourceGroups/{rgName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmssName}"
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
@@ -169,7 +187,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// resource.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,

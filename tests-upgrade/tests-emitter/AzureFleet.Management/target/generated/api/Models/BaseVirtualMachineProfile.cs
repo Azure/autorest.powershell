@@ -109,9 +109,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// Server operating system are: <br><br> RHEL_BYOS (for RHEL) <br><br> SLES_BYOS
         /// (for SUSE) <br><br> For more information, see [Azure Hybrid Use Benefit for
         /// Windows
-        /// Server](https://docs.microsoft.com/azure/virtual-machines/windows/hybrid-use-benefit-licensing)
+        /// Server](https://learn.microsoft.com/azure/virtual-machines/windows/hybrid-use-benefit-licensing)
         /// <br><br> [Azure Hybrid Use Benefit for Linux
-        /// Server](https://docs.microsoft.com/azure/virtual-machines/linux/azure-hybrid-benefit-linux)
+        /// Server](https://learn.microsoft.com/azure/virtual-machines/linux/azure-hybrid-benefit-linux)
         /// <br><br> Minimum api-version: 2015-06-15
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
@@ -388,7 +388,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// specified in the request body the default behavior is to set it to the value of
         /// vCPUs available for that VM size exposed in api response of [List all available
         /// virtual machine sizes in a
-        /// region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        /// region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
         public int? VMSizePropertyVcpUsAvailable { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetHardwareProfileInternal)HardwareProfile).VMSizePropertyVcpUsAvailable; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetHardwareProfileInternal)HardwareProfile).VMSizePropertyVcpUsAvailable = value ?? default(int); }
@@ -398,7 +398,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// in the request body the default behavior is set to the value of vCPUsPerCore
         /// for the VM Size exposed in api response of [List all available virtual machine
         /// sizes in a
-        /// region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        /// region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         /// **Setting this property to 1 also means that hyper-threading is disabled.**
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
@@ -527,9 +527,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// Server operating system are: <br><br> RHEL_BYOS (for RHEL) <br><br> SLES_BYOS
         /// (for SUSE) <br><br> For more information, see [Azure Hybrid Use Benefit for
         /// Windows
-        /// Server](https://docs.microsoft.com/azure/virtual-machines/windows/hybrid-use-benefit-licensing)
+        /// Server](https://learn.microsoft.com/azure/virtual-machines/windows/hybrid-use-benefit-licensing)
         /// <br><br> [Azure Hybrid Use Benefit for Linux
-        /// Server](https://docs.microsoft.com/azure/virtual-machines/linux/azure-hybrid-benefit-linux)
+        /// Server](https://learn.microsoft.com/azure/virtual-machines/linux/azure-hybrid-benefit-linux)
         /// <br><br> Minimum api-version: 2015-06-15
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
@@ -544,9 +544,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Server operating system are: <br><br> RHEL_BYOS (for RHEL) <br><br> SLES_BYOS
         (for SUSE) <br><br> For more information, see [Azure Hybrid Use Benefit for
         Windows
-        Server](https://docs.microsoft.com/azure/virtual-machines/windows/hybrid-use-benefit-licensing)
+        Server](https://learn.microsoft.com/azure/virtual-machines/windows/hybrid-use-benefit-licensing)
         <br><br> [Azure Hybrid Use Benefit for Linux
-        Server](https://docs.microsoft.com/azure/virtual-machines/linux/azure-hybrid-benefit-linux)
+        Server](https://learn.microsoft.com/azure/virtual-machines/linux/azure-hybrid-benefit-linux)
         <br><br> Minimum api-version: 2015-06-15",
         SerializedName = @"licenseType",
         PossibleTypes = new [] { typeof(string) })]
@@ -882,7 +882,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// specified in the request body the default behavior is to set it to the value of
         /// vCPUs available for that VM size exposed in api response of [List all available
         /// virtual machine sizes in a
-        /// region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        /// region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -894,7 +894,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         specified in the request body the default behavior is to set it to the value of
         vCPUs available for that VM size exposed in api response of [List all available
         virtual machine sizes in a
-        region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).",
+        region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).",
         SerializedName = @"vCPUsAvailable",
         PossibleTypes = new [] { typeof(int) })]
         int? VMSizePropertyVcpUsAvailable { get; set; }
@@ -903,7 +903,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// in the request body the default behavior is set to the value of vCPUsPerCore
         /// for the VM Size exposed in api response of [List all available virtual machine
         /// sizes in a
-        /// region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        /// region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         /// **Setting this property to 1 also means that hyper-threading is disabled.**
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
@@ -916,7 +916,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         in the request body the default behavior is set to the value of vCPUsPerCore
         for the VM Size exposed in api response of [List all available virtual machine
         sizes in a
-        region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         **Setting this property to 1 also means that hyper-threading is disabled.**",
         SerializedName = @"vCPUsPerCore",
         PossibleTypes = new [] { typeof(int) })]
@@ -1002,9 +1002,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// Server operating system are: <br><br> RHEL_BYOS (for RHEL) <br><br> SLES_BYOS
         /// (for SUSE) <br><br> For more information, see [Azure Hybrid Use Benefit for
         /// Windows
-        /// Server](https://docs.microsoft.com/azure/virtual-machines/windows/hybrid-use-benefit-licensing)
+        /// Server](https://learn.microsoft.com/azure/virtual-machines/windows/hybrid-use-benefit-licensing)
         /// <br><br> [Azure Hybrid Use Benefit for Linux
-        /// Server](https://docs.microsoft.com/azure/virtual-machines/linux/azure-hybrid-benefit-linux)
+        /// Server](https://learn.microsoft.com/azure/virtual-machines/linux/azure-hybrid-benefit-linux)
         /// <br><br> Minimum api-version: 2015-06-15
         /// </summary>
         string LicenseType { get; set; }
@@ -1168,7 +1168,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// specified in the request body the default behavior is to set it to the value of
         /// vCPUs available for that VM size exposed in api response of [List all available
         /// virtual machine sizes in a
-        /// region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        /// region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         /// </summary>
         int? VMSizePropertyVcpUsAvailable { get; set; }
         /// <summary>
@@ -1176,7 +1176,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// in the request body the default behavior is set to the value of vCPUsPerCore
         /// for the VM Size exposed in api response of [List all available virtual machine
         /// sizes in a
-        /// region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        /// region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         /// **Setting this property to 1 also means that hyper-threading is disabled.**
         /// </summary>
         int? VMSizePropertyVcpUsPerCore { get; set; }

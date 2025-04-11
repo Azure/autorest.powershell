@@ -211,7 +211,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             }
             if (content.Contains("PartnerPropertyLicensesSubscribed"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed = (int) content.GetValueForProperty("PartnerPropertyLicensesSubscribed",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed = (int?) content.GetValueForProperty("PartnerPropertyLicensesSubscribed",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
             }
             if (content.Contains("SingleSignOnPropertyUrl"))
             {
@@ -408,7 +408,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             }
             if (content.Contains("PartnerPropertyLicensesSubscribed"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed = (int) content.GetValueForProperty("PartnerPropertyLicensesSubscribed",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed = (int?) content.GetValueForProperty("PartnerPropertyLicensesSubscribed",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
             }
             if (content.Contains("SingleSignOnPropertyUrl"))
             {

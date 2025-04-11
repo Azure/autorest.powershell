@@ -30,7 +30,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// specified in the request body the default behavior is to set it to the value of
         /// vCPUs available for that VM size exposed in api response of [List all available
         /// virtual machine sizes in a
-        /// region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        /// region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
         public int? VMSizePropertyVcpUsAvailable { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMSizePropertiesInternal)VMSizeProperty).VCpUsAvailable; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMSizePropertiesInternal)VMSizeProperty).VCpUsAvailable = value ?? default(int); }
@@ -40,7 +40,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// in the request body the default behavior is set to the value of vCPUsPerCore
         /// for the VM Size exposed in api response of [List all available virtual machine
         /// sizes in a
-        /// region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        /// region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         /// **Setting this property to 1 also means that hyper-threading is disabled.**
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
@@ -61,7 +61,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// specified in the request body the default behavior is to set it to the value of
         /// vCPUs available for that VM size exposed in api response of [List all available
         /// virtual machine sizes in a
-        /// region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        /// region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -73,7 +73,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         specified in the request body the default behavior is to set it to the value of
         vCPUs available for that VM size exposed in api response of [List all available
         virtual machine sizes in a
-        region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).",
+        region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).",
         SerializedName = @"vCPUsAvailable",
         PossibleTypes = new [] { typeof(int) })]
         int? VMSizePropertyVcpUsAvailable { get; set; }
@@ -82,7 +82,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// in the request body the default behavior is set to the value of vCPUsPerCore
         /// for the VM Size exposed in api response of [List all available virtual machine
         /// sizes in a
-        /// region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        /// region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         /// **Setting this property to 1 also means that hyper-threading is disabled.**
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
@@ -95,7 +95,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         in the request body the default behavior is set to the value of vCPUsPerCore
         for the VM Size exposed in api response of [List all available virtual machine
         sizes in a
-        region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         **Setting this property to 1 also means that hyper-threading is disabled.**",
         SerializedName = @"vCPUsPerCore",
         PossibleTypes = new [] { typeof(int) })]
@@ -117,7 +117,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// specified in the request body the default behavior is to set it to the value of
         /// vCPUs available for that VM size exposed in api response of [List all available
         /// virtual machine sizes in a
-        /// region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        /// region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         /// </summary>
         int? VMSizePropertyVcpUsAvailable { get; set; }
         /// <summary>
@@ -125,7 +125,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// in the request body the default behavior is set to the value of vCPUsPerCore
         /// for the VM Size exposed in api response of [List all available virtual machine
         /// sizes in a
-        /// region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list).
+        /// region](https://learn.microsoft.com/en-us/rest/api/compute/resource-skus/list).
         /// **Setting this property to 1 also means that hyper-threading is disabled.**
         /// </summary>
         int? VMSizePropertyVcpUsPerCore { get; set; }

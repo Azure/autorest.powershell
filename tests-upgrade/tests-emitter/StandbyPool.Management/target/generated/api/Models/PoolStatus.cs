@@ -43,7 +43,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
     {
         /// <summary>Displays the healthy state of the StandbyPool.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
