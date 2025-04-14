@@ -1834,11 +1834,11 @@ export class CmdletClass extends Class {
 
         for (const vParam of vps.body) {
           const vSchema = vParam.schema;
-          vParam.origin;
+          const schemaProperty = <NewVirtualProperty>vParam.origin;
           const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state, this.state.project.fixedArray);
 
           // we need to know if the actual underlying property is actually nullable.
-          const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, !!(<NewVirtualProperty>vParam.origin).required, this.state, this.state.project.fixedArray).isNullable;
+          const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, !!(schemaProperty.required && schemaProperty.read && schemaProperty.create && schemaProperty.update), this.state, this.state.project.fixedArray).isNullable;
           let cmdletParameter: Property;
           if (propertyType.schema.type !== SchemaType.Array || this.state.project.fixedArray) {
             if (vParam.name === 'IdentityType' && !this.disableTransformIdentityType &&
