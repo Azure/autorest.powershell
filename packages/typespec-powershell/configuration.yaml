@@ -248,6 +248,10 @@ nuspec: "./{module-name}.nuspec"
 remove-lro-headers: true
 skip-model-cmdlets: false
 module-version: 0.1.0
+prefix: ''
+subject-prefix: ''
+service-name: "Demo"
+module-name: "Demo"
 namespace: "Microsoft.Azure.PowerShell.Cmdlets.{service-name}"
 use-namespace-folders: false
 help-link-prefix: https://learn.microsoft.com/powershell/module/

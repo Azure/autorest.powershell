@@ -31,8 +31,8 @@ function loadConfiguration(emitterOptions: Record<string, any>): Record<string, 
   const configuration = deserialize<Record<string, any>>(readFileSync(configPath, 'utf8'), configPath);
   // Define the values for interpolation
   const interpolationValues = {
-    'module-name': emitterOptions['module-name'],
-    'service-name': emitterOptions['service-name']
+    'module-name': emitterOptions['module-name'] ?? configuration['module-name'],
+    'service-name': emitterOptions['service-name'] ?? configuration['service-name']
   };
   interpolatePlaceholders(configuration, interpolationValues);
   // If there is overlap between the configuration and the emitter options, the emitter options will take precedence
