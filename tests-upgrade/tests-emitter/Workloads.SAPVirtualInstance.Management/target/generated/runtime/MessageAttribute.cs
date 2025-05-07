@@ -20,7 +20,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Runtime
         public string ChangeDescription { get; set; } = null;
 
         //Name of the module that is being deprecated
-        public string moduleName { get; set; } = String.IsNullOrEmpty(@"${$project.rootModuleName}") ? @"${$project.ModuleName}" : "${$project.rootModuleName}";
+        public string moduleName { get; set; } = String.IsNullOrEmpty(@"${$project.rootModuleName}") ? @"${$project.moduleName}" : @"${$project.rootModuleName}";
 
         //The version the change is effective from, non mandatory
         public string DeprecateByVersion { get; }
