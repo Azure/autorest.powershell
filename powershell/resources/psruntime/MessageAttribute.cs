@@ -76,7 +76,7 @@ namespace Microsoft.Message.ClientRuntime
 
             if (!string.IsNullOrWhiteSpace(ChangeDescription))
             {
-                writeOutput(string.Format(Resources.BreakingChangesAttributesChangeDescriptionMessage, this.ChangeDescription));
+                writeOutput(string.Format(Resources.BreakingChangesAttributesChangeDescraiptionMessage, this.ChangeDescription));
             }
 
             if (ChangeInEfectByDateSet)
