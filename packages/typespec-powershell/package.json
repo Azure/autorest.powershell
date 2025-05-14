@@ -15,7 +15,7 @@
     }
   },
   "dependencies": {
-    "@autorest/powershell": "~4.0.731",
+    "@autorest/powershell": "~4.0.0",
     "@autorest/codemodel": "~4.19.3",
     "@autorest/extension-base": "~3.5.2",
     "@azure-tools/async-io": "~3.0.0",
@@ -44,17 +44,17 @@
     "vitest": "1.6.1"
   },
   "peerDependencies": {
-    "@azure-tools/typespec-azure-core": ">=0.53.0 <1.0.0",
-    "@azure-tools/typespec-client-generator-core": ">=0.53.0 <1.0.0",
-    "@typespec/compiler": ">=0.67.0 <1.0.0",
-    "@typespec/http": ">=0.67.0 <1.0.0",
-    "@typespec/streams": ">=0.67.0 <1.0.0",
-    "@typespec/xml": ">=0.67.0 <1.0.0",
-    "@typespec/rest": ">=0.67.0 <1.0.0",
-    "@typespec/versioning": ">=0.67.0 <1.0.0",
-    "@typespec/openapi": ">=0.67.0 <1.0.0",
-    "@azure-tools/typespec-azure-resource-manager": ">=0.53.0 <1.0.0",
-    "@azure-tools/typespec-azure-rulesets": ">=0.53.0 <1.0.0"
+    "@azure-tools/typespec-azure-core": ">=0.56.0 <1.0.0",
+    "@azure-tools/typespec-client-generator-core": ">=0.56.0 <1.0.0",
+    "@typespec/compiler": ">=1.0.0 <2.0.0",
+    "@typespec/http": ">=1.0.1 <2.0.0",
+    "@typespec/streams": ">=0.70.0 <1.0.0",
+    "@typespec/xml": ">=0.70.0 <1.0.0",
+    "@typespec/rest": ">=0.70.0 <1.0.0",
+    "@typespec/versioning": ">=0.70.0 <1.0.0",
+    "@typespec/openapi": ">=1.0.0 <2.0.0",
+    "@azure-tools/typespec-azure-resource-manager": ">=0.56.0 <1.0.0",
+    "@azure-tools/typespec-azure-rulesets": ">=0.56.0 <1.0.0"
   },
   "scripts": {
     "build": "tsc",

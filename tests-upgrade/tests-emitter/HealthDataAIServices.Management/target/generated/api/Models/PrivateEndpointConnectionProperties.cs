@@ -40,7 +40,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PropertyOrigin.Owned)]
         internal Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpoint PrivateEndpoint { get => (this._privateEndpoint = this._privateEndpoint ?? new Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.PrivateEndpoint()); set => this._privateEndpoint = value; }
 
-        /// <summary>The resource identifier for private endpoint</summary>
+        /// <summary>The resource identifier of the private endpoint</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PropertyOrigin.Inlined)]
         public string PrivateEndpointId { get => ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointInternal)PrivateEndpoint).Id; }
 
@@ -97,14 +97,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         SerializedName = @"groupIds",
         PossibleTypes = new [] { typeof(string) })]
         System.Collections.Generic.List<string> GroupId { get;  }
-        /// <summary>The resource identifier for private endpoint</summary>
+        /// <summary>The resource identifier of the private endpoint</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Info(
         Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
         Update = false,
-        Description = @"The resource identifier for private endpoint",
+        Description = @"The resource identifier of the private endpoint",
         SerializedName = @"id",
         PossibleTypes = new [] { typeof(string) })]
         string PrivateEndpointId { get;  }
@@ -168,7 +168,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         System.Collections.Generic.List<string> GroupId { get; set; }
         /// <summary>The private endpoint resource.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpoint PrivateEndpoint { get; set; }
-        /// <summary>The resource identifier for private endpoint</summary>
+        /// <summary>The resource identifier of the private endpoint</summary>
         string PrivateEndpointId { get; set; }
         /// <summary>
         /// A collection of information about the state of the connection between service consumer and provider.
