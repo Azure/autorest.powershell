@@ -348,7 +348,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
                 getAccess: Access.Explicit,
                 setAccess: Access.Explicit,
                 get: vp.get,
-                set: toExpression(`${this.accessor(virtualProperty)} = value`)
+                set: toExpression(`${this.accessor(virtualProperty)} = value ${isRequired ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
               }));
             }
 
