@@ -8,7 +8,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <licenseUrl>https://aka.ms/azps-license</licenseUrl>
     <projectUrl>https://github.com/Azure/azure-powershell</projectUrl>
-    <description>Microsoft Azure PowerShell: App ComplianceAutomation cmdlets</description>
+    <description>Microsoft Azure PowerShell: AppComplianceAutomation cmdlets</description>
     <releaseNotes></releaseNotes>
     <copyright>Microsoft Corporation. All rights reserved.</copyright>
     <tags>Azure ResourceManager ARM PSModule Sphere</tags>
