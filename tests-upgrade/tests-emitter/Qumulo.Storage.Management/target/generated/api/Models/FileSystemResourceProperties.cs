@@ -74,7 +74,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
         Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IMarketplaceDetails Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourcePropertiesInternal.MarketplaceDetail { get => (this._marketplaceDetail = this._marketplaceDetail ?? new Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.MarketplaceDetails()); set { {_marketplaceDetail = value;} } }
 
         /// <summary>Internal Acessors for MarketplaceDetailMarketplaceSubscriptionStatus</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourcePropertiesInternal.MarketplaceDetailMarketplaceSubscriptionStatus { get => ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IMarketplaceDetailsInternal)MarketplaceDetail).MarketplaceSubscriptionStatus; set => ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IMarketplaceDetailsInternal)MarketplaceDetail).MarketplaceSubscriptionStatus = value; }
+        string Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourcePropertiesInternal.MarketplaceDetailMarketplaceSubscriptionStatus { get => ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IMarketplaceDetailsInternal)MarketplaceDetail).MarketplaceSubscriptionStatus; set => ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IMarketplaceDetailsInternal)MarketplaceDetail).MarketplaceSubscriptionStatus = value ?? null; }
 
         /// <summary>Internal Acessors for ProvisioningState</summary>
         string Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourcePropertiesInternal.ProvisioningState { get => this._provisioningState; set { {_provisioningState = value;} } }

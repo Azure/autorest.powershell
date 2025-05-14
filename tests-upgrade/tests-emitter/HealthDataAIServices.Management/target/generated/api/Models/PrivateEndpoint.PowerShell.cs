@@ -5,7 +5,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
 {
     using Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.PowerShell;
 
-    /// <summary>The Private Endpoint resource.</summary>
+    /// <summary>The private endpoint resource.</summary>
     [System.ComponentModel.TypeConverter(typeof(PrivateEndpointTypeConverter))]
     public partial class PrivateEndpoint
     {
@@ -152,7 +152,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             return ToJsonString();
         }
     }
-    /// The Private Endpoint resource.
+    /// The private endpoint resource.
     [System.ComponentModel.TypeConverter(typeof(PrivateEndpointTypeConverter))]
     public partial interface IPrivateEndpoint
 

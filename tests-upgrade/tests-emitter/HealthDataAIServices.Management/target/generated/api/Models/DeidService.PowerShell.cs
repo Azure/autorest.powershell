@@ -142,10 +142,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).ProvisioningState, global::System.Convert.ToString);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("ServiceUrl"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).ServiceUrl = (string) content.GetValueForProperty("ServiceUrl",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).ServiceUrl, global::System.Convert.ToString);
@@ -157,6 +153,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             if (content.Contains("PublicNetworkAccess"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).PublicNetworkAccess = (string) content.GetValueForProperty("PublicNetworkAccess",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).PublicNetworkAccess, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -255,10 +255,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).ProvisioningState, global::System.Convert.ToString);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("ServiceUrl"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).ServiceUrl = (string) content.GetValueForProperty("ServiceUrl",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).ServiceUrl, global::System.Convert.ToString);
@@ -270,6 +266,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             if (content.Contains("PublicNetworkAccess"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).PublicNetworkAccess = (string) content.GetValueForProperty("PublicNetworkAccess",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).PublicNetworkAccess, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServiceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {

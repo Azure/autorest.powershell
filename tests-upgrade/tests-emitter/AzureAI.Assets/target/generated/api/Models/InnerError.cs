@@ -6,7 +6,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
     using static Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Extensions;
 
     /// <summary>
-    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/Microsoft/api-guidelines/blob/vNext/Guidelines.md#7102-error-condition-responses.
+    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/microsoft/api-guidelines/blob/vNext/azure/Guidelines.md#handling-errors.
     /// </summary>
     public partial class InnerError :
         Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IInnerError,
@@ -33,7 +33,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
 
         }
     }
-    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/Microsoft/api-guidelines/blob/vNext/Guidelines.md#7102-error-condition-responses.
+    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/microsoft/api-guidelines/blob/vNext/azure/Guidelines.md#handling-errors.
     public partial interface IInnerError :
         Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.IJsonSerializable
     {
@@ -61,7 +61,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
         Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IInnerError Innererror { get; set; }
 
     }
-    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/Microsoft/api-guidelines/blob/vNext/Guidelines.md#7102-error-condition-responses.
+    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/microsoft/api-guidelines/blob/vNext/azure/Guidelines.md#handling-errors.
     internal partial interface IInnerErrorInternal
 
     {

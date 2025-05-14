@@ -36,10 +36,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaName Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaInternal.Name { get => (this._name = this._name ?? new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.QuotaName()); set { {_name = value;} } }
 
         /// <summary>Internal Acessors for NameLocalizedValue</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaInternal.NameLocalizedValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).LocalizedValue; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).LocalizedValue = value; }
+        string Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaInternal.NameLocalizedValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).LocalizedValue; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).LocalizedValue = value ?? null; }
 
         /// <summary>Internal Acessors for NameValue</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaInternal.NameValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).Value; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).Value = value; }
+        string Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaInternal.NameValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).Value; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaNameInternal)Name).Value = value ?? null; }
 
         /// <summary>Backing field for <see cref="Name" /> property.</summary>
         private Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuotaName _name;

@@ -80,7 +80,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupProperties Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal.Backup { get => (this._backup = this._backup ?? new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.BackupProperties()); set { {_backup = value;} } }
 
         /// <summary>Internal Acessors for BackupEarliestRestoreTime</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal.BackupEarliestRestoreTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupPropertiesInternal)Backup).EarliestRestoreTime; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupPropertiesInternal)Backup).EarliestRestoreTime = value; }
+        string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal.BackupEarliestRestoreTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupPropertiesInternal)Backup).EarliestRestoreTime; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupPropertiesInternal)Backup).EarliestRestoreTime = value ?? null; }
 
         /// <summary>Internal Acessors for Compute</summary>
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IComputeProperties Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal.Compute { get => (this._compute = this._compute ?? new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ComputeProperties()); set { {_compute = value;} } }

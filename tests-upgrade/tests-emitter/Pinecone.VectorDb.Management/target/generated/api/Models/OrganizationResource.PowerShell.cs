@@ -177,10 +177,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).PartnerProperty = (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IPartnerProperties) content.GetValueForProperty("PartnerProperty",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).PartnerProperty, Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.PartnerPropertiesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("Marketplace"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).Marketplace = (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IMarketplaceDetails) content.GetValueForProperty("Marketplace",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).Marketplace, Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.MarketplaceDetailsTypeConverter.ConvertFrom);
@@ -216,6 +212,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
             if (content.Contains("SingleSignOnPropertyAadDomain"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain = (System.Collections.Generic.List<string>) content.GetValueForProperty("SingleSignOnPropertyAadDomain",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -374,10 +374,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).PartnerProperty = (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IPartnerProperties) content.GetValueForProperty("PartnerProperty",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).PartnerProperty, Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.PartnerPropertiesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("Marketplace"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).Marketplace = (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IMarketplaceDetails) content.GetValueForProperty("Marketplace",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).Marketplace, Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.MarketplaceDetailsTypeConverter.ConvertFrom);
@@ -413,6 +409,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
             if (content.Contains("SingleSignOnPropertyAadDomain"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain = (System.Collections.Generic.List<string>) content.GetValueForProperty("SingleSignOnPropertyAadDomain",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {

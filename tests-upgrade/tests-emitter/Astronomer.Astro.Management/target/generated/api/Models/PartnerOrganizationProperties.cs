@@ -15,7 +15,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ISingleSignOnProperties Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IPartnerOrganizationPropertiesInternal.SingleSignOnProperty { get => (this._singleSignOnProperty = this._singleSignOnProperty ?? new Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.SingleSignOnProperties()); set { {_singleSignOnProperty = value;} } }
 
         /// <summary>Internal Acessors for SingleSignOnPropertyProvisioningState</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IPartnerOrganizationPropertiesInternal.SingleSignOnPropertyProvisioningState { get => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ISingleSignOnPropertiesInternal)SingleSignOnProperty).ProvisioningState; set => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ISingleSignOnPropertiesInternal)SingleSignOnProperty).ProvisioningState = value; }
+        string Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IPartnerOrganizationPropertiesInternal.SingleSignOnPropertyProvisioningState { get => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ISingleSignOnPropertiesInternal)SingleSignOnProperty).ProvisioningState; set => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ISingleSignOnPropertiesInternal)SingleSignOnProperty).ProvisioningState = value ?? null; }
 
         /// <summary>Backing field for <see cref="OrganizationId" /> property.</summary>
         private string _organizationId;

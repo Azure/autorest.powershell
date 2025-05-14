@@ -50,7 +50,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolForecastValues Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolPredictionInternal.ForecastValue { get => (this._forecastValue = this._forecastValue ?? new Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.StandbyVirtualMachinePoolForecastValues()); set { {_forecastValue = value;} } }
 
         /// <summary>Internal Acessors for ForecastValueInstancesRequestedCount</summary>
-        System.Collections.Generic.List<long> Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolPredictionInternal.ForecastValueInstancesRequestedCount { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolForecastValuesInternal)ForecastValue).InstancesRequestedCount; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolForecastValuesInternal)ForecastValue).InstancesRequestedCount = value; }
+        System.Collections.Generic.List<long> Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolPredictionInternal.ForecastValueInstancesRequestedCount { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolForecastValuesInternal)ForecastValue).InstancesRequestedCount; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolForecastValuesInternal)ForecastValue).InstancesRequestedCount = value ?? null /* arrayOf */; }
 
         /// <summary>Creates an new <see cref="StandbyVirtualMachinePoolPrediction" /> instance.</summary>
         public StandbyVirtualMachinePoolPrediction()
@@ -90,7 +90,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         /// Displays the predicted count of instances to be requested from the standby pool.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
