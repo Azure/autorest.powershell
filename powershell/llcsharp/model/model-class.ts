@@ -305,7 +305,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
             getAccess: Access.Explicit,
             setAccess: Access.Explicit,
             get: toExpression(`(${parentCast}${parentField.field.name}).${via.name}`),
-            set: toExpression(`(${parentCast}${parentField.field.name}).${via.name} = value`)
+            set: toExpression(`(${parentCast}${parentField.field.name}).${via.name} = value ${isRequired ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
           }));
         }
         if (isConstant) {
