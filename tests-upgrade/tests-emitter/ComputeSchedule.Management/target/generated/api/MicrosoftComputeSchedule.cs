@@ -294,7 +294,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesCancelOperations: cancelOperations for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesCancelOperations: Cancel a previously submitted (start/deallocate/hibernate) request
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -341,7 +343,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesCancelOperations: cancelOperations for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesCancelOperations: Cancel a previously submitted (start/deallocate/hibernate) request
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
@@ -398,7 +402,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesCancelOperations: cancelOperations for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesCancelOperations: Cancel a previously submitted (start/deallocate/hibernate) request
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -453,7 +459,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesCancelOperations: cancelOperations for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesCancelOperations: Cancel a previously submitted (start/deallocate/hibernate) request
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesCancelOperations operation</param>
@@ -499,7 +507,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesCancelOperations: cancelOperations for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesCancelOperations: Cancel a previously submitted (start/deallocate/hibernate) request
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesCancelOperations operation</param>
@@ -543,7 +553,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesCancelOperations: cancelOperations for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesCancelOperations: Cancel a previously submitted (start/deallocate/hibernate) request
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -718,6 +730,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
                 await eventListener.AssertNotNull(nameof(locationparameter),locationparameter);
                 await eventListener.AssertMinimumLength(nameof(locationparameter),locationparameter,1);
                 await eventListener.AssertNotNull(nameof(body), body);
@@ -725,7 +738,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteDeallocate: executeDeallocate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteDeallocate: Execute deallocate operation for a batch of virtual machines, this operation is triggered
+        /// as soon as Computeschedule receives it.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -772,7 +788,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteDeallocate: executeDeallocate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteDeallocate: Execute deallocate operation for a batch of virtual machines, this operation is triggered
+        /// as soon as Computeschedule receives it.
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
@@ -829,7 +848,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteDeallocate: executeDeallocate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteDeallocate: Execute deallocate operation for a batch of virtual machines, this operation is triggered
+        /// as soon as Computeschedule receives it.
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -884,7 +906,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteDeallocate: executeDeallocate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteDeallocate: Execute deallocate operation for a batch of virtual machines, this operation is triggered
+        /// as soon as Computeschedule receives it.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesExecuteDeallocate operation</param>
@@ -930,7 +955,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteDeallocate: executeDeallocate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteDeallocate: Execute deallocate operation for a batch of virtual machines, this operation is triggered
+        /// as soon as Computeschedule receives it.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesExecuteDeallocate operation</param>
@@ -974,7 +1002,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteDeallocate: executeDeallocate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteDeallocate: Execute deallocate operation for a batch of virtual machines, this operation is triggered
+        /// as soon as Computeschedule receives it.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -1149,6 +1180,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
                 await eventListener.AssertNotNull(nameof(locationparameter),locationparameter);
                 await eventListener.AssertMinimumLength(nameof(locationparameter),locationparameter,1);
                 await eventListener.AssertNotNull(nameof(body), body);
@@ -1156,7 +1188,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteHibernate: executeHibernate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteHibernate: Execute hibernate operation for a batch of virtual machines, this operation is triggered
+        /// as soon as Computeschedule receives it.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -1203,7 +1238,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteHibernate: executeHibernate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteHibernate: Execute hibernate operation for a batch of virtual machines, this operation is triggered
+        /// as soon as Computeschedule receives it.
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
@@ -1260,7 +1298,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteHibernate: executeHibernate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteHibernate: Execute hibernate operation for a batch of virtual machines, this operation is triggered
+        /// as soon as Computeschedule receives it.
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -1315,7 +1356,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteHibernate: executeHibernate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteHibernate: Execute hibernate operation for a batch of virtual machines, this operation is triggered
+        /// as soon as Computeschedule receives it.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesExecuteHibernate operation</param>
@@ -1361,7 +1405,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteHibernate: executeHibernate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteHibernate: Execute hibernate operation for a batch of virtual machines, this operation is triggered
+        /// as soon as Computeschedule receives it.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesExecuteHibernate operation</param>
@@ -1405,7 +1452,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteHibernate: executeHibernate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteHibernate: Execute hibernate operation for a batch of virtual machines, this operation is triggered
+        /// as soon as Computeschedule receives it.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -1580,6 +1630,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
                 await eventListener.AssertNotNull(nameof(locationparameter),locationparameter);
                 await eventListener.AssertMinimumLength(nameof(locationparameter),locationparameter,1);
                 await eventListener.AssertNotNull(nameof(body), body);
@@ -1587,7 +1638,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteStart: executeStart for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteStart: Execute start operation for a batch of virtual machines, this operation is triggered as soon
+        /// as Computeschedule receives it.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -1634,7 +1688,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteStart: executeStart for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteStart: Execute start operation for a batch of virtual machines, this operation is triggered as soon
+        /// as Computeschedule receives it.
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
@@ -1691,7 +1748,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteStart: executeStart for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteStart: Execute start operation for a batch of virtual machines, this operation is triggered as soon
+        /// as Computeschedule receives it.
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -1746,7 +1806,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteStart: executeStart for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteStart: Execute start operation for a batch of virtual machines, this operation is triggered as soon
+        /// as Computeschedule receives it.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesExecuteStart operation</param>
@@ -1792,7 +1855,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteStart: executeStart for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteStart: Execute start operation for a batch of virtual machines, this operation is triggered as soon
+        /// as Computeschedule receives it.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesExecuteStart operation</param>
@@ -1836,7 +1902,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesExecuteStart: executeStart for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesExecuteStart: Execute start operation for a batch of virtual machines, this operation is triggered as soon
+        /// as Computeschedule receives it.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -2011,6 +2080,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
                 await eventListener.AssertNotNull(nameof(locationparameter),locationparameter);
                 await eventListener.AssertMinimumLength(nameof(locationparameter),locationparameter,1);
                 await eventListener.AssertNotNull(nameof(body), body);
@@ -2019,7 +2089,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
         }
 
         /// <summary>
-        /// virtualMachinesGetOperationErrors: getOperationErrors associated with an operation on a virtual machine
+        /// VirtualMachinesGetOperationErrors: Get error details on operation errors (like transient errors encountered, additional
+        /// logs) if they exist.
         /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
@@ -2068,7 +2139,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
         }
 
         /// <summary>
-        /// virtualMachinesGetOperationErrors: getOperationErrors associated with an operation on a virtual machine
+        /// VirtualMachinesGetOperationErrors: Get error details on operation errors (like transient errors encountered, additional
+        /// logs) if they exist.
         /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
@@ -2127,7 +2199,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
         }
 
         /// <summary>
-        /// virtualMachinesGetOperationErrors: getOperationErrors associated with an operation on a virtual machine
+        /// VirtualMachinesGetOperationErrors: Get error details on operation errors (like transient errors encountered, additional
+        /// logs) if they exist.
         /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
@@ -2184,7 +2257,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
         }
 
         /// <summary>
-        /// virtualMachinesGetOperationErrors: getOperationErrors associated with an operation on a virtual machine
+        /// VirtualMachinesGetOperationErrors: Get error details on operation errors (like transient errors encountered, additional
+        /// logs) if they exist.
         /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
@@ -2232,7 +2306,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
         }
 
         /// <summary>
-        /// virtualMachinesGetOperationErrors: getOperationErrors associated with an operation on a virtual machine
+        /// VirtualMachinesGetOperationErrors: Get error details on operation errors (like transient errors encountered, additional
+        /// logs) if they exist.
         /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
@@ -2278,7 +2353,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
         }
 
         /// <summary>
-        /// virtualMachinesGetOperationErrors: getOperationErrors associated with an operation on a virtual machine
+        /// VirtualMachinesGetOperationErrors: Get error details on operation errors (like transient errors encountered, additional
+        /// logs) if they exist.
         /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
@@ -2454,6 +2530,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
                 await eventListener.AssertNotNull(nameof(locationparameter),locationparameter);
                 await eventListener.AssertMinimumLength(nameof(locationparameter),locationparameter,1);
                 await eventListener.AssertNotNull(nameof(body), body);
@@ -2461,7 +2538,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesGetOperationStatus: getOperationStatus for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesGetOperationStatus: Polling endpoint to read status of operations performed on virtual machines
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -2508,7 +2587,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesGetOperationStatus: getOperationStatus for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesGetOperationStatus: Polling endpoint to read status of operations performed on virtual machines
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
@@ -2565,7 +2646,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesGetOperationStatus: getOperationStatus for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesGetOperationStatus: Polling endpoint to read status of operations performed on virtual machines
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -2620,7 +2703,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesGetOperationStatus: getOperationStatus for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesGetOperationStatus: Polling endpoint to read status of operations performed on virtual machines
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesGetOperationStatus operation</param>
@@ -2666,7 +2751,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesGetOperationStatus: getOperationStatus for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesGetOperationStatus: Polling endpoint to read status of operations performed on virtual machines
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesGetOperationStatus operation</param>
@@ -2710,7 +2797,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesGetOperationStatus: getOperationStatus for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesGetOperationStatus: Polling endpoint to read status of operations performed on virtual machines
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -2885,6 +2974,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
                 await eventListener.AssertNotNull(nameof(locationparameter),locationparameter);
                 await eventListener.AssertMinimumLength(nameof(locationparameter),locationparameter,1);
                 await eventListener.AssertNotNull(nameof(body), body);
@@ -2892,7 +2982,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitDeallocate: submitDeallocate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitDeallocate: Schedule deallocate operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -2939,7 +3031,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitDeallocate: submitDeallocate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitDeallocate: Schedule deallocate operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
@@ -2996,7 +3090,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitDeallocate: submitDeallocate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitDeallocate: Schedule deallocate operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -3051,7 +3147,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitDeallocate: submitDeallocate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitDeallocate: Schedule deallocate operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesSubmitDeallocate operation</param>
@@ -3097,7 +3195,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitDeallocate: submitDeallocate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitDeallocate: Schedule deallocate operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesSubmitDeallocate operation</param>
@@ -3141,7 +3241,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitDeallocate: submitDeallocate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitDeallocate: Schedule deallocate operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -3316,6 +3418,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
                 await eventListener.AssertNotNull(nameof(locationparameter),locationparameter);
                 await eventListener.AssertMinimumLength(nameof(locationparameter),locationparameter,1);
                 await eventListener.AssertNotNull(nameof(body), body);
@@ -3323,7 +3426,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitHibernate: submitHibernate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitHibernate: Schedule hibernate operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -3370,7 +3475,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitHibernate: submitHibernate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitHibernate: Schedule hibernate operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
@@ -3427,7 +3534,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitHibernate: submitHibernate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitHibernate: Schedule hibernate operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -3482,7 +3591,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitHibernate: submitHibernate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitHibernate: Schedule hibernate operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesSubmitHibernate operation</param>
@@ -3528,7 +3639,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitHibernate: submitHibernate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitHibernate: Schedule hibernate operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesSubmitHibernate operation</param>
@@ -3572,7 +3685,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitHibernate: submitHibernate for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitHibernate: Schedule hibernate operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -3747,6 +3862,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
                 await eventListener.AssertNotNull(nameof(locationparameter),locationparameter);
                 await eventListener.AssertMinimumLength(nameof(locationparameter),locationparameter,1);
                 await eventListener.AssertNotNull(nameof(body), body);
@@ -3754,7 +3870,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitStart: submitStart for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitStart: Schedule start operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -3801,7 +3919,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitStart: submitStart for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitStart: Schedule start operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
@@ -3858,7 +3978,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitStart: submitStart for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitStart: Schedule start operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The request body</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -3913,7 +4035,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitStart: submitStart for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitStart: Schedule start operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesSubmitStart operation</param>
@@ -3959,7 +4083,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitStart: submitStart for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitStart: Schedule start operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="jsonString">Json string supplied to the ScheduledActionsVirtualMachinesSubmitStart operation</param>
@@ -4003,7 +4129,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             }
         }
 
-        /// <summary>virtualMachinesSubmitStart: submitStart for a virtual machine</summary>
+        /// <summary>
+        /// VirtualMachinesSubmitStart: Schedule start operation for a batch of virtual machines at datetime in future.
+        /// </summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="locationparameter">The location name.</param>
         /// <param name="body">The request body</param>
@@ -4178,6 +4306,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
                 await eventListener.AssertNotNull(nameof(locationparameter),locationparameter);
                 await eventListener.AssertMinimumLength(nameof(locationparameter),locationparameter,1);
                 await eventListener.AssertNotNull(nameof(body), body);

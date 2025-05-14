@@ -80,7 +80,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Origin(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PropertyOrigin.Inherited)]
         public string Name { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IResourceInternal)__proxyResource).Name; }
 
-        /// <summary>The resource identifier for private endpoint</summary>
+        /// <summary>The resource identifier of the private endpoint</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Origin(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PropertyOrigin.Inlined)]
         public string PrivateEndpointId { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionPropertiesInternal)Property).PrivateEndpointId; }
 
@@ -185,14 +185,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         SerializedName = @"groupIds",
         PossibleTypes = new [] { typeof(string) })]
         System.Collections.Generic.List<string> GroupId { get;  }
-        /// <summary>The resource identifier for private endpoint</summary>
+        /// <summary>The resource identifier of the private endpoint</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
         Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,
         Update = false,
-        Description = @"The resource identifier for private endpoint",
+        Description = @"The resource identifier of the private endpoint",
         SerializedName = @"id",
         PossibleTypes = new [] { typeof(string) })]
         string PrivateEndpointId { get;  }
@@ -256,7 +256,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         System.Collections.Generic.List<string> GroupId { get; set; }
         /// <summary>The private endpoint resource.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpoint PrivateEndpoint { get; set; }
-        /// <summary>The resource identifier for private endpoint</summary>
+        /// <summary>The resource identifier of the private endpoint</summary>
         string PrivateEndpointId { get; set; }
         /// <summary>
         /// A collection of information about the state of the connection between service consumer and provider.

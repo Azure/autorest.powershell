@@ -312,6 +312,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
                 await eventListener.AssertNotNull(nameof(extendedZoneName),extendedZoneName);
                 await eventListener.AssertRegEx(nameof(extendedZoneName), extendedZoneName, @"^[a-zA-Z0-9-]{3,24}$");
             }
@@ -611,6 +612,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
             }
         }
 
@@ -919,6 +921,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
                 await eventListener.AssertNotNull(nameof(extendedZoneName),extendedZoneName);
                 await eventListener.AssertRegEx(nameof(extendedZoneName), extendedZoneName, @"^[a-zA-Z0-9-]{3,24}$");
             }
@@ -1229,6 +1232,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones
             using( NoSynchronizationContext )
             {
                 await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertMinimumLength(nameof(subscriptionId),subscriptionId,1);
                 await eventListener.AssertNotNull(nameof(extendedZoneName),extendedZoneName);
                 await eventListener.AssertRegEx(nameof(extendedZoneName), extendedZoneName, @"^[a-zA-Z0-9-]{3,24}$");
             }
