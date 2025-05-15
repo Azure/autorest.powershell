@@ -64,13 +64,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models
         Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IMarketplaceDetails Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IOrganizationPropertiesInternal.MarketplaceDetail { get => (this._marketplaceDetail = this._marketplaceDetail ?? new Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.MarketplaceDetails()); set { {_marketplaceDetail = value;} } }
 
         /// <summary>Internal Acessors for MarketplaceDetailOfferDetail</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IOfferDetails Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IOrganizationPropertiesInternal.MarketplaceDetailOfferDetail { get => ((Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IMarketplaceDetailsInternal)MarketplaceDetail).OfferDetail; set => ((Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IMarketplaceDetailsInternal)MarketplaceDetail).OfferDetail = value; }
+        Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IOfferDetails Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IOrganizationPropertiesInternal.MarketplaceDetailOfferDetail { get => ((Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IMarketplaceDetailsInternal)MarketplaceDetail).OfferDetail; set => ((Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IMarketplaceDetailsInternal)MarketplaceDetail).OfferDetail = value ?? null /* model class */; }
 
         /// <summary>Internal Acessors for PartnerOrganizationProperty</summary>
         Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IPartnerOrganizationProperties Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IOrganizationPropertiesInternal.PartnerOrganizationProperty { get => (this._partnerOrganizationProperty = this._partnerOrganizationProperty ?? new Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.PartnerOrganizationProperties()); set { {_partnerOrganizationProperty = value;} } }
 
         /// <summary>Internal Acessors for PartnerOrganizationPropertySingleSignOnProperty</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.ISingleSignOnProperties Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IOrganizationPropertiesInternal.PartnerOrganizationPropertySingleSignOnProperty { get => ((Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IPartnerOrganizationPropertiesInternal)PartnerOrganizationProperty).SingleSignOnProperty; set => ((Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IPartnerOrganizationPropertiesInternal)PartnerOrganizationProperty).SingleSignOnProperty = value; }
+        Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.ISingleSignOnProperties Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IOrganizationPropertiesInternal.PartnerOrganizationPropertySingleSignOnProperty { get => ((Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IPartnerOrganizationPropertiesInternal)PartnerOrganizationProperty).SingleSignOnProperty; set => ((Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IPartnerOrganizationPropertiesInternal)PartnerOrganizationProperty).SingleSignOnProperty = value ?? null /* model class */; }
 
         /// <summary>Internal Acessors for ProvisioningState</summary>
         string Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.IOrganizationPropertiesInternal.ProvisioningState { get => this._provisioningState; set { {_provisioningState = value;} } }
@@ -268,7 +268,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models
         string MarketplaceDetailSubscriptionStatus { get; set; }
         /// <summary>Offer Id for the marketplace offer</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,
@@ -279,7 +279,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models
         string OfferDetailOfferId { get; set; }
         /// <summary>Plan Id for the marketplace offer</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,
@@ -301,7 +301,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models
         string OfferDetailPlanName { get; set; }
         /// <summary>Publisher Id for the marketplace offer</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,

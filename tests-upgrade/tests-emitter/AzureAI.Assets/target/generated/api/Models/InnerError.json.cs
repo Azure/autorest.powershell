@@ -6,7 +6,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
     using static Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Extensions;
 
     /// <summary>
-    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/Microsoft/api-guidelines/blob/vNext/Guidelines.md#7102-error-condition-responses.
+    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/microsoft/api-guidelines/blob/vNext/azure/Guidelines.md#handling-errors.
     /// </summary>
     public partial class InnerError
     {

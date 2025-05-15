@@ -176,10 +176,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).VMAttribute = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributes) content.GetValueForProperty("VMAttribute",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).VMAttribute, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VMAttributesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("SpotPriorityProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).SpotPriorityProfile = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISpotPriorityProfile) content.GetValueForProperty("SpotPriorityProfile",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).SpotPriorityProfile, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SpotPriorityProfileTypeConverter.ConvertFrom);
@@ -211,6 +207,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             if (content.Contains("AdditionalLocationProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).AdditionalLocationProfile = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ILocationProfile>) content.GetValueForProperty("AdditionalLocationProfile",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).AdditionalLocationProfile, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ILocationProfile>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.LocationProfileTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -393,10 +393,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).VMAttribute = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributes) content.GetValueForProperty("VMAttribute",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).VMAttribute, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VMAttributesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("SpotPriorityProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).SpotPriorityProfile = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISpotPriorityProfile) content.GetValueForProperty("SpotPriorityProfile",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).SpotPriorityProfile, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SpotPriorityProfileTypeConverter.ConvertFrom);
@@ -428,6 +424,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             if (content.Contains("AdditionalLocationProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).AdditionalLocationProfile = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ILocationProfile>) content.GetValueForProperty("AdditionalLocationProfile",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).AdditionalLocationProfile, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ILocationProfile>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.LocationProfileTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {

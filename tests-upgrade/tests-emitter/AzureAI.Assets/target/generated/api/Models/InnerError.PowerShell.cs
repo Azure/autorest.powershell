@@ -6,7 +6,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
     using Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.PowerShell;
 
     /// <summary>
-    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/Microsoft/api-guidelines/blob/vNext/Guidelines.md#7102-error-condition-responses.
+    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/microsoft/api-guidelines/blob/vNext/azure/Guidelines.md#handling-errors.
     /// </summary>
     [System.ComponentModel.TypeConverter(typeof(InnerErrorTypeConverter))]
     public partial class InnerError
@@ -162,7 +162,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
             return ToJsonString();
         }
     }
-    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/Microsoft/api-guidelines/blob/vNext/Guidelines.md#7102-error-condition-responses.
+    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/microsoft/api-guidelines/blob/vNext/azure/Guidelines.md#handling-errors.
     [System.ComponentModel.TypeConverter(typeof(InnerErrorTypeConverter))]
     public partial interface IInnerError
 

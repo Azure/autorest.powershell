@@ -15,7 +15,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetails Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IMarketplaceDetailsInternal.OfferDetail { get => (this._offerDetail = this._offerDetail ?? new Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.OfferDetails()); set { {_offerDetail = value;} } }
 
         /// <summary>Internal Acessors for OfferDetailEndDate</summary>
-        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IMarketplaceDetailsInternal.OfferDetailEndDate { get => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)OfferDetail).EndDate; set => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)OfferDetail).EndDate = value; }
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IMarketplaceDetailsInternal.OfferDetailEndDate { get => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)OfferDetail).EndDate; set => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)OfferDetail).EndDate = value ?? default(global::System.DateTime); }
 
         /// <summary>Backing field for <see cref="OfferDetail" /> property.</summary>
         private Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetails _offerDetail;

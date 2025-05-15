@@ -108,7 +108,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupProperties Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal.Backup { get => (this._backup = this._backup ?? new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.BackupProperties()); set { {_backup = value;} } }
 
         /// <summary>Internal Acessors for BackupEarliestRestoreTime</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal.BackupEarliestRestoreTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupPropertiesInternal)Backup).EarliestRestoreTime; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupPropertiesInternal)Backup).EarliestRestoreTime = value; }
+        string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal.BackupEarliestRestoreTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupPropertiesInternal)Backup).EarliestRestoreTime; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupPropertiesInternal)Backup).EarliestRestoreTime = value ?? null; }
 
         /// <summary>Internal Acessors for ClusterStatus</summary>
         string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal.ClusterStatus { get => this._clusterStatus; set { {_clusterStatus = value;} } }
@@ -141,13 +141,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterReplicaParameters Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal.ReplicaParameter { get => (this._replicaParameter = this._replicaParameter ?? new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.MongoClusterReplicaParameters()); set { {_replicaParameter = value;} } }
 
         /// <summary>Internal Acessors for ReplicaReplicationState</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal.ReplicaReplicationState { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationPropertiesInternal)Replica).ReplicationState; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationPropertiesInternal)Replica).ReplicationState = value; }
+        string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal.ReplicaReplicationState { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationPropertiesInternal)Replica).ReplicationState; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationPropertiesInternal)Replica).ReplicationState = value ?? null; }
 
         /// <summary>Internal Acessors for ReplicaRole</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal.ReplicaRole { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationPropertiesInternal)Replica).Role; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationPropertiesInternal)Replica).Role = value; }
+        string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal.ReplicaRole { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationPropertiesInternal)Replica).Role; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationPropertiesInternal)Replica).Role = value ?? null; }
 
         /// <summary>Internal Acessors for ReplicaSourceResourceId</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal.ReplicaSourceResourceId { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationPropertiesInternal)Replica).SourceResourceId; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationPropertiesInternal)Replica).SourceResourceId = value; }
+        string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal.ReplicaSourceResourceId { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationPropertiesInternal)Replica).SourceResourceId; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationPropertiesInternal)Replica).SourceResourceId = value ?? null; }
 
         /// <summary>Internal Acessors for RestoreParameter</summary>
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterRestoreParameters Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal.RestoreParameter { get => (this._restoreParameter = this._restoreParameter ?? new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.MongoClusterRestoreParameters()); set { {_restoreParameter = value;} } }

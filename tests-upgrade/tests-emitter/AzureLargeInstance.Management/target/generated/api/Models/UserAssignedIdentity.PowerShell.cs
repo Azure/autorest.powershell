@@ -124,13 +124,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
                 return;
             }
             // actually deserialize
-            if (content.Contains("ClientId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentityInternal)this).ClientId = (string) content.GetValueForProperty("ClientId",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentityInternal)this).ClientId, global::System.Convert.ToString);
-            }
             if (content.Contains("PrincipalId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentityInternal)this).PrincipalId = (string) content.GetValueForProperty("PrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentityInternal)this).PrincipalId, global::System.Convert.ToString);
+            }
+            if (content.Contains("ClientId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentityInternal)this).ClientId = (string) content.GetValueForProperty("ClientId",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentityInternal)this).ClientId, global::System.Convert.ToString);
             }
             AfterDeserializeDictionary(content);
         }
@@ -149,13 +149,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
                 return;
             }
             // actually deserialize
-            if (content.Contains("ClientId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentityInternal)this).ClientId = (string) content.GetValueForProperty("ClientId",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentityInternal)this).ClientId, global::System.Convert.ToString);
-            }
             if (content.Contains("PrincipalId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentityInternal)this).PrincipalId = (string) content.GetValueForProperty("PrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentityInternal)this).PrincipalId, global::System.Convert.ToString);
+            }
+            if (content.Contains("ClientId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentityInternal)this).ClientId = (string) content.GetValueForProperty("ClientId",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentityInternal)this).ClientId, global::System.Convert.ToString);
             }
             AfterDeserializePSObject(content);
         }

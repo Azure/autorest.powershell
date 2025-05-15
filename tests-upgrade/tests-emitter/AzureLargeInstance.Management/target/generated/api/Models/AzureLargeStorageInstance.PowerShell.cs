@@ -137,10 +137,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).StorageProperty = (Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IStorageProperties) content.GetValueForProperty("StorageProperty",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).StorageProperty, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.StoragePropertiesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("UniqueIdentifier"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).UniqueIdentifier = (string) content.GetValueForProperty("UniqueIdentifier",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).UniqueIdentifier, global::System.Convert.ToString);
@@ -148,6 +144,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             if (content.Contains("StoragePropertyProvisioningState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).StoragePropertyProvisioningState = (string) content.GetValueForProperty("StoragePropertyProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).StoragePropertyProvisioningState, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -270,10 +270,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).StorageProperty = (Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IStorageProperties) content.GetValueForProperty("StorageProperty",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).StorageProperty, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.StoragePropertiesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("UniqueIdentifier"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).UniqueIdentifier = (string) content.GetValueForProperty("UniqueIdentifier",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).UniqueIdentifier, global::System.Convert.ToString);
@@ -281,6 +277,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             if (content.Contains("StoragePropertyProvisioningState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).StoragePropertyProvisioningState = (string) content.GetValueForProperty("StoragePropertyProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).StoragePropertyProvisioningState, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {

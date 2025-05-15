@@ -34,16 +34,16 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
         Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemData Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal.SystemData { get => (this._systemData = this._systemData ?? new Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.SystemData()); set { {_systemData = value;} } }
 
         /// <summary>Internal Acessors for SystemDataCreatedAt</summary>
-        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal.SystemDataCreatedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).CreatedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).CreatedAt = value; }
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal.SystemDataCreatedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).CreatedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).CreatedAt = value ?? default(global::System.DateTime); }
 
         /// <summary>Internal Acessors for SystemDataCreatedBy</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal.SystemDataCreatedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).CreatedBy; set => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).CreatedBy = value; }
+        string Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal.SystemDataCreatedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).CreatedBy; set => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).CreatedBy = value ?? null; }
 
         /// <summary>Internal Acessors for SystemDataCreatedByType</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal.SystemDataCreatedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).CreatedByType; set => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).CreatedByType = value; }
+        string Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal.SystemDataCreatedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).CreatedByType; set => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).CreatedByType = value ?? null; }
 
         /// <summary>Internal Acessors for SystemDataLastModifiedAt</summary>
-        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal.SystemDataLastModifiedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).LastModifiedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).LastModifiedAt = value; }
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal.SystemDataLastModifiedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).LastModifiedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).LastModifiedAt = value ?? default(global::System.DateTime); }
 
         /// <summary>Backing field for <see cref="Property" /> property.</summary>
         private Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags _property;
@@ -131,7 +131,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
         /// Fully qualified resource Id: azureml://workspace/{workspaceName}/indexes/{name}/versions/{version} of the index.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = true,
         Read = true,
         Create = false,

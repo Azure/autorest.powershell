@@ -5,7 +5,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
 {
     using static Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Extensions;
 
-    /// <summary>The Private Endpoint resource.</summary>
+    /// <summary>The private endpoint resource.</summary>
     public partial class PrivateEndpoint
     {
 

@@ -178,10 +178,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).ProvisioningState, global::System.Convert.ToString);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("StorageSku"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).StorageSku = (string) content.GetValueForProperty("StorageSku",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).StorageSku, global::System.Convert.ToString);
@@ -205,6 +201,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             if (content.Contains("AvailabilityZone"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).AvailabilityZone = (string) content.GetValueForProperty("AvailabilityZone",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).AvailabilityZone, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -339,10 +339,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).ProvisioningState, global::System.Convert.ToString);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("StorageSku"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).StorageSku = (string) content.GetValueForProperty("StorageSku",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).StorageSku, global::System.Convert.ToString);
@@ -366,6 +362,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             if (content.Contains("AvailabilityZone"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).AvailabilityZone = (string) content.GetValueForProperty("AvailabilityZone",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).AvailabilityZone, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {

@@ -305,7 +305,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
             getAccess: Access.Explicit,
             setAccess: Access.Explicit,
             get: toExpression(`(${parentCast}${parentField.field.name}).${via.name}`),
-            set: toExpression(`(${parentCast}${parentField.field.name}).${via.name} = value`)
+            set: toExpression(`(${parentCast}${parentField.field.name}).${via.name} = value ${isRequired ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
           }));
         }
         if (isConstant) {
@@ -348,7 +348,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
                 getAccess: Access.Explicit,
                 setAccess: Access.Explicit,
                 get: vp.get,
-                set: toExpression(`${this.accessor(virtualProperty)} = value`)
+                set: toExpression(`${this.accessor(virtualProperty)} = value ${isRequired ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
               }));
             }
 
