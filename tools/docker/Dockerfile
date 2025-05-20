@@ -9,7 +9,7 @@ RUN apt-get update \
     && . /root/.bashrc \
     && nvm install 20.19.0 \
     && npm install -g autorest \
-    && npm install -g @azure-tools/typespec-client-generator-cli@0.15.x \
+    && npm install -g @azure-tools/typespec-client-generator-cli@0.21.0 \
     && apt-get -o Acquire::Check-Valid-Until=false install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
