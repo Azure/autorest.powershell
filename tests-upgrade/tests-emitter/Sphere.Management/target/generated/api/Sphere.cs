@@ -4303,6 +4303,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// <param name="resourceGroupName">The name of the resource group. The name is case insensitive.</param>
         /// <param name="catalogName">Name of catalog</param>
         /// <param name="body">Image upload request body.</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -4311,7 +4312,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        public async global::System.Threading.Tasks.Task CatalogsUploadImage(string subscriptionId, string resourceGroupName, string catalogName, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImage body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeUpdate)
+        public async global::System.Threading.Tasks.Task CatalogsUploadImage(string subscriptionId, string resourceGroupName, string catalogName, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImage body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeUpdate)
         {
             var apiVersion = @"2024-04-01";
             // Constant Parameters
@@ -4343,13 +4344,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
                 request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                 await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
                 // make the call
-                await this.CatalogsUploadImage_Call (request, onDefault,eventListener,sender);
+                await this.CatalogsUploadImage_Call (request, onOk,onDefault,eventListener,sender);
             }
         }
 
         /// <summary>upload an image. Use this action when the image ID is unknown.</summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">Image upload request body.</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -4358,7 +4360,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        public async global::System.Threading.Tasks.Task CatalogsUploadImageViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImage body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeUpdate)
+        public async global::System.Threading.Tasks.Task CatalogsUploadImageViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImage body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeUpdate)
         {
             var apiVersion = @"2024-04-01";
             // Constant Parameters
@@ -4402,7 +4404,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
                 request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                 await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
                 // make the call
-                await this.CatalogsUploadImage_Call (request, onDefault,eventListener,sender);
+                await this.CatalogsUploadImage_Call (request, onOk,onDefault,eventListener,sender);
             }
         }
 
@@ -4411,6 +4413,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// <param name="resourceGroupName">The name of the resource group. The name is case insensitive.</param>
         /// <param name="catalogName">Name of catalog</param>
         /// <param name="jsonString">Json string supplied to the CatalogsUploadImage operation</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -4418,7 +4421,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        public async global::System.Threading.Tasks.Task CatalogsUploadImageViaJsonString(string subscriptionId, string resourceGroupName, string catalogName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender)
+        public async global::System.Threading.Tasks.Task CatalogsUploadImageViaJsonString(string subscriptionId, string resourceGroupName, string catalogName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender)
         {
             var apiVersion = @"2024-04-01";
             // Constant Parameters
@@ -4450,12 +4453,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
                 request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                 await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
                 // make the call
-                await this.CatalogsUploadImage_Call (request, onDefault,eventListener,sender);
+                await this.CatalogsUploadImage_Call (request, onOk,onDefault,eventListener,sender);
             }
         }
 
         /// <summary>Actual wire call for <see cref= "CatalogsUploadImage" /> method.</summary>
         /// <param name="request">the prepared HttpRequestMessage to send.</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -4463,7 +4467,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        internal async global::System.Threading.Tasks.Task CatalogsUploadImage_Call(global::System.Net.Http.HttpRequestMessage request, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender)
+        internal async global::System.Threading.Tasks.Task CatalogsUploadImage_Call(global::System.Net.Http.HttpRequestMessage request, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender)
         {
             using( NoSynchronizationContext )
             {
@@ -4572,6 +4576,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
 
                     switch ( _response.StatusCode )
                     {
+                        case global::System.Net.HttpStatusCode.OK:
+                        {
+                            await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.BeforeResponseDispatch, _response); if( eventListener.Token.IsCancellationRequested ) { return; }
+                            await onOk(_response);
+                            break;
+                        }
                         default:
                         {
                             await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.BeforeResponseDispatch, _response); if( eventListener.Token.IsCancellationRequested ) { return; }
@@ -8001,6 +8011,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// <param name="productName">Name of product.</param>
         /// <param name="deviceGroupName">Name of device group.</param>
         /// <param name="body">Bulk claim devices request body.</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -8009,7 +8020,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        public async global::System.Threading.Tasks.Task DeviceGroupsClaimDevices(string subscriptionId, string resourceGroupName, string catalogName, string productName, string deviceGroupName, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IClaimDevicesRequest body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeUpdate)
+        public async global::System.Threading.Tasks.Task DeviceGroupsClaimDevices(string subscriptionId, string resourceGroupName, string catalogName, string productName, string deviceGroupName, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IClaimDevicesRequest body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeUpdate)
         {
             var apiVersion = @"2024-04-01";
             // Constant Parameters
@@ -8045,7 +8056,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
                 request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                 await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
                 // make the call
-                await this.DeviceGroupsClaimDevices_Call (request, onDefault,eventListener,sender);
+                await this.DeviceGroupsClaimDevices_Call (request, onOk,onDefault,eventListener,sender);
             }
         }
 
@@ -8055,6 +8066,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// </summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">Bulk claim devices request body.</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -8063,7 +8075,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        public async global::System.Threading.Tasks.Task DeviceGroupsClaimDevicesViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IClaimDevicesRequest body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeUpdate)
+        public async global::System.Threading.Tasks.Task DeviceGroupsClaimDevicesViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IClaimDevicesRequest body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeUpdate)
         {
             var apiVersion = @"2024-04-01";
             // Constant Parameters
@@ -8113,7 +8125,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
                 request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                 await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
                 // make the call
-                await this.DeviceGroupsClaimDevices_Call (request, onDefault,eventListener,sender);
+                await this.DeviceGroupsClaimDevices_Call (request, onOk,onDefault,eventListener,sender);
             }
         }
 
@@ -8127,6 +8139,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// <param name="productName">Name of product.</param>
         /// <param name="deviceGroupName">Name of device group.</param>
         /// <param name="jsonString">Json string supplied to the DeviceGroupsClaimDevices operation</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -8134,7 +8147,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        public async global::System.Threading.Tasks.Task DeviceGroupsClaimDevicesViaJsonString(string subscriptionId, string resourceGroupName, string catalogName, string productName, string deviceGroupName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender)
+        public async global::System.Threading.Tasks.Task DeviceGroupsClaimDevicesViaJsonString(string subscriptionId, string resourceGroupName, string catalogName, string productName, string deviceGroupName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender)
         {
             var apiVersion = @"2024-04-01";
             // Constant Parameters
@@ -8170,12 +8183,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
                 request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                 await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
                 // make the call
-                await this.DeviceGroupsClaimDevices_Call (request, onDefault,eventListener,sender);
+                await this.DeviceGroupsClaimDevices_Call (request, onOk,onDefault,eventListener,sender);
             }
         }
 
         /// <summary>Actual wire call for <see cref= "DeviceGroupsClaimDevices" /> method.</summary>
         /// <param name="request">the prepared HttpRequestMessage to send.</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -8183,7 +8197,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        internal async global::System.Threading.Tasks.Task DeviceGroupsClaimDevices_Call(global::System.Net.Http.HttpRequestMessage request, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender)
+        internal async global::System.Threading.Tasks.Task DeviceGroupsClaimDevices_Call(global::System.Net.Http.HttpRequestMessage request, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.ISendAsync sender)
         {
             using( NoSynchronizationContext )
             {
@@ -8292,6 +8306,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere
 
                     switch ( _response.StatusCode )
                     {
+                        case global::System.Net.HttpStatusCode.OK:
+                        {
+                            await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.BeforeResponseDispatch, _response); if( eventListener.Token.IsCancellationRequested ) { return; }
+                            await onOk(_response);
+                            break;
+                        }
                         default:
                         {
                             await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.BeforeResponseDispatch, _response); if( eventListener.Token.IsCancellationRequested ) { return; }

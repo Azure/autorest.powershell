@@ -5973,6 +5973,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics
         /// <param name="dataTypeName">The data type name.</param>
         /// <param name="body">The content of the action request</param>
         /// <param name="onNoContent">a delegate that is called when the remote service returns 204 (NoContent).</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -5981,7 +5982,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        public async global::System.Threading.Tasks.Task DataTypesDeleteData(string subscriptionId, string resourceGroupName, string dataProductName, string dataTypeName, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IAny body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.SerializationMode.IncludeUpdate)
+        public async global::System.Threading.Tasks.Task DataTypesDeleteData(string subscriptionId, string resourceGroupName, string dataProductName, string dataTypeName, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IAny body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.SerializationMode.IncludeUpdate)
         {
             var apiVersion = @"2023-11-15";
             // Constant Parameters
@@ -6015,7 +6016,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics
                 request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                 await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
                 // make the call
-                await this.DataTypesDeleteData_Call (request, onNoContent,onDefault,eventListener,sender);
+                await this.DataTypesDeleteData_Call (request, onNoContent,onOk,onDefault,eventListener,sender);
             }
         }
 
@@ -6023,6 +6024,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics
         /// <param name="viaIdentity"></param>
         /// <param name="body">The content of the action request</param>
         /// <param name="onNoContent">a delegate that is called when the remote service returns 204 (NoContent).</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -6031,7 +6033,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        public async global::System.Threading.Tasks.Task DataTypesDeleteDataViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IAny body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.SerializationMode.IncludeUpdate)
+        public async global::System.Threading.Tasks.Task DataTypesDeleteDataViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IAny body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.SerializationMode.IncludeUpdate)
         {
             var apiVersion = @"2023-11-15";
             // Constant Parameters
@@ -6078,7 +6080,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics
                 request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                 await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
                 // make the call
-                await this.DataTypesDeleteData_Call (request, onNoContent,onDefault,eventListener,sender);
+                await this.DataTypesDeleteData_Call (request, onNoContent,onOk,onDefault,eventListener,sender);
             }
         }
 
@@ -6089,6 +6091,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics
         /// <param name="dataTypeName">The data type name.</param>
         /// <param name="jsonString">Json string supplied to the DataTypesDeleteData operation</param>
         /// <param name="onNoContent">a delegate that is called when the remote service returns 204 (NoContent).</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -6096,7 +6099,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        public async global::System.Threading.Tasks.Task DataTypesDeleteDataViaJsonString(string subscriptionId, string resourceGroupName, string dataProductName, string dataTypeName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.ISendAsync sender)
+        public async global::System.Threading.Tasks.Task DataTypesDeleteDataViaJsonString(string subscriptionId, string resourceGroupName, string dataProductName, string dataTypeName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.ISendAsync sender)
         {
             var apiVersion = @"2023-11-15";
             // Constant Parameters
@@ -6130,13 +6133,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics
                 request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                 await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
                 // make the call
-                await this.DataTypesDeleteData_Call (request, onNoContent,onDefault,eventListener,sender);
+                await this.DataTypesDeleteData_Call (request, onNoContent,onOk,onDefault,eventListener,sender);
             }
         }
 
         /// <summary>Actual wire call for <see cref= "DataTypesDeleteData" /> method.</summary>
         /// <param name="request">the prepared HttpRequestMessage to send.</param>
         /// <param name="onNoContent">a delegate that is called when the remote service returns 204 (NoContent).</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -6144,7 +6148,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        internal async global::System.Threading.Tasks.Task DataTypesDeleteData_Call(global::System.Net.Http.HttpRequestMessage request, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.ISendAsync sender)
+        internal async global::System.Threading.Tasks.Task DataTypesDeleteData_Call(global::System.Net.Http.HttpRequestMessage request, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.ISendAsync sender)
         {
             using( NoSynchronizationContext )
             {
@@ -6253,6 +6257,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics
 
                     switch ( _response.StatusCode )
                     {
+                        case global::System.Net.HttpStatusCode.OK:
+                        {
+                            await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Events.BeforeResponseDispatch, _response); if( eventListener.Token.IsCancellationRequested ) { return; }
+                            await onOk(_response);
+                            break;
+                        }
                         case global::System.Net.HttpStatusCode.NoContent:
                         {
                             await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Events.BeforeResponseDispatch, _response); if( eventListener.Token.IsCancellationRequested ) { return; }
