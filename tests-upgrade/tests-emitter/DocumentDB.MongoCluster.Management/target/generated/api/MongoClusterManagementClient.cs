@@ -4286,6 +4286,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// <param name="resourceGroupName">The name of the resource group. The name is case insensitive.</param>
         /// <param name="mongoClusterName">The name of the mongo cluster.</param>
         /// <param name="body">The content of the action request</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -4294,7 +4295,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        public async global::System.Threading.Tasks.Task MongoClustersPromote(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPromoteReplicaRequest body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
+        public async global::System.Threading.Tasks.Task MongoClustersPromote(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPromoteReplicaRequest body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
             var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
@@ -4326,13 +4327,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
                 request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                 await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
                 // make the call
-                await this.MongoClustersPromote_Call (request, onDefault,eventListener,sender);
+                await this.MongoClustersPromote_Call (request, onOk,onDefault,eventListener,sender);
             }
         }
 
         /// <summary>Promotes a replica mongo cluster to a primary role.</summary>
         /// <param name="viaIdentity"></param>
         /// <param name="body">The content of the action request</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -4341,7 +4343,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        public async global::System.Threading.Tasks.Task MongoClustersPromoteViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPromoteReplicaRequest body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
+        public async global::System.Threading.Tasks.Task MongoClustersPromoteViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPromoteReplicaRequest body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
             var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
@@ -4385,7 +4387,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
                 request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                 await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
                 // make the call
-                await this.MongoClustersPromote_Call (request, onDefault,eventListener,sender);
+                await this.MongoClustersPromote_Call (request, onOk,onDefault,eventListener,sender);
             }
         }
 
@@ -4394,6 +4396,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// <param name="resourceGroupName">The name of the resource group. The name is case insensitive.</param>
         /// <param name="mongoClusterName">The name of the mongo cluster.</param>
         /// <param name="jsonString">Json string supplied to the MongoClustersPromote operation</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -4401,7 +4404,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        public async global::System.Threading.Tasks.Task MongoClustersPromoteViaJsonString(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
+        public async global::System.Threading.Tasks.Task MongoClustersPromoteViaJsonString(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
             var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
@@ -4433,12 +4436,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
                 request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                 await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
                 // make the call
-                await this.MongoClustersPromote_Call (request, onDefault,eventListener,sender);
+                await this.MongoClustersPromote_Call (request, onOk,onDefault,eventListener,sender);
             }
         }
 
         /// <summary>Actual wire call for <see cref= "MongoClustersPromote" /> method.</summary>
         /// <param name="request">the prepared HttpRequestMessage to send.</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
         /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
         /// elsewhere).</param>
         /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener" /> instance that will receive events.</param>
@@ -4446,7 +4450,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
         /// </returns>
-        internal async global::System.Threading.Tasks.Task MongoClustersPromote_Call(global::System.Net.Http.HttpRequestMessage request, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
+        internal async global::System.Threading.Tasks.Task MongoClustersPromote_Call(global::System.Net.Http.HttpRequestMessage request, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
             using( NoSynchronizationContext )
             {
@@ -4555,6 +4559,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
 
                     switch ( _response.StatusCode )
                     {
+                        case global::System.Net.HttpStatusCode.OK:
+                        {
+                            await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Events.BeforeResponseDispatch, _response); if( eventListener.Token.IsCancellationRequested ) { return; }
+                            await onOk(_response);
+                            break;
+                        }
                         default:
                         {
                             await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Events.BeforeResponseDispatch, _response); if( eventListener.Token.IsCancellationRequested ) { return; }

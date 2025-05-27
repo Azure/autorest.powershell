@@ -119,7 +119,7 @@ export async function tweakModel(state: State): Promise<PwshModel> {
         //delete operation.responses['202'];
 
         // for lro deletion, we need to add the 200 response if it's not already there.
-        if (operation.requests && operation.requests[0].protocol.http?.method === 'delete') {
+        if (operation.requests && (operation.requests[0].protocol.http?.method === 'delete' || operation.requests[0].protocol.http?.method === 'post')) {
           if (!operation.responses.find(each => each.protocol.http?.statusCodes[0] === '200')) {
             const response = new Response();
             response.protocol.http = response.protocol.http ?? new Protocol();
