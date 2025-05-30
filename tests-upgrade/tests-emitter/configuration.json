@@ -51,6 +51,14 @@
     "Workloads.SAPVirtualInstance.Management"
   ],
   "blackTestList": [],
-  "ignoreFolder": ["examples", "CompareResult"],
-  "ignoreCompareFile": ["generated\\modules", "Properties\\AssemblyInfo.cs"]
+  "ignoreFolder": [
+    "examples",
+    "CompareResult"
+  ],
+  "ignoreCompareFile": [
+    "generated\\modules",
+    "Properties\\AssemblyInfo.cs",
+    "generated/modules",
+    "Properties/AssemblyInfo.cs"
+  ]
 }
