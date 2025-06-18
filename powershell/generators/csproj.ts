@@ -43,12 +43,13 @@ export async function generateCsproj(project: Project) {
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-${release}
+
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
+    <ProjectReference Include="..\\..\\..\\SharedContracts\\SharedContracts.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -63,7 +64,7 @@ ${release}
     <LangVersion>7.1</LangVersion>
     <TargetFramework>netstandard2.1</TargetFramework>
     <OutputType>Library</OutputType>
-    <AssemblyName>${project.serviceName}</AssemblyName>
+    <AssemblyName>${project.cliName}</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>${project.projectNamespace}</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -84,12 +85,12 @@ ${release}
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-${release}
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
+    <ProjectReference Include="..\\..\\..\\SharedContracts\\SharedContracts.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

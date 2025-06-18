@@ -14,6 +14,7 @@ import {
 import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 import { join } from 'path';
 import { Project } from '../internal/project';
+import { Project as ProjectCLI } from '../internal/project-cli';
 import { generatePsm1 } from '../generators/psm1';
 import { generateCsproj } from '../generators/csproj';
 import { generatePsm1Custom } from '../generators/psm1.custom';
@@ -51,6 +52,21 @@ async function copyRequiredFiles(project: Project) {
     join(resources, 'psruntime'),
     async (fname, content) =>
       project.state.writeFile(
+        join(project.runtimeFolder, fname),
+        content,
+        undefined,
+        'source-file-other'
+      ),
+    project.overrides,
+    transformOutput
+  );
+
+  // copy to the CLI runtime folder
+
+  await copyResources(
+    join(resources, 'psruntime'),
+    async (fname, content) =>
+      project.state.writeFileCLI(
         join(project.runtimeFolder, fname),
         content,
         undefined,
@@ -100,6 +116,17 @@ async function copyRequiredFiles(project: Project) {
           'binary-file'
         )
     );
+    // copy to the CLI runtime folder
+    await copyBinaryResources(
+      join(resources, 'signing'),
+      async (fname, content) =>
+        project.state.writeFileCLI(
+          join(project.baseFolder, fname),
+          content,
+          undefined,
+          'binary-file'
+        )
+    );
   }
 }
 
@@ -108,6 +135,7 @@ export async function powershellV2(service: Host | TspHost, state?: ModelState<P
 
   try {
     const project = await new Project(service).init(state);
+    const projectCLI = await new ProjectCLI(service).init(state);
 
     await project.writeFiles(async (filename, content) =>
       project.state.writeFile(
@@ -117,15 +145,25 @@ export async function powershellV2(service: Host | TspHost, state?: ModelState<P
         sourceFileCSharp
       )
     );
+    await projectCLI.writeFiles(async (filename, content) =>
+      projectCLI.state.writeFileCLI(
+        filename,
+        applyOverrides(content, projectCLI.overrides),
+        undefined,
+        sourceFileCSharp
+      )
+    );
     debug = (await project.state.service.getValue('debug')) || false;
     await project.state.protectFiles(project.psd1);
     await project.state.protectFiles(project.readme);
     await project.state.protectFiles(project.customFolder);
+    await project.state.protectFiles(project.psCustomFolder);
     await project.state.protectFiles(project.testFolder);
     await project.state.protectFiles(project.docsFolder);
     await project.state.protectFiles(project.examplesFolder);
     await project.state.protectFiles(project.resourcesFolder);
     await project.state.protectFiles(project.uxFolder);
+    await projectCLI.state.protectFiles(projectCLI.cliCustomFolder);
 
     // wait for all the generation to be done
     await copyRequiredFiles(project);
@@ -139,7 +177,12 @@ export async function powershellV2(service: Host | TspHost, state?: ModelState<P
     await generateGitAttributes(project);
     await generateReadme(project);
     await generateAssemblyInfo(project);
-
+    projectCLI.state.writeFileCLI(
+      join(projectCLI.customFolder, 'README.md'),
+      'README for CLI customization',
+      undefined,
+      'source-file-other'
+    );
     await generateScriptCmdlets(project);
   } catch (E) {
     if (debug && E instanceof Error) {

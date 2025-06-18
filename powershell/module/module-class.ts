@@ -48,6 +48,7 @@ export class NewModuleClass extends Class {
 
   initMethod = this.add(new Method('Init', dotnet.Void, { description: 'Initialization steps performed after the module is loaded.' }));
   createPipelineMethod!: Method;
+  createCLIPipelineMethod!: Method;
 
   pInvocationInfo = new Parameter('invocationInfo', InvocationInfo, { description: 'The <see cref="System.Management.Automation.InvocationInfo" /> from the cmdlet' });
   pPipeline = new Parameter('pipeline', ClientRuntime.HttpPipeline, { modifier: ParameterModifier.Ref, description: 'The HttpPipeline for the request' });
@@ -104,6 +105,7 @@ export class NewModuleClass extends Class {
 
     if (this.state.project.azure) {
       this.createAzureInitAndPipeline(namespace);
+      this.interfaces.push(ClientRuntime.IModule);
     } else {
       this.createInitAndPipeline(namespace);
     }
@@ -124,6 +126,8 @@ export class NewModuleClass extends Class {
     /* extensibility points */
     this.add(new PartialMethod('BeforeCreatePipeline', dotnet.Void, { parameters: [this.pInvocationInfo, this.pPipeline] }));
     this.add(new PartialMethod('AfterCreatePipeline', dotnet.Void, { parameters: [this.pInvocationInfo, this.pPipeline] }));
+    this.add(new PartialMethod('BeforeCreateCLIPipeline', dotnet.Void, { parameters: [this.pPipeline] }));
+    this.add(new PartialMethod('AfterCreateCLIPipeline', dotnet.Void, { parameters: [this.pPipeline] }));
     this.add(new PartialMethod('CustomInit', dotnet.Void));
 
     /* Setting the Proxy */
@@ -229,6 +233,8 @@ export class NewModuleClass extends Class {
 
     const isDataPlane = !!this.state.project.endpointResourceIdKeyName;
 
+    namespace.add(new ImportDirective('SharedContracts'));
+
     const pipelineChangeDelegate = namespace.add(new Alias('PipelineChangeDelegate', System.Action(sendAsyncStep.fullDefinition)));
 
     const getParameterDelegate = namespace.add(new Alias('GetParameterDelegate', System.Func(
@@ -249,6 +255,10 @@ export class NewModuleClass extends Class {
       InvocationInfo,  /* invocationInfo */
       dotnet.String,   /* correlationId */
       dotnet.String,  /* processRecordId */
+      pipelineChangeDelegate.fullDefinition,    /* prependStep */
+      pipelineChangeDelegate.fullDefinition)); /* appendStep */
+
+    const newCLIRequestPipelineDelegate = new Alias('NewCLIRequestPipelineDelegate', System.Action(
       pipelineChangeDelegate.fullDefinition,    /* prependStep */
       pipelineChangeDelegate.fullDefinition)); /* appendStep */
 
@@ -305,6 +315,7 @@ export class NewModuleClass extends Class {
     }
 
     namespace.add(newRequestPipelineDelegate);
+    namespace.add(newCLIRequestPipelineDelegate);
 
     const incomingSignalDelegate = namespace.add(new Alias('SignalDelegate', this.incomingSignalFunc));
     const eventListenerDelegate = namespace.add(new Alias('EventListenerDelegate', this.eventListenerFunc));
@@ -314,6 +325,7 @@ export class NewModuleClass extends Class {
     /* AzAccounts VTable properties  */
     const OnModuleLoad = this.add(new Property('OnModuleLoad', moduleLoadPipelineDelegate, { description: 'The delegate to call when this module is loaded (supporting a commmon module).' }));
     const OnNewRequest = new Property('OnNewRequest', newRequestPipelineDelegate, { description: 'The delegate to call before each new request (supporting a commmon module).' });
+    const OnNewCLIRequest = new Property('OnNewCLIRequest', newCLIRequestPipelineDelegate, { description: 'The delegate to call before each CLI new request (supporting a commmon module).' });
     const AddRequestUserAgentHandler = new Property('AddRequestUserAgentHandler', newRequestPipelineDelegate, { description: 'The delegate to call before each new request to add request user agent.' });
     const AddPatchRequestUriHandler = new Property('AddPatchRequestUriHandler', newRequestPipelineDelegate, { description: 'The delegate to call before each new request to patch request uri.' });
     const AddAuthorizeRequestHandler = new Property('AddAuthorizeRequestHandler', authorizeRequestDelegate, { description: 'The delegate to call before each new request to add authorization.' });
@@ -329,6 +341,7 @@ export class NewModuleClass extends Class {
       this.add(AddAuthorizeRequestHandler);
     } else {
       this.add(OnNewRequest);
+      this.add(OnNewCLIRequest);
     }
     const GetParameterValue = this.add(new Property('GetParameterValue', getParameterDelegate, { description: 'The delegate to call to get parameter data from a common module.' }));
     const EventListener = this.add(new Property('EventListener', eventListenerDelegate, { description: 'A delegate that gets called for each signalled event' }));
@@ -378,6 +391,11 @@ export class NewModuleClass extends Class {
       description: 'Creates an instance of the HttpPipeline for each call.',
       returnsDescription: `An instance of ${ClientRuntime.HttpPipeline} for the remote call.`
     }));
+    this.createCLIPipelineMethod = this.add(new Method('CreateCLIPipeline', ClientRuntime.HttpPipeline, {
+      parameters: [this.pExtensibleParameters],
+      description: 'Creates an instance of the HttpPipeline for each CLI call.',
+      returnsDescription: `An instance of ${ClientRuntime.HttpPipeline} for the CLI remote call.`
+    }));
     /* Add following three fields for data plane */
     const fendpointResourceIdKeyName = new Field('_endpointResourceIdKeyName', dotnet.String, { access: Access.Private, initialValue: new StringExpression(this.state.project.endpointResourceIdKeyName) });
     const fEndpointSuffixKeyName = new Field('_endpointSuffixKeyName', dotnet.String, { access: Access.Private, initialValue: new StringExpression(this.state.project.endpointSuffixKeyName) });
@@ -402,6 +420,23 @@ export class NewModuleClass extends Class {
         yield `${AddAuthorizeRequestHandler.value}?.Invoke( ${$this.pInvocationInfo.use}, ${fendpointResourceIdKeyName},${fEndpointSuffixKeyName}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); }, ${fTokenAudienceConverter}, ${$this.pExtensibleParameters} );`;
       } else {
         yield `${OnNewRequest.value}?.Invoke( ${$this.pInvocationInfo.use}, ${$this.pCorrelationId},${$this.pProcessRecordId}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); } );`;
+      }
+      yield Return(pip);
+    });
+
+    /* pipeline create method */
+    this.createCLIPipelineMethod.add(function* () {
+      const pip = new LocalVariable('pipeline', ClientRuntime.HttpPipeline, { initializer: 'null' });
+      yield pip.declarationStatement;
+      yield `BeforeCreateCLIPipeline(ref ${pip});`;
+      yield pip.assign(`(${pip} ?? (${$this.fUseProxy} ? ${$this.fPipelineWithProxy} : ${$this.fPipeline})).Clone()`);
+      yield `AfterCreateCLIPipeline(ref ${pip});`;
+      if (isDataPlane) {
+        yield `${AddRequestUserAgentHandler.value}?.Invoke( ${$this.pInvocationInfo.use}, ${$this.pCorrelationId},${$this.pProcessRecordId}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); } );`;
+        yield `${AddPatchRequestUriHandler.value}?.Invoke( ${$this.pInvocationInfo.use}, ${$this.pCorrelationId},${$this.pProcessRecordId}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); } );`;
+        yield `${AddAuthorizeRequestHandler.value}?.Invoke( ${$this.pInvocationInfo.use}, ${fendpointResourceIdKeyName},${fEndpointSuffixKeyName}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); }, ${fTokenAudienceConverter}, ${$this.pExtensibleParameters} );`;
+      } else {
+        yield `${OnNewCLIRequest.value}?.Invoke( (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); } );`;
       }
       yield Return(pip);
     });

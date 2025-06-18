@@ -130,7 +130,7 @@ export class Project extends codeDomProject {
   public endpointSuffixKeyName!: string;
 
   public customFolder!: string;
-  public psCustomFolder!: string;
+  public cliCustomFolder!: string;
   public utilsFolder!: string;
   public internalFolder!: string;
   public testFolder!: string;
@@ -143,7 +143,6 @@ export class Project extends codeDomProject {
   public resourcesFolder!: string;
   public uxFolder!: string;
   public serviceName!: string;
-  public cliName!: string;
   public moduleName!: string;
   public title!: string;
   public rootModuleName!: string;
@@ -206,7 +205,7 @@ export class Project extends codeDomProject {
   public async init(state?: ModelState<PwshModel>): Promise<this> {
     await super.init();
 
-    this.state = await new State(this.service).init(this);
+    this.state = await new State(this.service).init(<any>this);
 
     if (state) {
       this.state.model = state.model;
@@ -292,7 +291,6 @@ export class Project extends codeDomProject {
     // Names
     this.prefix = this.model.language.default.prefix;
     this.serviceName = this.model.language.default.serviceName;
-    this.cliName = this.serviceName.toLowerCase();
     this.subjectPrefix = this.model.language.default.subjectPrefix;
     this.moduleName = await this.state.getValue('module-name');
     this.title = await this.state.getValue('title');
@@ -317,7 +315,7 @@ export class Project extends codeDomProject {
     this.modelCmdletFolder = await this.state.getValue('model-cmdlet-folder');
 
     this.customFolder = await this.state.getValue('custom-cmdlet-folder');
-    this.psCustomFolder = await this.state.getValue('powershell-custom-cmdlet-folder');
+    this.cliCustomFolder = await this.state.getValue('cli-custom-cmdlet-folder');
     this.utilsFolder = await this.state.getValue('utils-cmdlet-folder');
     this.internalFolder = await this.state.getValue('internal-cmdlet-folder');
     this.testFolder = await this.state.getValue('test-folder');
@@ -385,12 +383,12 @@ export class Project extends codeDomProject {
     this.addNamespace(this.modelsExtensions);
 
     // add cmdlet namespace
-    this.cmdlets = await new CmdletNamespace(
-      this.serviceNamespace,
-      this.state
-    ).init();
-    this.cmdlets.header = this.license;
-    this.addNamespace(this.cmdlets);
+    // this.cmdlets = await new CmdletNamespace(
+    //   this.serviceNamespace,
+    //   this.state
+    // ).init();
+    // this.cmdlets.header = this.license;
+    // this.addNamespace(this.cmdlets);
 
     // abort now if we have any errors.
     this.state.checkpoint();

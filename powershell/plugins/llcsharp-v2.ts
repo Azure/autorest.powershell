@@ -21,8 +21,9 @@ export async function llcsharpV2(service: Host | TspHost, state?: ModelState<Pws
       return await project.state.resolveVariables(input);
     };
 
+    const projectCLI = await new Project(service).init(state);
     await project.writeFiles(async (fname, content) => project.state.writeFile(join(project.apifolder, fname), applyOverrides(content, project.overrides), undefined, 'source-file-csharp'));
-    await project.writeFiles(async (fname, content) => project.state.writeFileCLI(join(project.apifolder, fname), applyOverrides(content, project.overrides), undefined, 'source-file-csharp'));
+    await projectCLI.writeFiles(async (fname, content) => projectCLI.state.writeFileCLI(join(projectCLI.apifolder, fname), applyOverrides(content, projectCLI.overrides), undefined, 'source-file-csharp'));
 
     // recursive copy resources
     await copyResources(join(resources, 'runtime', 'csharp', 'client'), async (fname, content) => project.state.writeFile(join(project.runtimefolder, fname), content, undefined, 'source-file-other'), project.overrides);
