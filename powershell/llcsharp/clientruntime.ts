@@ -51,6 +51,7 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   JsonSerializable: new Interface(clientRuntimeNamespace, 'JsonSerializable'),
   IXmlSerializable: new Interface(clientRuntimeNamespace, 'IXmlSerializable'),
   IEventListener: new Interface(clientRuntimeNamespace, 'IEventListener'),
+  IModule: new Interface(new Namespace('SharedContracts'), 'IModule'),
   IContext: new Interface(clientRuntimeNamespace, 'IContext'),
   IValidates: new Interface(clientRuntimeNamespace, 'IValidates'),
   IHeaderSerializable: new Interface(clientRuntimeNamespace, 'IHeaderSerializable'),

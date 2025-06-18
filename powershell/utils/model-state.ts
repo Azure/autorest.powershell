@@ -24,9 +24,9 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
   }
 
   async init(project?: any) {
+    this.outputFolder = await this.getValue('output-folder', './generated');
     if (this.service instanceof TspHostImpl) {
       // skip init for tsp
-      this.outputFolder = await this.getValue('output-folder', './generated');
       this.initContext(project);
       return this;
     }
@@ -98,7 +98,12 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
     return this.service.protectFiles(path);
   }
   writeFile(filename: string, content: string, sourceMap?: undefined, artifactType?: string | undefined): void {
-    return this.service.writeFile({ filename: this.outputFolder ? join(this.outputFolder, filename) : filename, content: content, sourceMap: sourceMap, artifactType: artifactType });
+    const psOutputFolder = this.outputFolder ? join(this.outputFolder, 'powershell') : undefined;
+    return this.service.writeFile({ filename: psOutputFolder ? join(psOutputFolder, filename) : filename, content: content, sourceMap: sourceMap, artifactType: artifactType });
+  }
+  writeFileCLI(filename: string, content: string, sourceMap?: undefined, artifactType?: string | undefined): void {
+    const cliOutputFolder = this.outputFolder ? join(this.outputFolder, 'cli') : undefined;
+    return this.service.writeFile({ filename: cliOutputFolder ? join(cliOutputFolder, filename) : filename, content: content, sourceMap: sourceMap, artifactType: artifactType });
   }
 
   message(message: Message): void {
