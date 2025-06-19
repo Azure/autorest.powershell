@@ -17,7 +17,7 @@ import { ModelExtensionsNamespace } from '../models/model-extensions';
 import { pwshHeaderText } from '../utils/powershell-comment';
 
 import { ModuleNamespace } from '../module/module-namespace';
-import { CmdletNamespace } from '../cmdlets/namespace';
+import { CmdletNamespace } from '../commands/namespace';
 import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 import {
   codemodel,
@@ -383,12 +383,12 @@ export class Project extends codeDomProject {
     this.addNamespace(this.modelsExtensions);
 
     // add cmdlet namespace
-    // this.cmdlets = await new CmdletNamespace(
-    //   this.serviceNamespace,
-    //   this.state
-    // ).init();
-    // this.cmdlets.header = this.license;
-    // this.addNamespace(this.cmdlets);
+    this.cmdlets = await new CmdletNamespace(
+      this.serviceNamespace,
+      this.state
+    ).init();
+    this.cmdlets.header = this.license;
+    this.addNamespace(this.cmdlets);
 
     // abort now if we have any errors.
     this.state.checkpoint();
