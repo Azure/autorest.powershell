@@ -81,9 +81,9 @@ interface ModelCmdletDirective {
   'cmdlet-name'?: string
 }
 export class NewPSSwitch extends Boolean {
-  get declaration(): string {
-    return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
-  }
+  // get declaration(): string {
+  //   return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
+  // }
 }
 export class PSSchemaResolver extends SchemaDefinitionResolver {
   inResolve = false;

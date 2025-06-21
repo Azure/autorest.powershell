@@ -14,7 +14,7 @@ import { CategoryAttribute, ParameterAttribute, ParameterCategory, ValidateNotNu
 export class CmdletNamespace extends Namespace {
   inputModels = new Array<Schema>();
   public get outputFolder(): string {
-    return this.state.project.cmdletFolder;
+    return 'generated/commands';
   }
 
   constructor(parent: Namespace, private state: State, objectInitializer?: DeepPartial<CmdletNamespace>) {
@@ -34,42 +34,52 @@ export class CmdletNamespace extends Namespace {
       if (this.state.project.azure && operation.details.csharp.verb === 'Set' && operation.details.csharp.name.indexOf('ViaIdentity') > 0) {
         continue;
       }
-      if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath')) {
-        if (operation.details.default.virtualParameters) {
-          operation.details.default.virtualParameters.body = [];
-        }
-        const callGraph = operation.callGraph[operation.callGraph.length - 1];
-        if (callGraph.requests && callGraph.requests.length > 0) {
-          callGraph.requests[0].parameters = callGraph.requests[0].parameters?.filter(element => element.protocol.http?.in !== 'body');
-        }
-        if (operation.details.csharp.virtualParameters) {
-          operation.details.csharp.virtualParameters.body = [];
-        }
-        operation.parameters = operation.parameters.filter(element => element.required === true);
+      if (operation.details.default.hasBody) {
+        // skip command with unexpanded body
+        continue;
       }
+      if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath') || operation.variant.includes('Via-identity')) {
+        // skip commands with ViaJsonString, ViaJsonFilePath, or Via-identity variants
+        continue;
+      }
+      // if ()
+      // if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath')) {
+      //   if (operation.details.default.virtualParameters) {
+      //     operation.details.default.virtualParameters.body = [];
+      //   }
+      //   const callGraph = operation.callGraph[operation.callGraph.length - 1];
+      //   if (callGraph.requests && callGraph.requests.length > 0) {
+      //     callGraph.requests[0].parameters = callGraph.requests[0].parameters?.filter(element => element.protocol.http?.in !== 'body');
+      //   }
+      //   if (operation.details.csharp.virtualParameters) {
+      //     operation.details.csharp.virtualParameters.body = [];
+      //   }
+      //   operation.parameters = operation.parameters.filter(element => element.required === true);
+      // }
+      // const newClass = await new CommandClass(this, operation, this.state.path('commands', 'operations', index)).init();
+      // const refCopyPropertyNames = ['parameters', 'requests', 'responses', 'exceptions', 'requestMediaTypes'];
+      // if (operation.variant.includes('ViaJsonString')) {
+      //   const name = 'JsonString';
+      //   operation.details.csharp.name = `${operation.variant}Via${name}`;
+
+      //   operation.callGraph[operation.callGraph.length - 1] = clone(operation.callGraph[operation.callGraph.length - 1], false, undefined, undefined, refCopyPropertyNames);
+      //   operation.callGraph[operation.callGraph.length - 1].language.csharp!.name = `${(<any>operation.callGraph[operation.callGraph.length - 1]).language.csharp!.name}ViaJsonString`;
+      // }
+      // if (operation.variant.includes('ViaJsonFilePath')) {
+      //   const name = 'JsonFilePath';
+      //   operation.details.csharp.name = `${operation.variant}Via${name}`;
+
+      //   const jsonFilePath = newClass.properties.filter(p => p.name === 'JsonFilePath');
+      //   if (jsonFilePath.length > 0) {
+      //     jsonFilePath[0].set = 'if (!System.IO.File.Exists(value)) { throw new Exception("Cannot find File " + value); } this._jsonString = System.IO.File.ReadAllText(value); this._jsonFilePath = value;';
+      //   }
+      //   const jsonStringField = new Field('_jsonString', System.String);
+      //   newClass.add(jsonStringField);
+
+      //   operation.callGraph[operation.callGraph.length - 1] = clone(operation.callGraph[operation.callGraph.length - 1], false, undefined, undefined, refCopyPropertyNames);
+      //   operation.callGraph[operation.callGraph.length - 1].language.csharp!.name = `${(<any>operation.callGraph[operation.callGraph.length - 1]).language.csharp!.name}ViaJsonString`;
+      // }
       const newClass = await new CommandClass(this, operation, this.state.path('commands', 'operations', index)).init();
-      const refCopyPropertyNames = ['parameters', 'requests', 'responses', 'exceptions', 'requestMediaTypes'];
-      if (operation.variant.includes('ViaJsonString')) {
-        const name = 'JsonString';
-        operation.details.csharp.name = `${operation.variant}Via${name}`;
-
-        operation.callGraph[operation.callGraph.length - 1] = clone(operation.callGraph[operation.callGraph.length - 1], false, undefined, undefined, refCopyPropertyNames);
-        operation.callGraph[operation.callGraph.length - 1].language.csharp!.name = `${(<any>operation.callGraph[operation.callGraph.length - 1]).language.csharp!.name}ViaJsonString`;
-      }
-      if (operation.variant.includes('ViaJsonFilePath')) {
-        const name = 'JsonFilePath';
-        operation.details.csharp.name = `${operation.variant}Via${name}`;
-
-        const jsonFilePath = newClass.properties.filter(p => p.name === 'JsonFilePath');
-        if (jsonFilePath.length > 0) {
-          jsonFilePath[0].set = 'if (!System.IO.File.Exists(value)) { throw new Exception("Cannot find File " + value); } this._jsonString = System.IO.File.ReadAllText(value); this._jsonFilePath = value;';
-        }
-        const jsonStringField = new Field('_jsonString', System.String);
-        newClass.add(jsonStringField);
-
-        operation.callGraph[operation.callGraph.length - 1] = clone(operation.callGraph[operation.callGraph.length - 1], false, undefined, undefined, refCopyPropertyNames);
-        operation.callGraph[operation.callGraph.length - 1].language.csharp!.name = `${(<any>operation.callGraph[operation.callGraph.length - 1]).language.csharp!.name}ViaJsonString`;
-      }
       this.addClass(newClass);
     }
     return this;

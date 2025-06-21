@@ -14,6 +14,7 @@ export const DefaultRunspace = new LiteralExpression(`${sma}.Runspaces.Runspace.
 export const RunspaceFactory = new ClassType(new Namespace('global::System.Management.Automation.Runspaces'), 'RunspaceFactory');
 
 export const PSCmdlet = new Class(new Namespace('global::System.Management.Automation'), 'PSCmdlet');
+export const CLICommand = new Class(new Namespace('SharedContracts'), 'BaseProcessor');
 export const PSCredential: TypeDeclaration = new ClassType(sma, 'PSCredential');
 
 export const PSObject: TypeDeclaration = new ClassType(sma, 'PSObject');

@@ -76,8 +76,7 @@ export async function generateCsproj(project: Project) {
     <!-- Some methods are marked async and don't have an await in them -->
     <!-- warning CS1591: Missing XML comment for publicly visible type or member -->
     <NoWarn>1998, 1591</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DelaySign>false</DelaySign>

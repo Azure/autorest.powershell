@@ -11,6 +11,7 @@ import { Interface } from '@azure-tools/codegen-csharp';
 import { Namespace } from '@azure-tools/codegen-csharp';
 
 const clientRuntimeNamespace: Namespace = new Namespace('Microsoft.Rest.ClientRuntime');
+const SharedContractsNamespace: Namespace = new Namespace('SharedContracts');
 const serializationMode = new ClassType(clientRuntimeNamespace, 'SerializationMode');
 const events = new ClassType(clientRuntimeNamespace, 'Events');
 const method = new ClassType(clientRuntimeNamespace, 'Method');
@@ -33,6 +34,8 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
     Patch: new LiteralExpression(`${method.declaration}.Patch`)
   }),
 
+  ArgumentInfoAttribute: new ClassType(SharedContractsNamespace, 'ArgumentInfoAttribute'),
+  CommandInfoAttribute: new ClassType(SharedContractsNamespace, 'CommandInfoAttribute'),
   InfoAttribute: new ClassType(clientRuntimeNamespace, 'Info'),
   CompleterInfoAttribute: new ClassType(clientRuntimeNamespace, 'CompleterInfo'),
   DefaultInfoAttribute: new ClassType(clientRuntimeNamespace, 'DefaultInfo'),
@@ -51,7 +54,7 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   JsonSerializable: new Interface(clientRuntimeNamespace, 'JsonSerializable'),
   IXmlSerializable: new Interface(clientRuntimeNamespace, 'IXmlSerializable'),
   IEventListener: new Interface(clientRuntimeNamespace, 'IEventListener'),
-  IModule: new Interface(new Namespace('SharedContracts'), 'IModule'),
+  IModule: new Interface(SharedContractsNamespace, 'IModule'),
   IContext: new Interface(clientRuntimeNamespace, 'IContext'),
   IValidates: new Interface(clientRuntimeNamespace, 'IValidates'),
   IHeaderSerializable: new Interface(clientRuntimeNamespace, 'IHeaderSerializable'),

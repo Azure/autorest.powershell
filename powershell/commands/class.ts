@@ -15,7 +15,7 @@ import {
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While, LiteralStatement, Not, ElseIf
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
-import { NullableBoolean, Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute, NotSuggestDefaultParameterSetAttribute } from '../internal/powershell-declarations';
+import { NullableBoolean, Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, CLICommand, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute, NotSuggestDefaultParameterSetAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@autorest/extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
@@ -27,6 +27,7 @@ import { getChildResourceNameFromPath, getResourceNameFromPath } from '../utils/
 import { OperationParameter } from '../llcsharp/operation/parameter';
 import { get } from 'http';
 import { hasValidBodyParameters } from '../utils/http-operation';
+import { toKebabCase } from '../utils/code-namer';
 import { assert } from 'console';
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
 
@@ -153,25 +154,25 @@ export function createStepper(p: Expression) {
 
 export function addCompleterInfo(targetProperty: Property, parameter: VirtualParameter) {
   if (parameter.completerInfo && parameter.completerInfo.script) {
-    targetProperty.add(new Attribute(ClientRuntime.CompleterInfoAttribute, {
-      parameters: [
-        new LiteralExpression(`\nName = ${new StringExpression(parameter.completerInfo.name || '').value}`),
-        new LiteralExpression(`\nDescription =${new StringExpression(parameter.completerInfo.description || '').value}`),
-        new LiteralExpression(`\nScript = ${new StringExpression(parameter.completerInfo.script).value}`)
-      ]
-    }));
+    // targetProperty.add(new Attribute(ClientRuntime.CompleterInfoAttribute, {
+    //   parameters: [
+    //     new LiteralExpression(`\nName = ${new StringExpression(parameter.completerInfo.name || '').value}`),
+    //     new LiteralExpression(`\nDescription =${new StringExpression(parameter.completerInfo.description || '').value}`),
+    //     new LiteralExpression(`\nScript = ${new StringExpression(parameter.completerInfo.script).value}`)
+    //   ]
+    // }));
   }
 }
 
 export function NewAddCompleterInfo(targetProperty: Property, parameter: NewVirtualParameter) {
   if (parameter.completerInfo && parameter.completerInfo.script) {
-    targetProperty.add(new Attribute(ClientRuntime.CompleterInfoAttribute, {
-      parameters: [
-        new LiteralExpression(`\nName = ${new StringExpression(parameter.completerInfo.name || '').value}`),
-        new LiteralExpression(`\nDescription =${new StringExpression(parameter.completerInfo.description || '').value}`),
-        new LiteralExpression(`\nScript = ${new StringExpression(parameter.completerInfo.script).value}`)
-      ]
-    }));
+    // targetProperty.add(new Attribute(ClientRuntime.CompleterInfoAttribute, {
+    //   parameters: [
+    //     new LiteralExpression(`\nName = ${new StringExpression(parameter.completerInfo.name || '').value}`),
+    //     new LiteralExpression(`\nDescription =${new StringExpression(parameter.completerInfo.description || '').value}`),
+    //     new LiteralExpression(`\nScript = ${new StringExpression(parameter.completerInfo.script).value}`)
+    //   ]
+    // }));
   }
 }
 
@@ -182,7 +183,7 @@ export function isEnumImplementation(schema: NewSchema | undefined): boolean {
 
 export function addPSArgumentCompleterAttribute(targetProperty: Property, parameterSchema: any) {
   const enumValues = values(parameterSchema.language.csharp.enum.values).select(v => `"${(<string>(<any>v).value)}"`).toArray().join(', ');
-  targetProperty.add(new Attribute(PSArgumentCompleterAttribute, { parameters: [`${enumValues}`] }));
+  // targetProperty.add(new Attribute(PSArgumentCompleterAttribute, { parameters: [`${enumValues}`] }));
 }
 
 export function addParameterBreakingChange(targetProperty: Property, parameter: any) {
@@ -208,9 +209,9 @@ export function addParameterBreakingChange(targetProperty: Property, parameter: 
       }
       parameters.push(`NewParameterType="${parameter.breakingChange.newParameterType}"`);
     }
-    targetProperty.add(new Attribute(ClientRuntime.ParameterBreakingChangeAttribute, {
-      parameters: parameters
-    }));
+    // targetProperty.add(new Attribute(ClientRuntime.ParameterBreakingChangeAttribute, {
+    //   parameters: parameters
+    // }));
   }
 }
 
@@ -219,21 +220,127 @@ export function addParameterPreviewMessage(targetProperty: Property, parameter: 
     const parameters = [];
     parameters.push(`"${parameter.previewAnnouncement.previewMessage}"`);
     if (parameter.previewAnnouncement.estimatedGaDate) parameters.push(`"${parameter.previewAnnouncement.estimatedGaDate}"`);
-    targetProperty.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: parameters }));
+    // targetProperty.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: parameters }));
   }
 }
 
 export function addDefaultInfo(targetProperty: Property, parameter: any) {
   if (parameter.defaultInfo && parameter.defaultInfo.script) {
-    targetProperty.add(new Attribute(ClientRuntime.DefaultInfoAttribute, {
-      parameters: [
-        new LiteralExpression(`\nName = ${new StringExpression(parameter.defaultInfo.name || '').value}`),
-        new LiteralExpression(`\nDescription =${new StringExpression(parameter.defaultInfo.description || '').value}`),
-        new LiteralExpression(`\nScript = ${new StringExpression(parameter.defaultInfo.script).value}`),
-        new LiteralExpression(`\nSetCondition = ${new StringExpression(parameter.defaultInfo['set-condition'] || '').value}`)
-      ]
-    }));
+    // targetProperty.add(new Attribute(ClientRuntime.DefaultInfoAttribute, {
+    //   parameters: [
+    //     new LiteralExpression(`\nName = ${new StringExpression(parameter.defaultInfo.name || '').value}`),
+    //     new LiteralExpression(`\nDescription =${new StringExpression(parameter.defaultInfo.description || '').value}`),
+    //     new LiteralExpression(`\nScript = ${new StringExpression(parameter.defaultInfo.script).value}`),
+    //     new LiteralExpression(`\nSetCondition = ${new StringExpression(parameter.defaultInfo['set-condition'] || '').value}`)
+    //   ]
+    // }));
   }
+}
+
+/**
+ * Extracts resource types from an Azure Resource Manager URL path
+ * @param urlPath The URL path to extract resource types from
+ * @returns Array of resource type strings
+ * @example
+ * extractResourceTypesFromUrl('/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Databricks/workspaces/{workspaceName}/a/{a}/b/{b}/asdf')
+ * // Returns: ['workspaces', 'a', 'b']
+ * 
+ * extractResourceTypesFromUrl('/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Databricks/workspaces/{workspaceName}/a/{a}/b/{b}')
+ * // Returns: ['workspaces', 'a', 'b']
+ */
+export function extractResourceTypesFromUrl(urlPath: string): Array<string> {
+  if (!urlPath) return [];
+
+  // Split the path into segments and remove empty ones
+  const segments = urlPath.split('/').filter(segment => segment.length > 0);
+
+  const resourceTypes: string[] = [];
+  let foundProviders = false;
+
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i];
+
+    // Skip everything before 'providers'
+    if (segment === 'providers') {
+      foundProviders = true;
+      // Skip the provider namespace (e.g., 'Microsoft.Databricks')
+      i++;
+      continue;
+    }
+
+    // Only process segments after we've found 'providers'
+    if (!foundProviders) {
+      continue;
+    }
+
+    // Check if this segment is a parameter (enclosed in curly braces)
+    const isParameter = segment.startsWith('{') && segment.endsWith('}');
+
+    // If this is not a parameter, it's a resource type
+    if (!isParameter) {
+      resourceTypes.push(segment);
+    }
+  }
+
+  return resourceTypes;
+}
+
+
+export function calculateCommandName(operation: CommandOperation): string {
+  const lastCallGraph = operation.callGraph[operation.callGraph.length - 1];
+  const urlPath = lastCallGraph && lastCallGraph.requests && lastCallGraph.requests[0] && lastCallGraph.requests[0].protocol && lastCallGraph.requests[0].protocol.http
+    ? lastCallGraph.requests[0].protocol.http.path
+    : '';
+  const resourceTypes = extractResourceTypesFromUrl(urlPath);
+  const kebabCaseResourceTypes = resourceTypes.map(type => toKebabCase(type)).join(' ');
+
+  let cliAction = '';
+  // Get the verb from the operation
+  const action = (<any>operation).action;
+
+  if (action && typeof action === 'string') {
+    const actionLower = action.toLowerCase();
+
+    if (actionLower === 'get') {
+      cliAction = 'show';
+    } else {
+      cliAction = actionLower;
+    }
+  }
+
+  return kebabCaseResourceTypes + ' ' + cliAction;
+}
+
+export function addParameterAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string, paramSchema: NewSchema) {
+
+  let enums = '';
+  const addArgumentCompleter = isEnumImplementation(paramSchema) || pType instanceof ArrayOf && isEnumImplementation((<ArraySchema>pType.schema).elementType);
+  if (addArgumentCompleter) {
+    if (pType instanceof ArrayOf) {
+      const elementType = (<ArraySchema>pType?.schema)?.elementType;
+      if (elementType?.language?.csharp?.enum?.values) {
+        enums = values(<any>elementType.language.csharp.enum.values).select(v => `"${(<string>(<any>v).value)}"`).toArray().join(', ');
+      }
+    } else {
+      enums = values((<any>paramSchema).language.csharp.enum.values).select(v => `"${(<string>(<any>v).value)}"`).toArray().join(', ');
+    }
+
+  }
+
+  const aliases = new Array<string>();
+  aliases.push(toKebabCase(targetProperty.name));
+
+  targetProperty.add(new Attribute(ClientRuntime.ArgumentInfoAttribute, {
+    parameters: [
+      new LiteralExpression(`\nRequired = ${isRequired}`),
+      new LiteralExpression(`\nDescription = ${new StringExpression(description).value}`),
+      new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}`),
+      new LiteralExpression(`\nAliases = new string[] { ${aliases.map(a => `"${a}"`).join(', ')}}`),
+      new LiteralExpression(`\nEnums = new string[] { ${enums} }`),
+    ]
+  }));
+
+
 }
 
 export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
@@ -276,72 +383,72 @@ export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaratio
     }
   }
 
-  targetProperty.add(new Attribute(ClientRuntime.InfoAttribute, {
-    parameters: [
-      new LiteralExpression(`\nRequired = ${isRequired}`),
-      new LiteralExpression(`\nReadOnly = ${isReadOnly}`),
-      new LiteralExpression(`\nDescription = ${new StringExpression(description).value}`),
-      new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}`),
-      new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }`),
-    ]
-  }));
+  // targetProperty.add(new Attribute(ClientRuntime.InfoAttribute, {
+  //   parameters: [
+  //     new LiteralExpression(`\nRequired = ${isRequired}`),
+  //     new LiteralExpression(`\nReadOnly = ${isReadOnly}`),
+  //     new LiteralExpression(`\nDescription = ${new StringExpression(description).value}`),
+  //     new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}`),
+  //     new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }`),
+  //   ]
+  // }));
 
 
 }
 
 
-export function NewAddInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
+// export function addParameterAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
 
-  let pt = <any>pType;
-  while (pt.elementType) {
-    switch (pt.elementType.schema.type) {
-      case JsonType.Object:
-        if (pt.elementType.schema.language.csharp.interfaceImplementation) {
-          pt = {
-            declaration: pt.elementType.schema.language.csharp.interfaceImplementation.declaration,
-            schema: pt.elementType.schema,
-          };
-        } else {
-          // arg! it's not done yet. Hope it's not polymorphic itself.
-          pt = {
-            declaration: `${pt.elementType.schema.language.csharp.namespace}.${pt.elementType.schema.language.csharp.interfaceName}`,
-            schema: pt.elementType.schema,
-          };
-        }
-        break;
+//   let pt = <any>pType;
+//   while (pt.elementType) {
+//     switch (pt.elementType.schema.type) {
+//       case JsonType.Object:
+//         if (pt.elementType.schema.language.csharp.interfaceImplementation) {
+//           pt = {
+//             declaration: pt.elementType.schema.language.csharp.interfaceImplementation.declaration,
+//             schema: pt.elementType.schema,
+//           };
+//         } else {
+//           // arg! it's not done yet. Hope it's not polymorphic itself.
+//           pt = {
+//             declaration: `${pt.elementType.schema.language.csharp.namespace}.${pt.elementType.schema.language.csharp.interfaceName}`,
+//             schema: pt.elementType.schema,
+//           };
+//         }
+//         break;
 
-      case JsonType.Array:
-        pt = pt.elementType;
-        break;
+//       case JsonType.Array:
+//         pt = pt.elementType;
+//         break;
 
-      default:
-        pt = pt.elementType;
-        break;
-    }
-  }
-  const ptypes = new Array<string>();
-  if (pt.schema && pt.schema && pt.schema.language.csharp.byReference) {
-    ptypes.push(`typeof(${pt.schema.language.csharp.namespace}.${pt.schema.language.csharp.interfaceName}_Reference)`);
-    // do we need polymorphic types for by-resource ? Don't think so.
-  } else {
-    ptypes.push(`typeof(${pt.declaration})`);
-    if (pt.schema && pt.schema.language.csharp.classImplementation && pt.schema.language.csharp.classImplementation.discriminators) {
-      ptypes.push(...[...pt.schema.language.csharp.classImplementation.discriminators.values()].map(each => `typeof(${each.modelInterface.fullName})`));
-    }
-  }
+//       default:
+//         pt = pt.elementType;
+//         break;
+//     }
+//   }
+//   const ptypes = new Array<string>();
+//   if (pt.schema && pt.schema && pt.schema.language.csharp.byReference) {
+//     ptypes.push(`typeof(${pt.schema.language.csharp.namespace}.${pt.schema.language.csharp.interfaceName}_Reference)`);
+//     // do we need polymorphic types for by-resource ? Don't think so.
+//   } else {
+//     ptypes.push(`typeof(${pt.declaration})`);
+//     if (pt.schema && pt.schema.language.csharp.classImplementation && pt.schema.language.csharp.classImplementation.discriminators) {
+//       ptypes.push(...[...pt.schema.language.csharp.classImplementation.discriminators.values()].map(each => `typeof(${each.modelInterface.fullName})`));
+//     }
+//   }
 
-  targetProperty.add(new Attribute(ClientRuntime.InfoAttribute, {
-    parameters: [
-      new LiteralExpression(`\nRequired = ${isRequired}`),
-      new LiteralExpression(`\nReadOnly = ${isReadOnly}`),
-      new LiteralExpression(`\nDescription = ${new StringExpression(description).value}`),
-      new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}`),
-      new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }`),
-    ]
-  }));
+//   // targetProperty.add(new Attribute(ClientRuntime.InfoAttribute, {
+//   //   parameters: [
+//   //     new LiteralExpression(`\nRequired = ${isRequired}`),
+//   //     new LiteralExpression(`\nReadOnly = ${isReadOnly}`),
+//   //     new LiteralExpression(`\nDescription = ${new StringExpression(description).value}`),
+//   //     new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}`),
+//   //     new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }`),
+//   //   ]
+//   // }));
 
 
-}
+// }
 
 type operationParameter = {
   name: Property;
@@ -394,7 +501,7 @@ export class CommandClass extends Class {
     const variantName = `${noun}${operation.details.csharp.name ? `_${operation.details.csharp.name}` : ''}`;
 
     const name = `${operation.details.csharp.verb}${variantName}`;
-    super(namespace, name, PSCmdlet);
+    super(namespace, name, CLICommand);
     this.dropBodyParameter = operation.details.csharp.dropBodyParameter ? true : false;
     this.apply(objectInitializer);
     this.operation = operation;
@@ -409,7 +516,6 @@ export class CommandClass extends Class {
     this.hasStreamOutput = false;
 
     this.interfaces.push(ClientRuntime.IEventListener);
-    this.interfaces.push(ClientRuntime.IContext);
     this.eventListener = new EventListener(new LiteralExpression(`((${ClientRuntime.IEventListener})this)`), true);
 
     this.isViaIdentity = variantName.indexOf('ViaIdentity') > 0;
@@ -427,29 +533,29 @@ export class CommandClass extends Class {
     this.disableTransformIdentityType = await $this.state.getValue('disable-transform-identity-type', false);
     this.flattenUserAssignedIdentity = await $this.state.getValue('flatten-userassignedidentity', true);
 
-    this.add(new Method('BeginProcessing', dotnet.Void, {
-      override: Modifier.Override,
-      access: Access.Protected,
-      description: `(overrides the default BeginProcessing method in ${PSCmdlet})`,
-      *body() {
-        if ($this.state.project.azure) {
-          yield `var telemetryId = ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetTelemetryId.Invoke();`;
-          yield If('telemetryId != "" && telemetryId != "internal"', '__correlationId = telemetryId;');
-        }
-        yield 'Module.Instance.SetProxyConfiguration(Proxy, ProxyCredential, ProxyUseDefaultCredentials);';
-        yield If($this.$<Property>('Break'), `${ClientRuntime.AttachDebugger}.Break();`);
+    // this.add(new Method('BeginProcessing', dotnet.Void, {
+    //   override: Modifier.Override,
+    //   access: Access.Protected,
+    //   description: `(overrides the default BeginProcessing method in ${PSCmdlet})`,
+    //   *body() {
+    //     if ($this.state.project.azure) {
+    //       yield `var telemetryId = ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetTelemetryId.Invoke();`;
+    //       yield If('telemetryId != "" && telemetryId != "internal"', '__correlationId = telemetryId;');
+    //     }
+    //     yield 'Module.Instance.SetProxyConfiguration(Proxy, ProxyCredential, ProxyUseDefaultCredentials);';
+    //     yield If($this.$<Property>('Break'), `${ClientRuntime.AttachDebugger}.Break();`);
 
-        yield $this.eventListener.syncSignal(Events.CmdletBeginProcessing);
-      }
-    }));
+    //     yield $this.eventListener.syncSignal(Events.CmdletBeginProcessing);
+    //   }
+    // }));
 
     // construct the class
     this.NewAddClassAttributes(this.operation, this.variantName);
     if (this.hasStreamOutput) {
       this.outFileParameter = this.add(new Property('OutFile', System.String, { attributes: [], description: 'Path to write output file to.' }));
-      this.outFileParameter.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', 'HelpMessage = "Path to write output file to"'] }));
-      this.outFileParameter.add(new Attribute(ValidateNotNull));
-      this.outFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
+      // this.outFileParameter.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', 'HelpMessage = "Path to write output file to"'] }));
+      // this.outFileParameter.add(new Attribute(ValidateNotNull));
+      // this.outFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
     }
 
     this.NewAddPowershellParameters(this.operation);
@@ -467,7 +573,7 @@ export class CommandClass extends Class {
     this.NewImplementResponseMethod();
 
     // processRecord
-    this.NewImplementProcessRecord();
+    // this.NewImplementProcessRecord();
 
     // find each parameter to the method, and find out where the value is going to come from.
     this.operationParameters =
@@ -499,7 +605,7 @@ export class CommandClass extends Class {
             const httpParamTD = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<NewSchema>httpParam.schema), httpParam.required, this.state, this.state.project.fixedArray);
             return {
               name: each.param,
-              expression: toExpression(`this.InvocationInformation.BoundParameters.ContainsKey("${each.param.value}") ? ${each.param.value} : ${httpParamTD.defaultOfType}`),
+              expression: toExpression(`${each.param.value}`),
               parameterLocation: each.parameterLocation
             };
 
@@ -509,14 +615,14 @@ export class CommandClass extends Class {
 
     this.NewImplementProcessRecordAsync();
 
-    if (this.state.project.azure) {
-      this.NewImplementWriteObject();
-    }
+    // if (this.state.project.azure) {
+    //   this.NewImplementWriteObject();
+    // }
 
     this.debugMode = await this.state.getValue('debug', false);
 
     // json serialization
-    this.NewImplementSerialization(this.operation);
+    // this.NewImplementSerialization(this.operation);
 
     for (const prop of this.properties) {
       if (prop.name === 'Host') {
@@ -588,64 +694,76 @@ export class CommandClass extends Class {
     const $this = this;
     const lengthFunc = $this.state.project.fixedArray ? 'Length' : 'Count';
     const listToArrayFunc = $this.state.project.fixedArray ? '.ToArray()' : '';
-    if ($this.state.project.autoSwitchView) {
-      if (isEnumerable) {
-        return function* () {
-          yield If(`null != ${valueName}`, function* () {
-            yield If(`0 == _responseSize && 1 == ${valueName}.${lengthFunc}`, function* () {
-              yield `_firstResponse = ${valueName}[0];`;
-              yield '_responseSize = 1;';
-            });
-            yield Else(function* () {
-              yield $this.FlushResponse(false);
-              yield 'var values = new System.Collections.Generic.List<System.Management.Automation.PSObject>();';
-              yield ForEach('value', valueName, function* () {
-                yield 'values.Add(value.AddMultipleTypeNameIntoPSObject());';
-              });
-              yield `WriteObject(values${listToArrayFunc}, true); `;
-              yield '_responseSize = 2;';
-            });
-          });
-        };
-      } else {
-        return function* () {
-          yield If(`null != ${valueName}`, function* () {
-            yield If('0 == _responseSize', function* () {
-              yield `_firstResponse = ${valueName};`;
-              yield '_responseSize = 1;';
-            });
-            yield Else(function* () {
-              yield $this.FlushResponse(false);
-              yield `WriteObject(${valueName}.AddMultipleTypeNameIntoPSObject());`;
-              yield '_responseSize = 2;';
-            });
-          });
-        };
-      }
+    // if ($this.state.project.autoSwitchView) {
+    //   if (isEnumerable) {
+    //     return function* () {
+    //       yield If(`null != ${valueName}`, function* () {
+    //         yield If(`0 == _responseSize && 1 == ${valueName}.${lengthFunc}`, function* () {
+    //           yield `_firstResponse = ${valueName}[0];`;
+    //           yield '_responseSize = 1;';
+    //         });
+    //         yield Else(function* () {
+    //           yield $this.FlushResponse(false);
+    //           yield 'var values = new System.Collections.Generic.List<System.Management.Automation.PSObject>();';
+    //           yield ForEach('value', valueName, function* () {
+    //             yield 'values.Add(value.AddMultipleTypeNameIntoPSObject());';
+    //           });
+    //           yield `WriteObject(values${listToArrayFunc}, true); `;
+    //           yield '_responseSize = 2;';
+    //         });
+    //       });
+    //     };
+    //   } else {
+    //     return function* () {
+    //       yield If(`null != ${valueName}`, function* () {
+    //         yield If('0 == _responseSize', function* () {
+    //           yield `_firstResponse = ${valueName};`;
+    //           yield '_responseSize = 1;';
+    //         });
+    //         yield Else(function* () {
+    //           yield $this.FlushResponse(false);
+    //           yield `WriteObject(${valueName}.AddMultipleTypeNameIntoPSObject());`;
+    //           yield '_responseSize = 2;';
+    //         });
+    //       });
+    //     };
+    //   }
+    // } else {
+    //   return `WriteObject(${valueName}, ${isEnumerable});`;
+    // }
+    if (isEnumerable) {
+      return function* () {
+        yield `var __w = new ${ClientRuntime.XNodeArray}();`;
+        yield ForEach('__x', valueName, function* () {
+          yield `AddIf(__x?.ToJson(null, ${ClientRuntime.SerializationMode.IncludeAll}), __w.Add);`;
+        });
+        yield 'Console.WriteLine(__w.ToString());';
+      };
     } else {
-      return `WriteObject(${valueName}, ${isEnumerable});`;
+      return `Console.WriteLine((await response).ToJson(null, ${ClientRuntime.SerializationMode.IncludeAll}).ToString());`;
     }
+    // return '';
   }
 
 
   private addCommonStuff() {
 
     // add a private copy of invocation information for our own uses.
-    const privateInvocationInfo = this.add(new Field('__invocationInfo', InvocationInfo, { description: 'A copy of the Invocation Info (necessary to allow asJob to clone this cmdlet)', access: Access.Private }));
-    this.invocationInfo = new Property('InvocationInformation', InvocationInfo, { description: 'Accessor for our copy of the InvocationInfo.' });
-    this.invocationInfo.get = toExpression(`${privateInvocationInfo.value} = ${privateInvocationInfo.value} ?? this.MyInvocation `);
-    this.invocationInfo.set = new Statements(privateInvocationInfo.assign('value'));
-    this.add(this.invocationInfo);
+    // const privateInvocationInfo = this.add(new Field('__invocationInfo', InvocationInfo, { description: 'A copy of the Invocation Info (necessary to allow asJob to clone this cmdlet)', access: Access.Private }));
+    // this.invocationInfo = new Property('InvocationInformation', InvocationInfo, { description: 'Accessor for our copy of the InvocationInfo.' });
+    // this.invocationInfo.get = toExpression(`${privateInvocationInfo.value} = ${privateInvocationInfo.value} ?? this.MyInvocation `);
+    // this.invocationInfo.set = new Statements(privateInvocationInfo.assign('value'));
+    // this.add(this.invocationInfo);
 
-    if (this.state.project.azure) {
-      this.correlationId = this.add(new Field('__correlationId', dotnet.String, { initialValue: 'System.Guid.NewGuid().ToString()', description: 'A unique id generatd for the this cmdlet when it is instantiated.', access: Access.Private }));
-      this.processRecordId = this.add(new Field('__processRecordId', dotnet.String, { description: 'A unique id generatd for the this cmdlet when ProcessRecord() is called.', access: Access.Private }));
-    }
+    // if (this.state.project.azure) {
+    //   this.correlationId = this.add(new Field('__correlationId', dotnet.String, { initialValue: 'System.Guid.NewGuid().ToString()', description: 'A unique id generatd for the this cmdlet when it is instantiated.', access: Access.Private }));
+    //   this.processRecordId = this.add(new Field('__processRecordId', dotnet.String, { description: 'A unique id generatd for the this cmdlet when ProcessRecord() is called.', access: Access.Private }));
+    // }
 
     // switch view property
-    if (this.state.project.autoSwitchView) {
-      this.AddSwitchViewProperty(dotnet.Object);
-    }
+    // if (this.state.project.autoSwitchView) {
+    //   this.AddSwitchViewProperty(dotnet.Object);
+    // }
 
     // pipeline property
     this.add(new Property('Pipeline', ClientRuntime.HttpPipeline, { getAccess: Access.Public, setAccess: Access.Public, description: `The instance of the <see cref="${ClientRuntime.HttpPipeline}" /> that the remote call will use.` }));
@@ -654,71 +772,71 @@ export class CommandClass extends Class {
     const clientAPI = new ClassType(this.state.model.language.csharp?.namespace, this.state.model.language.csharp?.name || '');
     this.add(new LambdaProperty('Client', clientAPI, new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.ClientAPI`), { description: 'The reference to the client API class.' }));
 
-    this.add(new Method('StopProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Interrupts currently running code within the command.' })).add(function* () {
-      yield `((${ClientRuntime.IEventListener})this).Cancel();`;
-      yield 'base.StopProcessing();';
-    });
+    // this.add(new Method('StopProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Interrupts currently running code within the command.' })).add(function* () {
+    //   yield `((${ClientRuntime.IEventListener})this).Cancel();`;
+    //   yield 'base.StopProcessing();';
+    // });
 
     const $this = this;
-    this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Performs clean-up after the command execution' })).add(
-      function* () {
-        // gs01: remember what you were doing here to make it so these can be parallelized...
-        if ($this.state.project.autoSwitchView) {
-          yield $this.FlushResponse();
-        }
-        if (!$this.state.project.azure) {
-          yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
-        }
-        else {
-          yield `var telemetryInfo = ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetTelemetryInfo?.Invoke(__correlationId);`;
-          yield If('telemetryInfo != null', function* () {
-            yield 'telemetryInfo.TryGetValue("ShowSecretsWarning", out var showSecretsWarning);';
-            yield 'telemetryInfo.TryGetValue("SanitizedProperties", out var sanitizedProperties);';
-            yield 'telemetryInfo.TryGetValue("InvocationName", out var invocationName);';
-            yield If('showSecretsWarning == "true"', function* () {
-              yield If('string.IsNullOrEmpty(sanitizedProperties)', 'WriteWarning($"The output of cmdlet {invocationName} may compromise security by showing secrets. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
-              yield Else('WriteWarning($"The output of cmdlet {invocationName} may compromise security by showing the following secrets: {sanitizedProperties}. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
-            });
-          });
-        }
-      });
+    // this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Performs clean-up after the command execution' })).add(
+    //   function* () {
+    //     // gs01: remember what you were doing here to make it so these can be parallelized...
+    //     if ($this.state.project.autoSwitchView) {
+    //       yield $this.FlushResponse();
+    //     }
+    //     if (!$this.state.project.azure) {
+    //       yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
+    //     }
+    //     else {
+    //       yield `var telemetryInfo = ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetTelemetryInfo?.Invoke(__correlationId);`;
+    //       yield If('telemetryInfo != null', function* () {
+    //         yield 'telemetryInfo.TryGetValue("ShowSecretsWarning", out var showSecretsWarning);';
+    //         yield 'telemetryInfo.TryGetValue("SanitizedProperties", out var sanitizedProperties);';
+    //         yield 'telemetryInfo.TryGetValue("InvocationName", out var invocationName);';
+    //         yield If('showSecretsWarning == "true"', function* () {
+    //           yield If('string.IsNullOrEmpty(sanitizedProperties)', 'WriteWarning($"The output of cmdlet {invocationName} may compromise security by showing secrets. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
+    //           yield Else('WriteWarning($"The output of cmdlet {invocationName} may compromise security by showing the following secrets: {sanitizedProperties}. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
+    //         });
+    //       });
+    //     }
+    //   });
 
     // debugging
-    const brk = this.add(new Property('Break', SwitchParameter, { attributes: [], description: 'Wait for .NET debugger to attach' }));
-    brk.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "Wait for .NET debugger to attach"'] }));
-    brk.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+    // const brk = this.add(new Property('Break', SwitchParameter, { attributes: [], description: 'Wait for .NET debugger to attach' }));
+    // brk.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "Wait for .NET debugger to attach"'] }));
+    // brk.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
-    // Cmdlet Parameters for pipeline manipulations.
-    const prepend = this.add(new Property('HttpPipelinePrepend', ClientRuntime.SendAsyncSteps, { attributes: [], description: 'SendAsync Pipeline Steps to be prepended to the front of the pipeline' }));
-    prepend.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "SendAsync Pipeline Steps to be prepended to the front of the pipeline"'] }));
-    prepend.add(new Attribute(ValidateNotNull));
-    prepend.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+    // // Cmdlet Parameters for pipeline manipulations.
+    // const prepend = this.add(new Property('HttpPipelinePrepend', ClientRuntime.SendAsyncSteps, { attributes: [], description: 'SendAsync Pipeline Steps to be prepended to the front of the pipeline' }));
+    // prepend.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "SendAsync Pipeline Steps to be prepended to the front of the pipeline"'] }));
+    // prepend.add(new Attribute(ValidateNotNull));
+    // prepend.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
-    const append = this.add(new Property('HttpPipelineAppend', ClientRuntime.SendAsyncSteps, { attributes: [], description: 'SendAsync Pipeline Steps to be appended to the front of the pipeline' }));
-    append.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline"'] }));
-    append.add(new Attribute(ValidateNotNull));
-    append.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+    // const append = this.add(new Property('HttpPipelineAppend', ClientRuntime.SendAsyncSteps, { attributes: [], description: 'SendAsync Pipeline Steps to be appended to the front of the pipeline' }));
+    // append.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline"'] }));
+    // append.add(new Attribute(ValidateNotNull));
+    // append.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
-    const proxyCredential = this.add(new Property('ProxyCredential', PSCredential, { attributes: [], description: 'Credentials for a proxy server to use for the remote call' }));
-    proxyCredential.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "Credentials for a proxy server to use for the remote call"'] }));
-    proxyCredential.add(new Attribute(ValidateNotNull));
-    proxyCredential.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+    // const proxyCredential = this.add(new Property('ProxyCredential', PSCredential, { attributes: [], description: 'Credentials for a proxy server to use for the remote call' }));
+    // proxyCredential.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "Credentials for a proxy server to use for the remote call"'] }));
+    // proxyCredential.add(new Attribute(ValidateNotNull));
+    // proxyCredential.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
-    const useDefaultCreds = this.add(new Property('ProxyUseDefaultCredentials ', SwitchParameter, { attributes: [], description: 'Use the default credentials for the proxy' }));
-    useDefaultCreds.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "Use the default credentials for the proxy"'] }));
-    useDefaultCreds.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+    // const useDefaultCreds = this.add(new Property('ProxyUseDefaultCredentials ', SwitchParameter, { attributes: [], description: 'Use the default credentials for the proxy' }));
+    // useDefaultCreds.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "Use the default credentials for the proxy"'] }));
+    // useDefaultCreds.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
-    const proxyUri = this.add(new Property('Proxy', System.Uri, { attributes: [], description: 'The URI for the proxy server to use' }));
-    proxyUri.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "The URI for the proxy server to use"'] }));
-    proxyUri.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+    // const proxyUri = this.add(new Property('Proxy', System.Uri, { attributes: [], description: 'The URI for the proxy server to use' }));
+    // proxyUri.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "The URI for the proxy server to use"'] }));
+    // proxyUri.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
-    if (this.state.project.azure) {
-      this.defaultProfile = this.add(new Property('DefaultProfile', PSObject, { description: 'The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet against a different subscription' }));
-      this.defaultProfile.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet against a different subscription."'] }));
-      this.defaultProfile.add(new Attribute(ValidateNotNull));
-      this.defaultProfile.add(new Attribute(Alias, { parameters: ['"AzureRMContext"', '"AzureCredential"'] }));
-      this.defaultProfile.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Azure`] }));
-    }
+    // if (this.state.project.azure) {
+    //   this.defaultProfile = this.add(new Property('DefaultProfile', PSObject, { description: 'The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet against a different subscription' }));
+    //   this.defaultProfile.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet against a different subscription."'] }));
+    //   this.defaultProfile.add(new Attribute(ValidateNotNull));
+    //   this.defaultProfile.add(new Attribute(Alias, { parameters: ['"AzureRMContext"', '"AzureCredential"'] }));
+    //   this.defaultProfile.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Azure`] }));
+    // }
   }
 
   private NewImplementProcessRecord() {
@@ -740,12 +858,12 @@ export class CommandClass extends Class {
 
         if (operation.asjob) {
           const asjob = $this.add(new Property('AsJob', SwitchParameter, { description: 'when specified, runs this cmdlet as a PowerShell job' }));
-          asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "Run the command as a job"'] }));
-          asjob.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+          // asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "Run the command as a job"'] }));
+          // asjob.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
           const nowait = $this.add(new Property('NoWait', SwitchParameter, { description: 'when specified, will make the remote call, and return an AsyncOperationResponse, letting the remote operation continue asynchronously.' }));
-          nowait.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "Run the command asynchronously"'] }));
-          nowait.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+          // nowait.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "Run the command asynchronously"'] }));
+          // nowait.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
         }
 
@@ -814,10 +932,10 @@ export class CommandClass extends Class {
       this.serializationMode = ClientRuntime.SerializationMode.IncludeCreateOrUpdate;
     }
 
-    const PRA = this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), {
-      access: Access.Protected, async: Modifier.Async,
-      description: 'Performs execution of the command, working asynchronously if required.',
-      returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
+    const PRA = this.add(new Method('Process', System.Threading.Tasks.Task(), {
+      access: Access.Public, override: Modifier.Override, async: Modifier.Async,
+      description: 'Performs execution of the command',
+      returnsDescription: 'Nothing will be complete when handling of the method is completed. Will throw an exception if the operation fails.',
     }));
 
     // we don't want to use SynchContext here.
@@ -832,6 +950,7 @@ export class CommandClass extends Class {
         yield `${ClientRuntime}.DictionaryExtensions.HashTableToDictionary<${vt}>(${$this.apProp.value},${$this.bodyParameter}.AdditionalProperties);`;
       }
 
+      yield 'this.LogMessage("Starting Process method");';
       // construct the call to the operation
       if (!$this.state.project.azure) {
         yield $this.eventListener.signal(Events.CmdletProcessRecordAsyncStart);
@@ -839,14 +958,18 @@ export class CommandClass extends Class {
 
       yield $this.eventListener.signal(Events.CmdletGetPipeline);
 
+      yield 'this.LogMessage("Starting CreateCLIPipeline");';
+
       if ($this.state.project.azure) {
-        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo}, ${$this.correlationId}, ${$this.processRecordId}, this.ParameterSetName, this.ExtensibleParameters)`));
+        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreateCLIPipeline()`));
       } else {
-        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo}, this.ParameterSetName, this.ExtensibleParameters)`));
+        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreateCLIPipeline()`));
       }
 
-      yield If(IsNotNull($this.$<Property>('HttpPipelinePrepend')), pipeline.invokeMethod('Prepend', toExpression(`(this.CommandRuntime as Microsoft.Rest.ClientRuntime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(${$this.$<Property>('HttpPipelinePrepend')}) ?? ${$this.$<Property>('HttpPipelinePrepend')}`)));
-      yield If(IsNotNull($this.$<Property>('HttpPipelineAppend')), pipeline.invokeMethod('Append', toExpression(`(this.CommandRuntime as Microsoft.Rest.ClientRuntime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(${$this.$<Property>('HttpPipelineAppend')}) ?? ${$this.$<Property>('HttpPipelineAppend')}`)));
+      yield 'this.LogMessage("Completed CreateCLIPipeline");';
+
+      // yield If(IsNotNull($this.$<Property>('HttpPipelinePrepend')), pipeline.invokeMethod('Prepend', toExpression(`(this.CommandRuntime as Microsoft.Rest.ClientRuntime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(${$this.$<Property>('HttpPipelinePrepend')}) ?? ${$this.$<Property>('HttpPipelinePrepend')}`)));
+      // yield If(IsNotNull($this.$<Property>('HttpPipelineAppend')), pipeline.invokeMethod('Append', toExpression(`(this.CommandRuntime as Microsoft.Rest.ClientRuntime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(${$this.$<Property>('HttpPipelineAppend')}) ?? ${$this.$<Property>('HttpPipelineAppend')}`)));
 
       yield '// get the client instance';
       // Add input pipeline if it is configured by developers.
@@ -898,23 +1021,19 @@ export class CommandClass extends Class {
         }
         const actualCall = function* () {
           yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
+          yield 'this.LogMessage("Starting call to Client API");';
           yield $this.ImplementCall(preProcess);
           yield $this.eventListener.signal(Events.CmdletAfterAPICall);
+          yield 'this.LogMessage("Completed Process method");';
         };
 
-        if ($this.state.project.azure && operationParameters.find(each => each.expression && each.expression.value === 'SubscriptionId') && $this.operation.details.csharp.verb.toLowerCase() === 'get') {
-          yield 'foreach( var SubscriptionId in this.SubscriptionId )';
-          yield BlockStatement(actualCall);
-        } else {
-          yield actualCall;
-        }
+
+        yield actualCall;
+
       });
       const ure = new Parameter('urexception', { declaration: `${ClientRuntime.fullName}.UndeclaredResponseException` });
       yield Catch(ure, function* () {
-        yield `WriteError(new global::System.Management.Automation.ErrorRecord(${ure.value}, ${ure.value}.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}})
-{
-  ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ure.value}.Message) { RecommendedAction = ${ure.value}.Action }
-});`;
+        yield 'Console.Error.WriteLine($"Error: urexception - {urexception.Message}");';
       });
       yield Finally(function* () {
         yield $this.eventListener.signalNoCheck(Events.CmdletProcessRecordAsyncEnd);
@@ -1348,16 +1467,17 @@ export class CommandClass extends Class {
 
           const unexpected = function* () {
             yield '// Unrecognized Response. Create an error record based on what we have.';
-            const ex = (each.language.csharp?.responseType) ?
-              Local('ex', `new ${ClientRuntime.name}.RestException<${each.language.csharp.responseType}>(responseMessage, await response)`) :
-              Local('ex', `new ${ClientRuntime.name}.RestException(responseMessage)`);
+            //             const ex = (each.language.csharp?.responseType) ?
+            //               Local('ex', `new ${ClientRuntime.name}.RestException<${each.language.csharp.responseType}>(responseMessage, await response)`) :
+            //               Local('ex', `new ${ClientRuntime.name}.RestException(responseMessage)`);
 
-            yield ex.declarationStatement;
+            //             yield ex.declarationStatement;
 
-            yield `WriteError( new global::System.Management.Automation.ErrorRecord(${ex.value}, ${ex.value}.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
-{
-  ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ex.value}.Message) { RecommendedAction = ${ex.value}.Action }
-});`;
+            //             yield `WriteError( new global::System.Management.Automation.ErrorRecord(${ex.value}, ${ex.value}.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
+            // {
+            //   ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ex.value}.Message) { RecommendedAction = ${ex.value}.Action }
+            // });`;
+            yield 'Console.Error.WriteLine($"Error: unexpected response from the service. The response did not include a code or message.");';
           };
           if ((<SchemaResponse>each).schema !== undefined) {
             // the schema should be the error information.
@@ -1384,10 +1504,7 @@ export class CommandClass extends Class {
               yield laction;
 
               yield If(Or(IsNull(lcode), (IsNull(lmessage))), unexpected);
-              yield Else(`WriteError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
-{
-  ErrorDetails = new global::System.Management.Automation.ErrorDetails(${lmessage}) { RecommendedAction = ${laction || System.String.Empty} }
-});`
+              yield Else('Console.Error.WriteLine($"Error: [{code}] : {message}");'
 
               );
               return;
@@ -1411,6 +1528,7 @@ export class CommandClass extends Class {
           const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression('(await response)') });
           yield `// (await response) // should be ${rType.declaration}`;
           yield result.declarationStatement;
+          // yield `Console.WriteLine((await response).ToJson(null, ${ClientRuntime.SerializationMode.IncludeAll}).ToString());`;
 
           if (apiCall.language.csharp?.pageable) {
             const pageable = apiCall.language.csharp.pageable;
@@ -1459,18 +1577,20 @@ export class CommandClass extends Class {
                       description: 'Link to retrieve next page.'
                     }));
                     const nextLinkName = `${result.value}.${nl.name}`;
-                    yield `_nextLink = ${nextLinkName};`;
+
+                    //cirrus, add support for paging
+                    // yield `_nextLink = ${nextLinkName};`;
                     const nextLinkCondition = $this.clientsidePagination ? '!String.IsNullOrEmpty(_nextLink) && this.PagingParameters.First > 0' : '!String.IsNullOrEmpty(_nextLink)';
-                    yield (If('_isFirst', function* () {
-                      yield '_isFirst = false;';
-                      yield (While(nextLinkCondition,
-                        If('responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage ', function* () {
-                          yield `requestMessage = requestMessage.Clone(new global::System.Uri( _nextLink ),${ClientRuntime.Method.Get} );`;
-                          yield $this.eventListener.signal(Events.FollowingNextLink);
-                          yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
-                        })
-                      ));
-                    }));
+                    // yield (If('_isFirst', function* () {
+                    //   yield '_isFirst = false;';
+                    //   yield (While(nextLinkCondition,
+                    //     If('responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage ', function* () {
+                    //       yield `requestMessage = requestMessage.Clone(new global::System.Uri( _nextLink ),${ClientRuntime.Method.Get} );`;
+                    //       yield $this.eventListener.signal(Events.FollowingNextLink);
+                    //       yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+                    //     })
+                    //   ));
+                    // }));
                   }
                   return;
                 } else if (valueProperty) {
@@ -1515,10 +1635,7 @@ export class CommandClass extends Class {
               yield `global::System.IO.File.WriteAllBytes(${paths.value}[0],${result.value});`;
             }
 
-            yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
-              // no return type. Let's just return ... true?
-              yield 'WriteObject(true);';
-            });
+
             return;
           }
 
@@ -1554,18 +1671,10 @@ export class CommandClass extends Class {
               yield Using(fileStream.declarationExpression, `await ${stream.value}.CopyToAsync(${fileStream.value});`);
             });
 
-
-            yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
-              // no return type. Let's just return ... true?
-              yield 'WriteObject(true);';
-            });
             return;
           }
         }
-        yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
-          // no return type. Let's just return ... true?
-          yield 'WriteObject(true);';
-        });
+
       });
       $this.add(responseMethod);
     }
@@ -1656,113 +1765,113 @@ export class CommandClass extends Class {
 
       const sw = Switch(id, [
         TerminalCase(Events.Verbose.value, function* () {
-          yield `WriteVerbose($"{(messageData().Message ?? ${System.String.Empty})}");`;
+          //yield `WriteVerbose($"{(messageData().Message ?? ${System.String.Empty})}");`;
           yield Return();
         }),
 
         TerminalCase(Events.Warning.value, function* () {
-          yield `WriteWarning($"{(messageData().Message ?? ${System.String.Empty})}");`;
+          //yield `WriteWarning($"{(messageData().Message ?? ${System.String.Empty})}");`;
           yield Return();
         }),
         TerminalCase(Events.Information.value, function* () {
           if ($this.operation.asjob) {
             yield '// When an operation supports asjob, Information messages must go thru verbose.';
-            yield `WriteVerbose($"INFORMATION: {(messageData().Message ?? ${System.String.Empty})}");`;
+            //yield `WriteVerbose($"INFORMATION: {(messageData().Message ?? ${System.String.Empty})}");`;
           }
           else {
-            const data = new LocalVariable('data', dotnet.Var, { initializer: new LiteralExpression(`${messageData.use}()`) });
-            yield data.declarationStatement;
-            yield 'WriteInformation(data.Message, new string[]{});';
+            //const data = new LocalVariable('data', dotnet.Var, { initializer: new LiteralExpression(`${messageData.use}()`) });
+            //yield data.declarationStatement;
+            //yield 'WriteInformation(data.Message, new string[]{});';
           }
           yield Return();
 
         }),
         TerminalCase(Events.Debug.value, function* () {
-          yield `WriteDebug($"{(messageData().Message ?? ${System.String.Empty})}");`;
+          //yield `WriteDebug($"{(messageData().Message ?? ${System.String.Empty})}");`;
           yield Return();
         }),
         TerminalCase(Events.Error.value, function* () {
-          yield 'WriteError(new global::System.Management.Automation.ErrorRecord( new global::System.Exception(messageData().Message), string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null ) );';
+          //yield 'WriteError(new global::System.Management.Automation.ErrorRecord( new global::System.Exception(messageData().Message), string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null ) );';
           yield Return();
         }),
-        TerminalCase(Events.Progress.value, function* () {
-          yield 'var data = messageData();';
-          yield 'int progress = (int)data.Value;';
-          yield 'string activityMessage, statusDescription;';
-          yield 'global::System.Management.Automation.ProgressRecordType recordType;';
+        // TerminalCase(Events.Progress.value, function* () {
+        //   // yield 'var data = messageData();';
+        //   // yield 'int progress = (int)data.Value;';
+        //   // yield 'string activityMessage, statusDescription;';
+        //   // yield 'global::System.Management.Automation.ProgressRecordType recordType;';
 
-          yield 'if (progress < 100)';
-          yield '{';
-          yield '    activityMessage = "In progress";';
-          yield '    statusDescription = "Checking operation status";';
-          yield '    recordType = System.Management.Automation.ProgressRecordType.Processing;';
-          yield '}';
-          yield 'else';
-          yield '{';
-          yield '    activityMessage = "Completed";';
-          yield '    statusDescription = "Completed";';
-          yield '    recordType = System.Management.Automation.ProgressRecordType.Completed;';
-          yield '}';
+        //   // yield 'if (progress < 100)';
+        //   // yield '{';
+        //   // yield '    activityMessage = "In progress";';
+        //   // yield '    statusDescription = "Checking operation status";';
+        //   // yield '    recordType = System.Management.Automation.ProgressRecordType.Processing;';
+        //   // yield '}';
+        //   // yield 'else';
+        //   // yield '{';
+        //   // yield '    activityMessage = "Completed";';
+        //   // yield '    statusDescription = "Completed";';
+        //   // yield '    recordType = System.Management.Automation.ProgressRecordType.Completed;';
+        //   // yield '}';
 
-          // hardcode id = 1 because there is no need for nested progress bar
-          yield 'WriteProgress(new global::System.Management.Automation.ProgressRecord(1, activityMessage, statusDescription)';
-          yield '{';
-          yield '    PercentComplete = progress,';
-          yield 'RecordType = recordType';
-          yield '});';
-          yield Return();
-        }),
+        //   // // hardcode id = 1 because there is no need for nested progress bar
+        //   // yield 'WriteProgress(new global::System.Management.Automation.ProgressRecord(1, activityMessage, statusDescription)';
+        //   // yield '{';
+        //   // yield '    PercentComplete = progress,';
+        //   // yield 'RecordType = recordType';
+        //   // yield '});';
+        //   yield Return();
+        // }),
       ]);
 
-      if ($this.operation.asjob) {
-        // if we support -AsJob, we support -NoWait
-        sw.add(Case(Events.DelayBeforePolling.value, function* () {
-          yield 'var data = messageData();';
-          yield If('true == MyInvocation?.BoundParameters?.ContainsKey("NoWait")', function* () {
-            yield 'if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)';
-            yield '{';
-            yield '    var asyncOperation = response.GetFirstHeader(@"Azure-AsyncOperation");';
-            yield '    var location = response.GetFirstHeader(@"Location");';
-            yield '    var uri = global::System.String.IsNullOrEmpty(asyncOperation) ? global::System.String.IsNullOrEmpty(location) ? response.RequestMessage.RequestUri.AbsoluteUri : location : asyncOperation;';
-            yield `    WriteObject(new ${ClientRuntime}.PowerShell.AsyncOperationResponse { Target = uri });`;
+      // if ($this.operation.asjob) {
+      //   // if we support -AsJob, we support -NoWait
+      //   sw.add(Case(Events.DelayBeforePolling.value, function* () {
+      //     yield 'var data = messageData();';
+      //     yield If('true == MyInvocation?.BoundParameters?.ContainsKey("NoWait")', function* () {
+      //       yield 'if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)';
+      //       yield '{';
+      //       yield '    var asyncOperation = response.GetFirstHeader(@"Azure-AsyncOperation");';
+      //       yield '    var location = response.GetFirstHeader(@"Location");';
+      //       yield '    var uri = global::System.String.IsNullOrEmpty(asyncOperation) ? global::System.String.IsNullOrEmpty(location) ? response.RequestMessage.RequestUri.AbsoluteUri : location : asyncOperation;';
+      //       yield `    WriteObject(new ${ClientRuntime}.PowerShell.AsyncOperationResponse { Target = uri });`;
 
-            yield '    // do nothing more. ';
-            yield '    data.Cancel();';
-            yield '    return;';
-            yield '}';
-          });
-          yield Else(function* () {
-            yield 'if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)';
-            yield '{';
-            yield '    int delay = (int)(response.Headers.RetryAfter?.Delta?.TotalSeconds ?? 30);';
-            yield '    WriteDebug($"Delaying {delay} seconds before polling.");';
-            yield '    for (var now = 0; now < delay; ++now)';
-            yield '    {';
-            // hardcode id = 1 because there is no need for nested progress bar
-            yield '        WriteProgress(new global::System.Management.Automation.ProgressRecord(1, "In progress", "Checking operation status")';
-            yield '        {';
-            yield '            PercentComplete = now * 100 / delay';
-            yield '        });';
-            yield `        await global::System.Threading.Tasks.Task.Delay(1000, ${token.use});`;
-            yield '    }';
-            yield '}';
-          });
-        }));
-      }
+      //       yield '    // do nothing more. ';
+      //       yield '    data.Cancel();';
+      //       yield '    return;';
+      //       yield '}';
+      //     });
+      //     yield Else(function* () {
+      //       yield 'if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)';
+      //       yield '{';
+      //       yield '    int delay = (int)(response.Headers.RetryAfter?.Delta?.TotalSeconds ?? 30);';
+      //       yield '    WriteDebug($"Delaying {delay} seconds before polling.");';
+      //       yield '    for (var now = 0; now < delay; ++now)';
+      //       yield '    {';
+      //       // hardcode id = 1 because there is no need for nested progress bar
+      //       yield '        WriteProgress(new global::System.Management.Automation.ProgressRecord(1, "In progress", "Checking operation status")';
+      //       yield '        {';
+      //       yield '            PercentComplete = now * 100 / delay';
+      //       yield '        });';
+      //       yield `        await global::System.Threading.Tasks.Task.Delay(1000, ${token.use});`;
+      //       yield '    }';
+      //       yield '}';
+      //     });
+      //   }));
+      // }
 
       // the whole switch statement
       yield sw;
 
       if ($this.state.project.azure) {
         // in azure mode, we signal the AzAccount module with every event that makes it here.
-        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i, t, m) => ((${ClientRuntime.IEventListener})this).Signal(i, t, () => ${ClientRuntime.EventDataConverter}.ConvertFrom(m()) as ${ClientRuntime.EventData}), ${$this.invocationInfo.value}, this.ParameterSetName, ${$this.correlationId.value}, ${$this.processRecordId.value}, null );`;
+        //yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i, t, m) => ((${ClientRuntime.IEventListener})this).Signal(i, t, () => ${ClientRuntime.EventDataConverter}.ConvertFrom(m()) as ${ClientRuntime.EventData}), ${$this.invocationInfo.value}, this.ParameterSetName, ${$this.correlationId.value}, ${$this.processRecordId.value}, null );`;
         yield If(`${token.value}.IsCancellationRequested`, Return());
       } else {
         // In Non-Azure Modes, emit the Signal method without coorelation and processrecordid
         yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i, t, m) => ((${ClientRuntime.IEventListener})this).Signal(i, t, () => ${ClientRuntime.EventDataConverter}.ConvertFrom(m()) as ${ClientRuntime.EventData}), ${$this.invocationInfo.value}, this.ParameterSetName, null ); `;
         yield If(`${token.value}.IsCancellationRequested`, Return());
       }
-      yield `WriteDebug($"{id}: {(messageData().Message ?? ${System.String.Empty})}");`;
+      // yield `WriteDebug($"{id}: {(messageData().Message ?? ${System.String.Empty})}");`;
       // any handling of the signal on our side...
     });
   }
@@ -1847,9 +1956,9 @@ export class CommandClass extends Class {
                 set: operation.details.csharp.verb.toLowerCase() === 'new' ? toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value.IsPresent ? "SystemAssigned": null `) : undefined
               });
               enableSystemAssignedIdentity.description = 'Determines whether to enable a system-assigned identity for the resource.';
-              enableSystemAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required && operation.details.csharp.verb.toLowerCase() !== 'new' ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(enableSystemAssignedIdentity.description || '.')}"`)] }));
+              // enableSystemAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required && operation.details.csharp.verb.toLowerCase() !== 'new' ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(enableSystemAssignedIdentity.description || '.')}"`)] }));
               if (length(vParam.alias) > 0) {
-                enableSystemAssignedIdentity.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
+                // enableSystemAssignedIdentity.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
               }
               this.add(enableSystemAssignedIdentity);
               continue;
@@ -1859,10 +1968,10 @@ export class CommandClass extends Class {
               if (this.flattenUserAssignedIdentity && vParam.schema.type === 'dictionary') {
                 const userAssignedIdentity = new Property('UserAssignedIdentity', dotnet.StringArray);
                 userAssignedIdentity.description = 'The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: \'/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.\'';
-                userAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(userAssignedIdentity.description || '.')}"`)] }));
-                userAssignedIdentity.add(new Attribute(AllowEmptyCollectionAttribute));
+                // userAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(userAssignedIdentity.description || '.')}"`)] }));
+                // userAssignedIdentity.add(new Attribute(AllowEmptyCollectionAttribute));
                 if (length(vParam.alias) > 0) {
-                  userAssignedIdentity.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
+                  // userAssignedIdentity.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
                 }
                 this.add(userAssignedIdentity);
                 continue;
@@ -1885,7 +1994,7 @@ export class CommandClass extends Class {
           if (vParam.schema.language.csharp?.byReference) {
             // this parameter's schema is marked as 'by-reference' which means we should
             // tag it with an ExportAs attribute for the I*Reference type.
-            cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${vParam.schema.language.csharp.referenceInterface})`] }));
+            // cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${vParam.schema.language.csharp.referenceInterface})`] }));
           }
 
           if (vParam.schema.type === SchemaType.Array) {
@@ -1893,7 +2002,7 @@ export class CommandClass extends Class {
             // if ((<ArraySchema>vParam.schema). && vParam.schema.items.details.csharp.byReference) {
             //   cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${vParam.schema.items.details.csharp.referenceInterface}[])`] }));
             // }
-            cmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
+            // cmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
           }
           const dictSchema = vSchema.type === SchemaType.Dictionary ? vSchema :
             vSchema.type === SchemaType.Object ? (<ObjectSchema>vSchema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary) :
@@ -1905,7 +2014,7 @@ export class CommandClass extends Class {
             if (length((<ObjectSchema>vSchema).properties) === 0) {
               // it's a pure dictionary
               // add an attribute for changing the exported type.
-              cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
+              // cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
             } else {
               // it's a hybrid. We need to add an additional property that puts its items into the target container
 
@@ -1939,16 +2048,16 @@ export class CommandClass extends Class {
               description: `Input File for ${cmdletParameter.name} (${escapeString(desc)})`
             });
 
-            inputFileParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "Input File for ${cmdletParameter.name} (${escapeString(desc || '.')})"`)] }));
-            inputFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
+            // inputFileParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "Input File for ${cmdletParameter.name} (${escapeString(desc || '.')})"`)] }));
+            // inputFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
             if (length(vParam.alias) > 0) {
-              inputFileParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
+              // inputFileParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
             }
             $this.add(inputFileParameter);
           } else {
-            cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc || '.')}"`)] }));
-            cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
-            NewAddInfoAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, (<NewVirtualProperty>vParam.origin).property.serializedName);
+            // cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc || '.')}"`)] }));
+            // cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
+            addParameterAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, (<NewVirtualProperty>vParam.origin).property.serializedName, vParam.schema);
             NewAddCompleterInfo(cmdletParameter, vParam);
             addParameterBreakingChange(cmdletParameter, vParam);
             addParameterPreviewMessage(cmdletParameter, vParam);
@@ -1963,7 +2072,7 @@ export class CommandClass extends Class {
 
           // add aliases if there is any
           if (length(vParam.alias) > 0) {
-            cmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
+            // cmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
           }
           this.add(cmdletParameter);
         }
@@ -1984,9 +2093,9 @@ export class CommandClass extends Class {
           }
 
           this.apProp = this.add(new Property(apPropName, System.Collections.Hashtable));
-          this.apProp.add(new Attribute(ParameterAttribute, {
-            parameters: ['Mandatory = false', 'HelpMessage = "Additional Parameters"']
-          }));
+          // this.apProp.add(new Attribute(ParameterAttribute, {
+          //   parameters: ['Mandatory = false', 'HelpMessage = "Additional Parameters"']
+          // }));
           this.bodyParameterInfo = {
             type: {
               declaration: parameter.schema.language.csharp?.fullname
@@ -2011,8 +2120,8 @@ export class CommandClass extends Class {
         description: 'Identity Parameter'
       }));
       const parameters = [new LiteralExpression('Mandatory = true'), new LiteralExpression('HelpMessage = "Identity Parameter"'), new LiteralExpression('ValueFromPipeline = true')];
-      idParam.add(new Attribute(ParameterAttribute, { parameters }));
-      idParam.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Path`] }));
+      // idParam.add(new Attribute(ParameterAttribute, { parameters }));
+      // idParam.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Path`] }));
     }
     for (const vParam of values(vps.operation)) {
       if (vParam.name === 'Host') {
@@ -2034,17 +2143,7 @@ export class CommandClass extends Class {
 
         origin = <NewIParameter>vParam.origin;
 
-        regularCmdletParameter = (this.state.project.azure && vParam.name === 'SubscriptionId' && operation.details.csharp.verb.toLowerCase() === 'get') ?
-
-          // special case for subscription id
-          this.add(new BackedProperty(vParam.name, dotnet.StringArray, {
-            metadata: {
-              parameterDefinition: origin.details.csharp.httpParameter
-            },
-            description: vParam.description
-          })) :
-
-          // everything else
+        regularCmdletParameter = 
           this.add(new BackedProperty(vParam.name, propertyType, {
             metadata: {
               parameterDefinition: origin.details.csharp.httpParameter
@@ -2063,7 +2162,7 @@ export class CommandClass extends Class {
             // it's a pure dictionary
             // change the property type to hashtable.
             // add an attribute to change the exported type.
-            regularCmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
+            // regularCmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
           } else {
             // it's a hybrid. We need to add an additional property that puts its items into the target container
 
@@ -2078,12 +2177,12 @@ export class CommandClass extends Class {
         parameters.push(new LiteralExpression('ValueFromPipeline = true'));
         this.bodyParameter = regularCmdletParameter;
       }
-      regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
+      // regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
       if (!vParam.type && vParam.schema.type === SchemaType.Array) {
-        regularCmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
+        // regularCmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
       }
       if (!!origin && !!propertyType) {
-        NewAddInfoAttribute(regularCmdletParameter, propertyType, vParam.required ?? false, false, vParam.description, origin.name);
+        addParameterAttribute(regularCmdletParameter, propertyType, vParam.required ?? false, false, vParam.description, origin.name, vParam.schema);
       }
       NewAddCompleterInfo(regularCmdletParameter, vParam);
       addParameterBreakingChange(regularCmdletParameter, vParam);
@@ -2093,7 +2192,7 @@ export class CommandClass extends Class {
 
       // add aliases if there is any
       if (length(vParam.alias) > 0) {
-        regularCmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
+        // regularCmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
       }
 
       const httpParam = origin ? origin.details.csharp.httpParameter : null;
@@ -2104,7 +2203,7 @@ export class CommandClass extends Class {
         const cat = this.apiCall.parameters?.find((param) => !param.language.csharp?.constantValue && param.language.csharp?.serializedName === httpParam.language.csharp?.serializedName);
 
         if (cat) {
-          regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase((cat.protocol.http?.in))}`] }));
+          // regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase((cat.protocol.http?.in))}`] }));
         }
       } else {
         const isBodyParameter = origin ? origin.details.csharp.isBodyParameter : false;
@@ -2142,7 +2241,7 @@ export class CommandClass extends Class {
         Channel: Channel.Debug,
         Text: `[DIRECTIVE] Applied 'hide' directive to parameter ${cmdletParameter.name}. Added attribute ${DoNotExportAttribute.declaration} to parameter.`,
       });
-      cmdletParameter.add(new Attribute(DoNotExportAttribute));
+      // cmdletParameter.add(new Attribute(DoNotExportAttribute));
     }
   }
 
@@ -2161,17 +2260,17 @@ export class CommandClass extends Class {
     }
 
     if (operation.details.csharp.hidden) {
-      this.add(new Attribute(InternalExportAttribute));
+      // this.add(new Attribute(InternalExportAttribute));
       const noun = `${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}`;
       const cmdletName = `${operation.details.csharp.verb}-${noun}${operation.details.csharp.name ? `_${operation.details.csharp.name}` : ''}`;
       this.state.message({ Channel: Channel.Debug, Text: `[DIRECTIVE] Applied 'hide' directive to ${cmdletName}. Added attribute ${InternalExportAttribute.declaration} to cmdlet.` });
     }
 
-    this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
+    // this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
 
     // add alias attribute if there is any aliases for this cmdlet
     if (length(operation.details.csharp.alias) > 0) {
-      this.add(new Attribute(Alias, { parameters: operation.details.csharp.alias.map((x: string) => '"' + x + '"') }));
+      // this.add(new Attribute(Alias, { parameters: operation.details.csharp.alias.map((x: string) => '"' + x + '"') }));
     }
 
     let shouldAddPassThru = false;
@@ -2262,7 +2361,7 @@ export class CommandClass extends Class {
         if (breakingChange.cmdlet.replacement) parameters.push(`ReplacementCmdletName = "${breakingChange.cmdlet.replacement}"`);
         if (breakingChange.cmdlet.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.cmdlet.changeDescription}"`);
 
-        this.add(new Attribute(ClientRuntime.CmdletBreakingChangeAttribute, { parameters: parameters }));
+        // this.add(new Attribute(ClientRuntime.CmdletBreakingChangeAttribute, { parameters: parameters }));
       }
       if (breakingChange.variant) {
         const parameters = [];
@@ -2275,7 +2374,7 @@ export class CommandClass extends Class {
         if (breakingChange.variant.changeInEfectByDate) parameters.push(`"${breakingChange.variant.changeInEfectByDate}"`);
         if (breakingChange.variant.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.variant.changeDescription}"`);
 
-        this.add(new Attribute(ClientRuntime.ParameterSetBreakingChangeAttribute, { parameters: parameters }));
+        // this.add(new Attribute(ClientRuntime.ParameterSetBreakingChangeAttribute, { parameters: parameters }));
       }
       if (breakingChange.output) {
         const parameters = [];
@@ -2304,7 +2403,7 @@ export class CommandClass extends Class {
         }
         if (breakingChange.output.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.output.changeDescription}"`);
 
-        this.add(new Attribute(ClientRuntime.OutputBreakingChangeAttribute, { parameters: parameters }));
+        // this.add(new Attribute(ClientRuntime.OutputBreakingChangeAttribute, { parameters: parameters }));
       }
     }
 
@@ -2313,27 +2412,31 @@ export class CommandClass extends Class {
       const parameters = [];
       parameters.push(`"${operation.details.csharp.previewAnnouncement.previewMessage}"`);
       if (operation.details.csharp.previewAnnouncement.estimatedGaDate) parameters.push(`"${operation.details.csharp.previewAnnouncement.estimatedGaDate}"`);
-      this.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: parameters }));
+      // this.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: parameters }));
     }
 
-    this.add(new Attribute(OutputTypeAttribute, { parameters: [...outputTypes] }));
+    // this.add(new Attribute(OutputTypeAttribute, { parameters: [...outputTypes] }));
     if (shouldAddPassThru) {
       const passThru = this.add(new Property('PassThru', SwitchParameter, { description: 'When specified, forces the cmdlet return a \'bool\' given that there isn\'t a return type by default.' }));
-      passThru.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "Returns true when the command succeeds"'] }));
-      passThru.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+      // passThru.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "Returns true when the command succeeds"'] }));
+      // passThru.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
     }
 
-    this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }));
+    this.add(new Attribute(ClientRuntime.CommandInfoAttribute, { parameters: [
+      new LiteralExpression(`\nName = "${calculateCommandName(operation)}"`),
+      new LiteralExpression(`\nDescription = "${this.description}"`),
+    ] }));
+
 
     // If defines externalDocs for operation
     if (operation.details.default.externalDocs) {
-      this.add(new Attribute(ExternalDocsAttribute, {
-        parameters: [`${new StringExpression(this.operation.details.default.externalDocs?.url ?? '')}`,
-          `${new StringExpression(this.operation.details.default.externalDocs?.description ?? '')}`]
-      }));
+      // this.add(new Attribute(ExternalDocsAttribute, {
+      //   parameters: [`${new StringExpression(this.operation.details.default.externalDocs?.url ?? '')}`,
+      //     `${new StringExpression(this.operation.details.default.externalDocs?.description ?? '')}`]
+      // }));
     }
 
-    this.add(new Attribute(GeneratedAttribute));
+    // this.add(new Attribute(GeneratedAttribute));
     if (operation.extensions && operation.extensions['x-ms-metadata'] && operation.extensions['x-ms-metadata'].profiles) {
       const profileNames = Object.keys(operation.extensions && operation.extensions['x-ms-metadata'].profiles);
       // wrap profile names
@@ -2341,13 +2444,13 @@ export class CommandClass extends Class {
         profileNames[index] = `"${element}"`;
       });
 
-      this.add(new Attribute(ProfileAttribute, { parameters: [...profileNames] }));
+      // this.add(new Attribute(ProfileAttribute, { parameters: [...profileNames] }));
     }
     if (this.operation.callGraph.length === 1) {
-      this.add(new Attribute(HttpPathAttribute, { parameters: [`Path = "${this.apiCall.requests?.[0].protocol?.http?.path}"`, `ApiVersion = "${this.apiCall.apiVersions?.[0].version}"`] }));
+      // this.add(new Attribute(HttpPathAttribute, { parameters: [`Path = "${this.apiCall.requests?.[0].protocol?.http?.path}"`, `ApiVersion = "${this.apiCall.apiVersions?.[0].version}"`] }));
     }
     if (variantName.includes('ViaJsonString') || variantName.includes('ViaJsonFilePath')) {
-      this.add(new Attribute(NotSuggestDefaultParameterSetAttribute));
+      // this.add(new Attribute(NotSuggestDefaultParameterSetAttribute));
     }
   }
 }
