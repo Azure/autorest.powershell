@@ -32,6 +32,13 @@ import { assert } from 'console';
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
 
 
+enum Condition {
+  None,
+  If,
+  ElseIf,
+  Else
+}
+
 const Verbs = {
   Common: 'global::System.Management.Automation.VerbsCommon',
   Data: 'global::System.Management.Automation.VerbsData',
@@ -480,6 +487,7 @@ export class CommandClass extends Class {
   private bodyParameterInfo?: { type: TypeDeclaration; valueType: TypeDeclaration };
   private apProp?: Property;
   private operation: CommandOperation;
+  private operations: Array<CommandOperation>;
   private debugMode?: boolean;
   private variantName: string;
   private isViaIdentity: boolean;
@@ -495,8 +503,9 @@ export class CommandClass extends Class {
   private disableTransformIdentityType?: boolean;
   private flattenUserAssignedIdentity?: boolean;
 
-  constructor(namespace: Namespace, operation: CommandOperation, state: State, objectInitializer?: DeepPartial<CommandClass>) {
+  constructor(namespace: Namespace, operations: Array<CommandOperation>, state: State, objectInitializer?: DeepPartial<CommandClass>) {
     // generate the 'variant'  part of the name
+    const operation = operations[0];
     const noun = `${state.project.prefix}${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}`;
     const variantName = `${noun}${operation.details.csharp.name ? `_${operation.details.csharp.name}` : ''}`;
 
@@ -504,7 +513,8 @@ export class CommandClass extends Class {
     super(namespace, name, CLICommand);
     this.dropBodyParameter = operation.details.csharp.dropBodyParameter ? true : false;
     this.apply(objectInitializer);
-    this.operation = operation;
+    this.operation = operations[0];
+    this.operations = operations;
     this.apiCall = this.operation.callGraph[this.operation.callGraph.length - 1];
     // create the response handlers
     this.responses = [...values(this.apiCall.responses), ...values(this.apiCall.exceptions)];
@@ -558,7 +568,7 @@ export class CommandClass extends Class {
       // this.outFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
     }
 
-    this.NewAddPowershellParameters(this.operation);
+    this.NewAddPowershellParameters(this.operation, this.operations);
 
     // implement IEventListener
     this.implementIEventListener();
@@ -1022,7 +1032,17 @@ export class CommandClass extends Class {
         const actualCall = function* () {
           yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
           yield 'this.LogMessage("Starting call to Client API");';
-          yield $this.ImplementCall(preProcess);
+          if ($this.operations.length > 1) {
+            for (let idx = 0; idx < $this.operations.length; idx++) {
+              if (idx === 0) {
+                yield $this.ImplementCall(preProcess, $this.operations[idx], Condition.If);
+              } else {
+                yield $this.ImplementCall(preProcess, $this.operations[idx], Condition.ElseIf);
+              }
+            }
+          } else {
+            yield $this.ImplementCall(preProcess, $this.operation, Condition.None);
+          }
           yield $this.eventListener.signal(Events.CmdletAfterAPICall);
           yield 'this.LogMessage("Completed Process method");';
         };
@@ -1069,9 +1089,8 @@ export class CommandClass extends Class {
     $this.add(collWriteObject);
   }
 
-  private * ImplementCall(preProcess: PreProcess) {
+  private * ImplementCall(preProcess: PreProcess, operation: CommandOperation, condition: Condition) {
     const $this = this;
-    const operation = $this.operation;
     const apiCall = $this.apiCall;
     const operationParameters: Array<operationParameter> = $this.operationParameters;
     const callbackMethods = $this.callbackMethods;
@@ -1232,6 +1251,9 @@ export class CommandClass extends Class {
       }
     } else {
       const pathParameters = [...pathParamsInIdentity.map(each => toExpression(each.value)), ...pathParamsNotInIdentity.map(each => toExpression(each.value))];
+      const conditionExpression = pathParameters.length > 0
+        ? pathParameters.map(p => `!string.IsNullOrEmpty(${p})`).join(' && ')
+        : 'true';
       const nonPathParameters = [...headerParams.map(each => toExpression(each.value)), ...queryParams.map(each => toExpression(each.value)), ...otherParams.map(each => toExpression(each.value))];
       let parameters = bodyParameter ? [...pathParameters, ...nonPathParameters, toExpression(bodyParameter.value), ...callbackMethods, dotnet.This, pipeline] : [...pathParameters, ...nonPathParameters, ...callbackMethods, dotnet.This, pipeline];
       if (serializationMode) {
@@ -1245,7 +1267,19 @@ export class CommandClass extends Class {
       if (preProcess) {
         yield preProcess($this, pathParameters, [...otherParams.map(each => toExpression(each.value)), dotnet.This, pipeline], false);
       }
-      yield `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`;
+      switch (condition) {
+        case Condition.If:
+          yield If(conditionExpression, `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`);
+          break;
+        case Condition.Else:
+          yield Else(`await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`);
+          break;
+        case Condition.ElseIf:
+          yield ElseIf(conditionExpression, `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`);
+          break;
+        default:
+          yield `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`;
+      }
     }
   }
 
@@ -1876,7 +1910,7 @@ export class CommandClass extends Class {
     });
   }
 
-  private NewAddPowershellParameters(operation: CommandOperation) {
+  private NewAddPowershellParameters(operation: CommandOperation, operations: Array<CommandOperation>) {
     const vps = operation.details.csharp.virtualParameters || {
       body: [],
       operation: [],
