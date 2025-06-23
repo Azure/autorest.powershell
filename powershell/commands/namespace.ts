@@ -28,6 +28,7 @@ export class CmdletNamespace extends Namespace {
     this.add(new ImportDirective(`${ClientRuntime.Cmdlets}`));
     this.add(new ImportDirective('System'));
 
+    const listOperations = new Map<string, Array<CommandOperation>>();
     // generate cmdlet classes on top of the SDK
     for (const { key: index, value: operation } of items(this.state.model.commands.operations)) {
       // skip ViaIdentity for set-* cmdlets.
@@ -40,6 +41,16 @@ export class CmdletNamespace extends Namespace {
       }
       if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath') || operation.variant.includes('Via-identity')) {
         // skip commands with ViaJsonString, ViaJsonFilePath, or Via-identity variants
+        continue;
+      }
+      if ((<any>operation).action.toLowerCase() === 'list') {
+        // skip list operations and will generate them later
+        const resourceName = (<any>operation).subject.toLowerCase();
+        if (listOperations.has(resourceName)) {
+          listOperations.get(resourceName)!.push(operation);
+        } else {
+          listOperations.set(resourceName, [operation]);
+        }
         continue;
       }
       // if ()
@@ -79,7 +90,24 @@ export class CmdletNamespace extends Namespace {
       //   operation.callGraph[operation.callGraph.length - 1] = clone(operation.callGraph[operation.callGraph.length - 1], false, undefined, undefined, refCopyPropertyNames);
       //   operation.callGraph[operation.callGraph.length - 1].language.csharp!.name = `${(<any>operation.callGraph[operation.callGraph.length - 1]).language.csharp!.name}ViaJsonString`;
       // }
-      const newClass = await new CommandClass(this, operation, this.state.path('commands', 'operations', index)).init();
+      const newClass = await new CommandClass(this, [operation], this.state.path('commands', 'operations', index)).init();
+      this.addClass(newClass);
+    }
+    // handle list operations
+    // Loop through all arrays in listOperations and sort each array by parameter count
+    for (const [resourceName, operations] of listOperations) {
+      // Sort operations in ascending order by parameter count (fewer parameters first)
+      operations.sort((a, b) => {
+        const aParamCount = a.parameters?.length || 0;
+        const bParamCount = b.parameters?.length || 0;
+        return bParamCount - aParamCount;
+      });
+      // Update the sorted array back to the map
+      listOperations.set(resourceName, operations);
+    }
+
+    for (const [resourceName, operations] of listOperations) {
+      const newClass = await new CommandClass(this, operations, this.state.path('commands', 'operations', resourceName)).init();
       this.addClass(newClass);
     }
     return this;
