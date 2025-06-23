@@ -1091,7 +1091,7 @@ export class CommandClass extends Class {
 
   private * ImplementCall(preProcess: PreProcess, operation: CommandOperation, condition: Condition) {
     const $this = this;
-    const apiCall = $this.apiCall;
+    const apiCall = operation.callGraph[this.operation.callGraph.length - 1];
     const operationParameters: Array<operationParameter> = $this.operationParameters;
     const callbackMethods = $this.callbackMethods;
     const pipeline = $this.$<Property>('Pipeline');
@@ -1109,6 +1109,7 @@ export class CommandClass extends Class {
     if (idschema) {
       const allVPs = NewGetAllPublicVirtualProperties(idschema.language.csharp?.virtualProperties);
       const props = [...values(idschema.properties)];
+      const operationPathParameters = operation.parameters.filter(each => (<any>each).protocol && (<any>each).protocol.http.in === ParameterLocation.Path);
       operationParameters.forEach(each => {
         const pascalName = pascalCase(`${each.name}`);
         //push parameters that is not path parameters into allParams and idOpParamsNotFromIdentity
@@ -1130,6 +1131,9 @@ export class CommandClass extends Class {
           }
           return;
         } else {
+          if ($this.operations.length > 1 && !operationPathParameters.find(opParam => pascalCase(opParam.name) === pascalName)) {
+            return;
+          }
           const match = props.find(p => pascalCase(p.serializedName) === pascalName);
           if (match) {
 
@@ -1910,6 +1914,19 @@ export class CommandClass extends Class {
     });
   }
 
+  private isRequiredPathParameter(parameter: NewIParameter): boolean {
+    if (this.operations.length > 1) {
+      // Check if the parameter exists in all operations
+      return this.operations.every(operation => {
+        return operation.parameters.some(opParam =>
+          opParam.name === parameter.name &&
+          (<any>opParam) && (<any>opParam).protocol?.http?.in === ParameterLocation.Path
+        );
+      });
+    }
+    return true;
+  }
+
   private NewAddPowershellParameters(operation: CommandOperation, operations: Array<CommandOperation>) {
     const vps = operation.details.csharp.virtualParameters || {
       body: [],
@@ -2216,7 +2233,8 @@ export class CommandClass extends Class {
         // regularCmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
       }
       if (!!origin && !!propertyType) {
-        addParameterAttribute(regularCmdletParameter, propertyType, vParam.required ?? false, false, vParam.description, origin.name, vParam.schema);
+        const required = (<any>origin).protocol && (<any>origin).protocol?.http?.in === ParameterLocation.Path ? this.isRequiredPathParameter(origin) && vParam.required : vParam.required;
+        addParameterAttribute(regularCmdletParameter, propertyType, required ?? false, false, vParam.description, origin.name, vParam.schema);
       }
       NewAddCompleterInfo(regularCmdletParameter, vParam);
       addParameterBreakingChange(regularCmdletParameter, vParam);

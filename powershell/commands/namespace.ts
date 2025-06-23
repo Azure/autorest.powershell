@@ -95,16 +95,16 @@ export class CmdletNamespace extends Namespace {
     }
     // handle list operations
     // Loop through all arrays in listOperations and sort each array by parameter count
-    // for (const [resourceName, operations] of listOperations) {
-    //   // Sort operations in ascending order by parameter count (fewer parameters first)
-    //   operations.sort((a, b) => {
-    //     const aParamCount = a.parameters?.length || 0;
-    //     const bParamCount = b.parameters?.length || 0;
-    //     return aParamCount - bParamCount;
-    //   });
-    //   // Update the sorted array back to the map
-    //   listOperations.set(resourceName, operations);
-    // }
+    for (const [resourceName, operations] of listOperations) {
+      // Sort operations in ascending order by parameter count (fewer parameters first)
+      operations.sort((a, b) => {
+        const aParamCount = a.parameters?.length || 0;
+        const bParamCount = b.parameters?.length || 0;
+        return bParamCount - aParamCount;
+      });
+      // Update the sorted array back to the map
+      listOperations.set(resourceName, operations);
+    }
 
     for (const [resourceName, operations] of listOperations) {
       const newClass = await new CommandClass(this, operations, this.state.path('commands', 'operations', resourceName)).init();
