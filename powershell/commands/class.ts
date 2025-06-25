@@ -1605,15 +1605,16 @@ export class CommandClass extends Class {
                   }
                   const nl = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, nextLinkProperty.serializedName);
                   if (nl) {
-                    $this.add(new Field('_isFirst', dotnet.Bool, {
-                      access: Access.Private,
-                      initialValue: new LiteralExpression('true'),
-                      description: 'A flag to tell whether it is the first onOK call.'
-                    }));
-                    $this.add(new Field('_nextLink', dotnet.String, {
-                      access: Access.Private,
-                      description: 'Link to retrieve next page.'
-                    }));
+                    //cirrus, need to add support for paging
+                    // $this.add(new Field('_isFirst', dotnet.Bool, {
+                    //   access: Access.Private,
+                    //   initialValue: new LiteralExpression('true'),
+                    //   description: 'A flag to tell whether it is the first onOK call.'
+                    // }));
+                    // $this.add(new Field('_nextLink', dotnet.String, {
+                    //   access: Access.Private,
+                    //   description: 'Link to retrieve next page.'
+                    // }));
                     const nextLinkName = `${result.value}.${nl.name}`;
 
                     //cirrus, add support for paging
