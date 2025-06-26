@@ -565,7 +565,7 @@ export class CommandClass extends Class {
       this.outFileParameter = this.add(new Property('OutFile', System.String, { attributes: [], description: 'Path to write output file to.' }));
       // this.outFileParameter.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', 'HelpMessage = "Path to write output file to"'] }));
       // this.outFileParameter.add(new Attribute(ValidateNotNull));
-      // this.outFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
+      this.outFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
     }
 
     this.NewAddPowershellParameters(this.operation, this.operations);
@@ -814,7 +814,7 @@ export class CommandClass extends Class {
     // debugging
     // const brk = this.add(new Property('Break', SwitchParameter, { attributes: [], description: 'Wait for .NET debugger to attach' }));
     // brk.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'DontShow = true', 'HelpMessage = "Wait for .NET debugger to attach"'] }));
-    // brk.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+    // \\brk.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
     // // Cmdlet Parameters for pipeline manipulations.
     // const prepend = this.add(new Property('HttpPipelinePrepend', ClientRuntime.SendAsyncSteps, { attributes: [], description: 'SendAsync Pipeline Steps to be prepended to the front of the pipeline' }));
@@ -869,11 +869,11 @@ export class CommandClass extends Class {
         if (operation.asjob) {
           const asjob = $this.add(new Property('AsJob', SwitchParameter, { description: 'when specified, runs this cmdlet as a PowerShell job' }));
           // asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "Run the command as a job"'] }));
-          // asjob.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+          asjob.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
           const nowait = $this.add(new Property('NoWait', SwitchParameter, { description: 'when specified, will make the remote call, and return an AsyncOperationResponse, letting the remote operation continue asynchronously.' }));
           // nowait.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "Run the command asynchronously"'] }));
-          // nowait.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+          nowait.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
         }
 
@@ -1424,7 +1424,12 @@ export class CommandClass extends Class {
           return false;
         });
         for (const param of bodyParameters) {
-          yield If(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("${param.name}"))`, `this.${param.name} = (${param.type.declaration})(this.MyInvocation?.BoundParameters["${param.name}"]);`);
+          if ('UserAssignedIdentity' === param.name || 'IdentityUserAssignedIdentity' === param.name) {
+            const userAssignedIdentity = $this.GetUserAssignedIdentityPropertyName();
+            yield If(`null != _bodyBackup?.${userAssignedIdentity}`, `${$this.bodyParameter?.value}.${userAssignedIdentity} = (_bodyBackup?.${userAssignedIdentity});`);
+            continue;
+          }
+          yield If(`null != _bodyBackup?.${param.value}`, `${$this.bodyParameter?.value}.${param.name} = _bodyBackup?.${param.value};`);
         }
       });
       $this.add(updateBodyMethod);
@@ -1990,6 +1995,11 @@ export class CommandClass extends Class {
           initialValue: (parameter.schema.type === SchemaType.Array) ? dotnet.Null : `new ${parameter.schema.language.csharp?.fullname}()`,
           access: Access.Private
         }));
+        const expandedBodyParameterBackup = this.add(new Field('_bodyBackup', td, {
+          description: parameter.details.csharp.description,
+          initialValue: (parameter.schema.type === SchemaType.Array) ? dotnet.Null : `new ${parameter.schema.language.csharp?.fullname}()`,
+          access: Access.Private
+        }));
         this.thingsToSerialize.push(expandedBodyParameter);
 
         for (const vParam of vps.body) {
@@ -2004,7 +2014,7 @@ export class CommandClass extends Class {
             if (vParam.name === 'IdentityType' && !this.disableTransformIdentityType &&
               (this.operation.commandType === CommandType.ManagedIdentityNew || this.operation.commandType === CommandType.ManagedIdentityUpdate)) {
               const enableSystemAssignedIdentity = new Property('EnableSystemAssignedIdentity', operation.details.csharp.verb.toLowerCase() === 'new' ? SwitchParameter : NullableBoolean, {
-                set: operation.details.csharp.verb.toLowerCase() === 'new' ? toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value.IsPresent ? "SystemAssigned": null `) : undefined
+                set: operation.details.csharp.verb.toLowerCase() === 'new' ? `${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value.IsPresent ? "SystemAssigned": null; ${expandedBodyParameterBackup.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value.IsPresent ? "SystemAssigned": null; ` : undefined
               });
               enableSystemAssignedIdentity.description = 'Determines whether to enable a system-assigned identity for the resource.';
               // enableSystemAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required && operation.details.csharp.verb.toLowerCase() !== 'new' ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(enableSystemAssignedIdentity.description || '.')}"`)] }));
@@ -2031,14 +2041,14 @@ export class CommandClass extends Class {
             cmdletParameter = new Property(vParam.name, propertyType, {
               get: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`), // /* ${inspect(vParam.origin)} */
               // get: toExpression(`null == ${expandedBodyParameter.value}.${vParam.origin.name} ? ${propertyType.defaultOfType} : (${propertyType.declaration}) ${expandedBodyParameter.value}.${vParam.origin.name}`),
-              set: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value`),
+              set: `${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value; ${expandedBodyParameterBackup.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value;`,
               new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
             });
           } else {
             const fixedArrayPropertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state, true);
             cmdletParameter = new Property(vParam.name, fixedArrayPropertyType, {
               get: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}?.ToArray()${` ?? ${fixedArrayPropertyType.defaultOfType}`}`),
-              set: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = (value != null ? new ${propertyType.declaration}(value) : null)`),
+              set: `${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = (value != null ? new ${propertyType.declaration}(value) : null); ${expandedBodyParameterBackup.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = (value != null ? new ${propertyType.declaration}(value) : null);`,
               new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
             });
           }
@@ -2100,14 +2110,14 @@ export class CommandClass extends Class {
             });
 
             // inputFileParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "Input File for ${cmdletParameter.name} (${escapeString(desc || '.')})"`)] }));
-            // inputFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
+            inputFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
             if (length(vParam.alias) > 0) {
               // inputFileParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
             }
             $this.add(inputFileParameter);
           } else {
             // cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc || '.')}"`)] }));
-            // cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
+            cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
             addParameterAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, (<NewVirtualProperty>vParam.origin).property.serializedName, vParam.schema);
             NewAddCompleterInfo(cmdletParameter, vParam);
             addParameterBreakingChange(cmdletParameter, vParam);
@@ -2172,7 +2182,7 @@ export class CommandClass extends Class {
       }));
       const parameters = [new LiteralExpression('Mandatory = true'), new LiteralExpression('HelpMessage = "Identity Parameter"'), new LiteralExpression('ValueFromPipeline = true')];
       // idParam.add(new Attribute(ParameterAttribute, { parameters }));
-      // idParam.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Path`] }));
+      idParam.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Path`] }));
     }
     for (const vParam of values(vps.operation)) {
       if (vParam.name === 'Host') {
@@ -2194,7 +2204,7 @@ export class CommandClass extends Class {
 
         origin = <NewIParameter>vParam.origin;
 
-        regularCmdletParameter = 
+        regularCmdletParameter =
           this.add(new BackedProperty(vParam.name, propertyType, {
             metadata: {
               parameterDefinition: origin.details.csharp.httpParameter
@@ -2255,7 +2265,7 @@ export class CommandClass extends Class {
         const cat = this.apiCall.parameters?.find((param) => !param.language.csharp?.constantValue && param.language.csharp?.serializedName === httpParam.language.csharp?.serializedName);
 
         if (cat) {
-          // regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase((cat.protocol.http?.in))}`] }));
+          regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase((cat.protocol.http?.in))}`] }));
         }
       } else {
         const isBodyParameter = origin ? origin.details.csharp.isBodyParameter : false;
@@ -2471,13 +2481,15 @@ export class CommandClass extends Class {
     if (shouldAddPassThru) {
       const passThru = this.add(new Property('PassThru', SwitchParameter, { description: 'When specified, forces the cmdlet return a \'bool\' given that there isn\'t a return type by default.' }));
       // passThru.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "Returns true when the command succeeds"'] }));
-      // passThru.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+      passThru.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
     }
 
-    this.add(new Attribute(ClientRuntime.CommandInfoAttribute, { parameters: [
-      new LiteralExpression(`\nName = "${calculateCommandName(operation)}"`),
-      new LiteralExpression(`\nDescription = "${this.description}"`),
-    ] }));
+    this.add(new Attribute(ClientRuntime.CommandInfoAttribute, {
+      parameters: [
+        new LiteralExpression(`\nName = "${calculateCommandName(operation)}"`),
+        new LiteralExpression(`\nDescription = "${this.description}"`),
+      ]
+    }));
 
 
     // If defines externalDocs for operation
