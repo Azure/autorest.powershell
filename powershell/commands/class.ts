@@ -1862,10 +1862,10 @@ export class CommandClass extends Class {
         // }),
       ]);
 
-      // if ($this.operation.asjob) {
+      if ($this.operation.asjob) {
       //   // if we support -AsJob, we support -NoWait
-      //   sw.add(Case(Events.DelayBeforePolling.value, function* () {
-      //     yield 'var data = messageData();';
+        sw.add(Case(Events.DelayBeforePolling.value, function* () {
+          yield 'var data = messageData();';
       //     yield If('true == MyInvocation?.BoundParameters?.ContainsKey("NoWait")', function* () {
       //       yield 'if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)';
       //       yield '{';
@@ -1880,23 +1880,15 @@ export class CommandClass extends Class {
       //       yield '}';
       //     });
       //     yield Else(function* () {
-      //       yield 'if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)';
-      //       yield '{';
-      //       yield '    int delay = (int)(response.Headers.RetryAfter?.Delta?.TotalSeconds ?? 30);';
-      //       yield '    WriteDebug($"Delaying {delay} seconds before polling.");';
-      //       yield '    for (var now = 0; now < delay; ++now)';
-      //       yield '    {';
-      //       // hardcode id = 1 because there is no need for nested progress bar
-      //       yield '        WriteProgress(new global::System.Management.Automation.ProgressRecord(1, "In progress", "Checking operation status")';
-      //       yield '        {';
-      //       yield '            PercentComplete = now * 100 / delay';
-      //       yield '        });';
-      //       yield `        await global::System.Threading.Tasks.Task.Delay(1000, ${token.use});`;
-      //       yield '    }';
-      //       yield '}';
-      //     });
+          yield 'if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)';
+          yield '{';
+          yield '    int delay = (int)(response.Headers.RetryAfter?.Delta?.TotalSeconds ?? 30);';
+          yield '    this.LogMessage($"Checking operation status.");';
+          yield `    await global::System.Threading.Tasks.Task.Delay(delay*1000, ${token.use});`;
+          yield '}';
+        }));
       //   }));
-      // }
+      }
 
       // the whole switch statement
       yield sw;
