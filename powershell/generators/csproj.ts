@@ -45,13 +45,17 @@ export async function generateCsproj(project: Project) {
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 
   </PropertyGroup>
-
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);PowerShell</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <ProjectReference Include="..\\..\\..\\SharedContracts\\SharedContracts.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Compile Include="..\\custom\\*.cs" Link="custom\\%(Filename)%(Extension)" />
+  </ItemGroup>
   <PropertyGroup>
     <DefaultItemExcludes>$(DefaultItemExcludes);${removeCd(project.resourcesFolder)}/**</DefaultItemExcludes>
   </PropertyGroup>
@@ -85,13 +89,17 @@ export async function generateCsproj(project: Project) {
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
   </PropertyGroup>
-
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);CLI</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <ProjectReference Include="..\\..\\..\\SharedContracts\\SharedContracts.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Compile Include="..\\custom\\*.cs" Link="custom\\%(Filename)%(Extension)" />
+  </ItemGroup>
   <PropertyGroup>
     <DefaultItemExcludes>$(DefaultItemExcludes);${removeCd(project.resourcesFolder)}/**</DefaultItemExcludes>
   </PropertyGroup>
