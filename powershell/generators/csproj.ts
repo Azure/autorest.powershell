@@ -51,7 +51,9 @@ export async function generateCsproj(project: Project) {
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <ProjectReference Include="..\\..\\..\\SharedContracts\\SharedContracts.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Compile Include="..\\custom\\*.cs" Link="custom\\%(Filename)%(Extension)" />
+  </ItemGroup>
   <PropertyGroup>
     <DefaultItemExcludes>$(DefaultItemExcludes);${removeCd(project.resourcesFolder)}/**</DefaultItemExcludes>
   </PropertyGroup>
@@ -91,7 +93,9 @@ export async function generateCsproj(project: Project) {
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <ProjectReference Include="..\\..\\..\\SharedContracts\\SharedContracts.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Compile Include="..\\custom\\*.cs" Link="custom\\%(Filename)%(Extension)" />
+  </ItemGroup>
   <PropertyGroup>
     <DefaultItemExcludes>$(DefaultItemExcludes);${removeCd(project.resourcesFolder)}/**</DefaultItemExcludes>
   </PropertyGroup>
