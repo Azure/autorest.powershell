@@ -588,7 +588,7 @@ export class CmdletClass extends Class {
     const $this = this;
     const lengthFunc = $this.state.project.fixedArray ? 'Length' : 'Count';
     const listToArrayFunc = $this.state.project.fixedArray ? '.ToArray()' : '';
-    if ($this.state.project.autoSwitchView) {
+    if ($this.state.project.autoSwitchView && !$this.operation.asjob) {
       if (isEnumerable) {
         return function* () {
           yield If(`null != ${valueName}`, function* () {
@@ -643,7 +643,7 @@ export class CmdletClass extends Class {
     }
 
     // switch view property
-    if (this.state.project.autoSwitchView) {
+    if (this.state.project.autoSwitchView && !this.operation.asjob) {
       this.AddSwitchViewProperty(dotnet.Object);
     }
 
@@ -663,7 +663,7 @@ export class CmdletClass extends Class {
     this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Performs clean-up after the command execution' })).add(
       function* () {
         // gs01: remember what you were doing here to make it so these can be parallelized...
-        if ($this.state.project.autoSwitchView) {
+        if ($this.state.project.autoSwitchView && !$this.operation.asjob) {
           yield $this.FlushResponse();
         }
         if (!$this.state.project.azure) {
