@@ -18,6 +18,7 @@ import { extractPagedMetadataNested } from "../utils/operationUtil.js";
 import { parseNextLinkName } from "../utils/operationUtil.js";
 import { getLroMetadata } from "@azure-tools/typespec-azure-core";
 import { getOperationId } from "@typespec/openapi";
+import { listOperations } from "../utils/clientUtils.js";
 
 const GlobalParameter = "global-parameter";
 
@@ -123,45 +124,24 @@ function getUrlParameters(program: Program, psContext: SdkContext) {
 }
 
 function getOperationGroups(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel, emitterOptions: PSOptions): OperationGroup[] {
-  const operationGroups: OperationGroup[] = [];
-  // list all the operations in the client
-  const clientOperations = listOperationsInOperationGroup(psContext, client);
-  const newGroup = new OperationGroup("");
-  if (clientOperations.length > 0) {
-    newGroup.language.default.name = newGroup.$key = "";
-    operationGroups.push(newGroup);
-  }
-  for (const clientOperation of clientOperations) {
-    const op = ignoreDiagnostics(getHttpOperation(program, clientOperation));
-    if (op.overloads && op.overloads.length > 0) {
-      continue
+  const operationGroupsMap = new Map<string, OperationGroup>();
+
+  const operations = listOperations(client);
+  for (const operation of operations) {
+    const op = ignoreDiagnostics(getHttpOperation(program, operation));
+    // ignore overload base operation
+    if (op.overloads && op.overloads?.length > 0) {
+      continue;
     }
-    addOperation(psContext, op, newGroup, model, emitterOptions);
-    // const operationGroup = new OperationGroup(operation.name);
-    // operationGroup.language.default.name = operation.name;
-    // operationGroup.language.default.description = operation.description;
-    // operationGroup.operations.push(operation);
-    // operationGroups.push(operationGroup);
-  }
-  const opGroups = listOperationGroups(psContext, client, true);
-  for (const operationGroup of opGroups) {
-    const newGroup = new OperationGroup("");
-    newGroup.language.default.name = newGroup.$key = operationGroup.type.name;
-    operationGroups.push(newGroup);
-    const operations = listOperationsInOperationGroup(
-      psContext,
-      operationGroup
-    );
-    for (const operation of operations) {
-      const op = ignoreDiagnostics(getHttpOperation(program, operation));
-      // ignore overload base operation
-      if (op.overloads && op.overloads?.length > 0) {
-        continue;
-      }
-      addOperation(psContext, op, newGroup, model, emitterOptions);
+    let group = operationGroupsMap.get(operation.interface?.name || "");
+    if (!group) {
+      group = new OperationGroup("");
+      group.language.default.name = group.$key = operation.interface?.name || "";
+      operationGroupsMap.set(operation.interface?.name || "", group);
     }
+    addOperation(psContext, op, group, model, emitterOptions);
   }
-  return operationGroups;
+  return Array.from(operationGroupsMap.values());
 }
 
 function resolveOperationId(psContext: SdkContext, op: HttpOperation, operationGroup: OperationGroup): string {
