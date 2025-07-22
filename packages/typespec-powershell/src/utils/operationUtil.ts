@@ -36,6 +36,7 @@ import {
   listOperationsInOperationGroup,
   SdkContext
 } from "@azure-tools/typespec-client-generator-core";
+import { listOperations } from "./clientUtils.js";
 // import {
 //   OperationLroDetail,
 //   OPERATION_LRO_LOW_PRIORITY,
@@ -308,7 +309,7 @@ export function hasPollingOperations(
   client: SdkClient,
   dpgContext: SdkContext
 ) {
-  const clientOperations = listOperationsInOperationGroup(dpgContext, client);
+  const clientOperations = listOperations(client);
   for (const clientOp of clientOperations) {
     const route = ignoreDiagnostics(getHttpOperation(program, clientOp));
     // ignore overload base operation
@@ -317,23 +318,6 @@ export function hasPollingOperations(
     }
     if (isLongRunningOperation(program, route)) {
       return true;
-    }
-  }
-  const operationGroups = listOperationGroups(dpgContext, client, true);
-  for (const operationGroup of operationGroups) {
-    const operations = listOperationsInOperationGroup(
-      dpgContext,
-      operationGroup
-    );
-    for (const op of operations) {
-      const route = ignoreDiagnostics(getHttpOperation(program, op));
-      // ignore overload base operation
-      if (route.overloads && route.overloads?.length > 0) {
-        continue;
-      }
-      if (isLongRunningOperation(program, route)) {
-        return true;
-      }
     }
   }
   return false;

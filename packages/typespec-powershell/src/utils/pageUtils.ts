@@ -12,6 +12,7 @@ import {
   parseNextLinkName,
   parseItemName
 } from "../utils/operationUtil.js";
+import { listOperations } from "./clientUtils.js";
 
 
 const pageableOperationsKey = Symbol("pageable");
@@ -35,7 +36,7 @@ export function extractPageDetailFromCore(
   // Add default values
   nextLinks.add("nextLink");
   itemNames.add("value");
-  const clientOperations = listOperationsInOperationGroup(dpgContext, client);
+  const clientOperations = listOperations(client);
   for (const clientOp of clientOperations) {
     const route = ignoreDiagnostics(getHttpOperation(program, clientOp));
     // ignore overload base operation
@@ -43,21 +44,6 @@ export function extractPageDetailFromCore(
       continue;
     }
     extractPageDetailFromCoreForRoute(route);
-  }
-  const operationGroups = listOperationGroups(dpgContext, client, true);
-  for (const operationGroup of operationGroups) {
-    const operations = listOperationsInOperationGroup(
-      dpgContext,
-      operationGroup
-    );
-    for (const op of operations) {
-      const route = ignoreDiagnostics(getHttpOperation(program, op));
-      // ignore overload base operation
-      if (route.overloads && route.overloads?.length > 0) {
-        continue;
-      }
-      extractPageDetailFromCoreForRoute(route);
-    }
   }
 
   function extractPageDetailFromCoreForRoute(route: HttpOperation) {
