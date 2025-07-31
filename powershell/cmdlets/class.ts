@@ -1307,14 +1307,14 @@ export class CmdletClass extends Class {
           description: `the body result as a <see cref="${each.language.csharp?.responseType.replace(/\[|\]|\?/g, '')}">${each.language.csharp?.responseType}</see> from the remote call`
         }));
       }
-      if (each.language.csharp?.headerType) {
-        parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.language.csharp.headerType }), { description: `the header result as a <see cref="${each.language.csharp.headerType}" /> from the remote call` }));
-      }
-
+      
       if (isBinary) {
         parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: 'global::System.IO.Stream' }), { description: 'the body result as a <see cref="global::System.IO.Stream" /> from the remote call' }));
       }
-
+      
+      if (each.language.csharp?.headerType) {
+        parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.language.csharp.headerType }), { description: `the header result as a <see cref="${each.language.csharp.headerType}" /> from the remote call` }));
+      }
       const override = `override${pascalCase(each.language.csharp?.name || '')}`;
       const returnNow = new Parameter('returnNow', System.Threading.Tasks.Task(dotnet.Bool), { modifier: ParameterModifier.Ref, description: `/// Determines if the rest of the ${each.language.csharp?.name} method should be processed, or if the method should return immediately (set to true to skip further processing )` });
       const overrideResponseMethod = new PartialMethod(override, dotnet.Void, {
