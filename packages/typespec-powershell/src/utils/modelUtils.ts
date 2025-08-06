@@ -465,6 +465,9 @@ function getSchemaForScalar(
       case "base64url":
         schema.type = SchemaType.ByteArray;
         break;
+      case "duration":
+        schema.type = SchemaType.Duration;
+        break;
     }
   }
   function isBinaryAsRequestBody() {
@@ -1515,7 +1518,7 @@ function getSchemaForStdScalar(
         outputTypeName: "string"
       };
     case "duration":
-      return { type: "string", format, description };
+      return { type: "string", format: "duration", description };
     case "url":
       return { type: "string", format: "uri" };
   }
