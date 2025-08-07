@@ -6,10 +6,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
     using Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.PowerShell;
 
     /// <summary>
-    /// A PowerShell PSTypeConverter to support converting to an instance of <see cref="AzureLargeInstancesShutdownAcceptedResponseHeaders"
+    /// A PowerShell PSTypeConverter to support converting to an instance of <see cref="AzureLargeInstanceRestartAcceptedResponseHeaders"
     /// />
     /// </summary>
-    public partial class AzureLargeInstancesShutdownAcceptedResponseHeadersTypeConverter : global::System.Management.Automation.PSTypeConverter
+    public partial class AzureLargeInstanceRestartAcceptedResponseHeadersTypeConverter : global::System.Management.Automation.PSTypeConverter
     {
 
         /// <summary>
@@ -25,14 +25,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
         public override bool CanConvertFrom(object sourceValue, global::System.Type destinationType) => CanConvertFrom(sourceValue);
 
         /// <summary>
-        /// Determines if the converter can convert the <paramref name="sourceValue"/> parameter to the <see cref="AzureLargeInstancesShutdownAcceptedResponseHeaders"/>
+        /// Determines if the converter can convert the <paramref name="sourceValue"/> parameter to the <see cref="AzureLargeInstanceRestartAcceptedResponseHeaders"/>
         /// type.
         /// </summary>
-        /// <param name="sourceValue">the <see cref="System.Object" /> instance to check if it can be converted to the <see cref="AzureLargeInstancesShutdownAcceptedResponseHeaders"
+        /// <param name="sourceValue">the <see cref="System.Object" /> instance to check if it can be converted to the <see cref="AzureLargeInstanceRestartAcceptedResponseHeaders"
         /// /> type.</param>
         /// <returns>
-        /// <c>true</c> if the instance could be converted to a <see cref="AzureLargeInstancesShutdownAcceptedResponseHeaders" />
-        /// type, otherwise <c>false</c>
+        /// <c>true</c> if the instance could be converted to a <see cref="AzureLargeInstanceRestartAcceptedResponseHeaders" /> type,
+        /// otherwise <c>false</c>
         /// </returns>
         public static bool CanConvertFrom(dynamic sourceValue)
         {
@@ -95,35 +95,35 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
         /// <param name="formatProvider">not used by this TypeConverter.</param>
         /// <param name="ignoreCase">when set to <c>true</c>, will ignore the case when converting.</param>
         /// <returns>
-        /// an instance of <see cref="AzureLargeInstancesShutdownAcceptedResponseHeaders" />, or <c>null</c> if there is no suitable
+        /// an instance of <see cref="AzureLargeInstanceRestartAcceptedResponseHeaders" />, or <c>null</c> if there is no suitable
         /// conversion.
         /// </returns>
         public override object ConvertFrom(object sourceValue, global::System.Type destinationType, global::System.IFormatProvider formatProvider, bool ignoreCase) => ConvertFrom(sourceValue);
 
         /// <summary>
-        /// Converts the <paramref name="sourceValue" /> parameter into an instance of <see cref="AzureLargeInstancesShutdownAcceptedResponseHeaders"
+        /// Converts the <paramref name="sourceValue" /> parameter into an instance of <see cref="AzureLargeInstanceRestartAcceptedResponseHeaders"
         /// />
         /// </summary>
-        /// <param name="sourceValue">the value to convert into an instance of <see cref="AzureLargeInstancesShutdownAcceptedResponseHeaders"
+        /// <param name="sourceValue">the value to convert into an instance of <see cref="AzureLargeInstanceRestartAcceptedResponseHeaders"
         /// />.</param>
         /// <returns>
-        /// an instance of <see cref="AzureLargeInstancesShutdownAcceptedResponseHeaders" />, or <c>null</c> if there is no suitable
+        /// an instance of <see cref="AzureLargeInstanceRestartAcceptedResponseHeaders" />, or <c>null</c> if there is no suitable
         /// conversion.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesShutdownAcceptedResponseHeaders ConvertFrom(dynamic sourceValue)
+        public static Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeaders ConvertFrom(dynamic sourceValue)
         {
             if (null == sourceValue)
             {
                 return null;
             }
             global::System.Type type = sourceValue.GetType();
-            if (typeof(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesShutdownAcceptedResponseHeaders).IsAssignableFrom(type))
+            if (typeof(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeaders).IsAssignableFrom(type))
             {
                 return sourceValue;
             }
             try
             {
-                return AzureLargeInstancesShutdownAcceptedResponseHeaders.FromJsonString(typeof(string) == sourceValue.GetType() ? sourceValue : sourceValue.ToJsonString());;
+                return AzureLargeInstanceRestartAcceptedResponseHeaders.FromJsonString(typeof(string) == sourceValue.GetType() ? sourceValue : sourceValue.ToJsonString());;
             }
             catch
             {
@@ -131,11 +131,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             }
             if (typeof(global::System.Management.Automation.PSObject).IsAssignableFrom(type))
             {
-                return AzureLargeInstancesShutdownAcceptedResponseHeaders.DeserializeFromPSObject(sourceValue);
+                return AzureLargeInstanceRestartAcceptedResponseHeaders.DeserializeFromPSObject(sourceValue);
             }
             if (typeof(global::System.Collections.IDictionary).IsAssignableFrom(type))
             {
-                return AzureLargeInstancesShutdownAcceptedResponseHeaders.DeserializeFromDictionary(sourceValue);
+                return AzureLargeInstanceRestartAcceptedResponseHeaders.DeserializeFromDictionary(sourceValue);
             }
             return null;
         }

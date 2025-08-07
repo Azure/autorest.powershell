@@ -1,9 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { SdkClient, SdkContext, listOperationsInOperationGroup, listOperationGroups } from "@azure-tools/typespec-client-generator-core";
+import { SdkClient, SdkContext, listOperationsInOperationGroup, listOperationGroups, getClientNameOverride, getClientLocation } from "@azure-tools/typespec-client-generator-core";
 import { HttpOperation, HttpOperationParameter, HttpOperationBody, getHttpOperation } from "@typespec/http";
-import { getDoc, getService, ignoreDiagnostics, Program, Model, Type } from "@typespec/compiler";
+import { getDoc, getService, ignoreDiagnostics, Program, Model, Type, Operation as TypeSpecOperation, isGlobalNamespace, isService } from "@typespec/compiler";
+import { capitalize } from "@typespec/compiler/casing";
 import { getServers } from "@typespec/http";
 import { join } from "path";
 import { PwshModel } from "@autorest/powershell";
@@ -133,27 +134,79 @@ function getOperationGroups(program: Program, client: SdkClient, psContext: SdkC
     if (op.overloads && op.overloads?.length > 0) {
       continue;
     }
-    let group = operationGroupsMap.get(operation.interface?.name || "");
+    const operationId = resolveOperationId(psContext, op);
+    let group = operationGroupsMap.get(operationId.split("_")[0] || "");
     if (!group) {
       group = new OperationGroup("");
-      group.language.default.name = group.$key = operation.interface?.name || "";
-      operationGroupsMap.set(operation.interface?.name || "", group);
+      group.language.default.name = group.$key = operationId.split("_")[0] || "";
+      operationGroupsMap.set(operationId.split("_")[0] || "", group);
     }
     addOperation(psContext, op, group, model, emitterOptions);
   }
   return Array.from(operationGroupsMap.values());
 }
 
-function resolveOperationId(psContext: SdkContext, op: HttpOperation, operationGroup: OperationGroup): string {
-  const explicitOperationId = getOperationId(psContext.program, op.operation);
+function resolveOperationId(psContext: SdkContext, op: HttpOperation): string {
+  const { program } = psContext;
+  const operation = op.operation;
+
+  const explicitOperationId = getOperationId(program, operation);
   if (explicitOperationId) {
     return explicitOperationId;
   }
-  return operationGroup.$key + "_" + pascalCase(op.operation.name);
+
+  const operationName = getClientName(psContext, operation);
+
+  // Check for `@clientLocation` decorator
+  const clientLocation = getClientLocation(psContext, operation);
+  if (clientLocation) {
+    if (typeof clientLocation === "string") {
+      return standardizeOperationId(`${clientLocation}_${operationName}`);
+    }
+
+    if (clientLocation.kind === "Interface") {
+      return standardizeOperationId(`${getClientName(psContext, clientLocation)}_${operationName}`);
+    }
+
+    if (clientLocation.kind === "Namespace") {
+      if (isGlobalNamespace(program, clientLocation) || isService(program, clientLocation)) {
+        return standardizeOperationId(operationName);
+      }
+      return standardizeOperationId(`${getClientName(psContext, clientLocation)}_${operationName}`);
+    }
+  }
+
+  if (operation.interface) {
+    return standardizeOperationId(
+      `${getClientName(psContext, operation.interface)}_${operationName}`,
+    );
+  }
+  const namespace = operation.namespace;
+  if (
+    namespace === undefined ||
+    isGlobalNamespace(program, namespace) ||
+    isService(program, namespace)
+  ) {
+    return standardizeOperationId(operationName);
+  }
+
+  return standardizeOperationId(`${getClientName(psContext, namespace)}_${operationName}`);
+}
+
+function getClientName(context: SdkContext, type: Type & { name: string }) {
+  const clientName = getClientNameOverride(context, type);
+  return clientName ?? type.name;
+}
+
+function standardizeOperationId(name: string) {
+  return name
+    .split("_")
+    .map((s) => capitalize(s))
+    .join("_");
 }
 
 function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: OperationGroup, model: PwshModel, emitterOptions: PSOptions) {
-  const operationId = resolveOperationId(psContext, op, operationGroup);
+  const operationId = resolveOperationId(psContext, op);
   const newOperation = new Operation( operationId.split('_')[1] ?? pascalCase(op.operation.name), getDoc(psContext.program, op.operation) ?? "");
   newOperation.operationId = operationId;
   // Add Api versions

@@ -341,7 +341,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                     if (InputObject?.Id != null)
                     {
-                        await this.Client.AzureLargeInstancesGetViaIdentity(InputObject.Id, onOk, onDefault, this, Pipeline);
+                        await this.Client.AzureLargeInstanceGetViaIdentity(InputObject.Id, onOk, onDefault, this, Pipeline);
                     }
                     else
                     {
@@ -358,7 +358,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
                         {
                             ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.AzureLargeInstanceName"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject) );
                         }
-                        await this.Client.AzureLargeInstancesGet(InputObject.SubscriptionId ?? null, InputObject.ResourceGroupName ?? null, InputObject.AzureLargeInstanceName ?? null, onOk, onDefault, this, Pipeline);
+                        await this.Client.AzureLargeInstanceGet(InputObject.SubscriptionId ?? null, InputObject.ResourceGroupName ?? null, InputObject.AzureLargeInstanceName ?? null, onOk, onDefault, this, Pipeline);
                     }
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }

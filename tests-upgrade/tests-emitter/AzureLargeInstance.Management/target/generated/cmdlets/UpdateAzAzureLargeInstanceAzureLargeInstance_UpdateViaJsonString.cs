@@ -336,7 +336,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
             try
             {
                 // work
-                if (ShouldProcess($"Call remote 'AzureLargeInstancesUpdate' operation"))
+                if (ShouldProcess($"Call remote 'AzureLargeInstanceUpdate' operation"))
                 {
                     using( var asyncCommandRuntime = new Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.PowerShell.AsyncCommandRuntime(this, ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Token) )
                     {
@@ -388,7 +388,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
                 try
                 {
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
-                    await this.Client.AzureLargeInstancesUpdateViaJsonString(SubscriptionId, ResourceGroupName, Name, _jsonString, onOk, onDefault, this, Pipeline);
+                    await this.Client.AzureLargeInstanceUpdateViaJsonString(SubscriptionId, ResourceGroupName, Name, _jsonString, onOk, onDefault, this, Pipeline);
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }
                 catch (Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.UndeclaredResponseException urexception)

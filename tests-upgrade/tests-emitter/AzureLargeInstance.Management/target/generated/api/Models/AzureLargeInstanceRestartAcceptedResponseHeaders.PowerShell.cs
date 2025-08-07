@@ -5,8 +5,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
 {
     using Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.PowerShell;
 
-    [System.ComponentModel.TypeConverter(typeof(AzureLargeInstancesStartAcceptedResponseHeadersTypeConverter))]
-    public partial class AzureLargeInstancesStartAcceptedResponseHeaders
+    [System.ComponentModel.TypeConverter(typeof(AzureLargeInstanceRestartAcceptedResponseHeadersTypeConverter))]
+    public partial class AzureLargeInstanceRestartAcceptedResponseHeaders
     {
 
         /// <summary>
@@ -60,11 +60,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
         partial void OverrideToString(ref string stringResult, ref bool returnNow);
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.AzureLargeInstancesStartAcceptedResponseHeaders"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.AzureLargeInstanceRestartAcceptedResponseHeaders"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
-        internal AzureLargeInstancesStartAcceptedResponseHeaders(global::System.Collections.IDictionary content)
+        internal AzureLargeInstanceRestartAcceptedResponseHeaders(global::System.Collections.IDictionary content)
         {
             bool returnNow = false;
             BeforeDeserializeDictionary(content, ref returnNow);
@@ -75,21 +75,21 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             // actually deserialize
             if (content.Contains("Location"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeadersInternal)this).Location = (string) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeadersInternal)this).Location, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeadersInternal)this).Location = (string) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeadersInternal)this).Location, global::System.Convert.ToString);
             }
             if (content.Contains("RetryAfter"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeadersInternal)this).RetryAfter = (int?) content.GetValueForProperty("RetryAfter",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeadersInternal)this).RetryAfter, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeadersInternal)this).RetryAfter = (int?) content.GetValueForProperty("RetryAfter",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeadersInternal)this).RetryAfter, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
             }
             AfterDeserializeDictionary(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.AzureLargeInstancesStartAcceptedResponseHeaders"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.AzureLargeInstanceRestartAcceptedResponseHeaders"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
-        internal AzureLargeInstancesStartAcceptedResponseHeaders(global::System.Management.Automation.PSObject content)
+        internal AzureLargeInstanceRestartAcceptedResponseHeaders(global::System.Management.Automation.PSObject content)
         {
             bool returnNow = false;
             BeforeDeserializePSObject(content, ref returnNow);
@@ -100,52 +100,52 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             // actually deserialize
             if (content.Contains("Location"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeadersInternal)this).Location = (string) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeadersInternal)this).Location, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeadersInternal)this).Location = (string) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeadersInternal)this).Location, global::System.Convert.ToString);
             }
             if (content.Contains("RetryAfter"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeadersInternal)this).RetryAfter = (int?) content.GetValueForProperty("RetryAfter",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeadersInternal)this).RetryAfter, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeadersInternal)this).RetryAfter = (int?) content.GetValueForProperty("RetryAfter",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeadersInternal)this).RetryAfter, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
             }
             AfterDeserializePSObject(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.AzureLargeInstancesStartAcceptedResponseHeaders"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.AzureLargeInstanceRestartAcceptedResponseHeaders"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeaders"
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeaders"
         /// />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeaders DeserializeFromDictionary(global::System.Collections.IDictionary content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeaders DeserializeFromDictionary(global::System.Collections.IDictionary content)
         {
-            return new AzureLargeInstancesStartAcceptedResponseHeaders(content);
+            return new AzureLargeInstanceRestartAcceptedResponseHeaders(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.AzureLargeInstancesStartAcceptedResponseHeaders"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.AzureLargeInstanceRestartAcceptedResponseHeaders"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeaders"
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeaders"
         /// />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeaders DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeaders DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
         {
-            return new AzureLargeInstancesStartAcceptedResponseHeaders(content);
+            return new AzureLargeInstanceRestartAcceptedResponseHeaders(content);
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="AzureLargeInstancesStartAcceptedResponseHeaders" />, deserializing the content from
+        /// Creates a new instance of <see cref="AzureLargeInstanceRestartAcceptedResponseHeaders" />, deserializing the content from
         /// a json string.
         /// </summary>
         /// <param name="jsonText">a string containing a JSON serialized instance of this model.</param>
         /// <returns>
-        /// an instance of the <see cref="AzureLargeInstancesStartAcceptedResponseHeaders" /> model class.
+        /// an instance of the <see cref="AzureLargeInstanceRestartAcceptedResponseHeaders" /> model class.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeaders FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonNode.Parse(jsonText));
+        public static Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceRestartAcceptedResponseHeaders FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonNode.Parse(jsonText));
 
         /// <summary>Serializes this instance to a json string.</summary>
 
@@ -164,8 +164,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             return ToJsonString();
         }
     }
-    [System.ComponentModel.TypeConverter(typeof(AzureLargeInstancesStartAcceptedResponseHeadersTypeConverter))]
-    public partial interface IAzureLargeInstancesStartAcceptedResponseHeaders
+    [System.ComponentModel.TypeConverter(typeof(AzureLargeInstanceRestartAcceptedResponseHeadersTypeConverter))]
+    public partial interface IAzureLargeInstanceRestartAcceptedResponseHeaders
 
     {
 

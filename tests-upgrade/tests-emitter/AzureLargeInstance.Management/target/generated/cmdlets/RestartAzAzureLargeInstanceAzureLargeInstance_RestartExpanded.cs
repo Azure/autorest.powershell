@@ -397,7 +397,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
             try
             {
                 // work
-                if (ShouldProcess($"Call remote 'AzureLargeInstancesRestart' operation"))
+                if (ShouldProcess($"Call remote 'AzureLargeInstanceRestart' operation"))
                 {
                     if (true == MyInvocation?.BoundParameters?.ContainsKey("AsJob"))
                     {
@@ -461,7 +461,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
                 try
                 {
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
-                    await this.Client.AzureLargeInstancesRestart(SubscriptionId, ResourceGroupName, Name, _forceParameterBody, onOk, onDefault, this, Pipeline);
+                    await this.Client.AzureLargeInstanceRestart(SubscriptionId, ResourceGroupName, Name, _forceParameterBody, onOk, onDefault, this, Pipeline);
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }
                 catch (Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.UndeclaredResponseException urexception)

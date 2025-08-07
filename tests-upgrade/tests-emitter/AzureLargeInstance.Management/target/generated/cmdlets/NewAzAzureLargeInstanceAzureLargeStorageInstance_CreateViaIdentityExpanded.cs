@@ -470,7 +470,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
             try
             {
                 // work
-                if (ShouldProcess($"Call remote 'AzureLargeStorageInstancesCreate' operation"))
+                if (ShouldProcess($"Call remote 'AzureLargeStorageInstanceCreate' operation"))
                 {
                     using( var asyncCommandRuntime = new Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.PowerShell.AsyncCommandRuntime(this, ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Token) )
                     {
@@ -525,7 +525,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
                     if (InputObject?.Id != null)
                     {
                         this.PreProcessManagedIdentityParameters();
-                        await this.Client.AzureLargeStorageInstancesCreateViaIdentity(InputObject.Id, _resourceBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.SerializationMode.IncludeCreate);
+                        await this.Client.AzureLargeStorageInstanceCreateViaIdentity(InputObject.Id, _resourceBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.SerializationMode.IncludeCreate);
                     }
                     else
                     {
@@ -543,7 +543,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
                             ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.AzureLargeStorageInstanceName"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject) );
                         }
                         this.PreProcessManagedIdentityParameters();
-                        await this.Client.AzureLargeStorageInstancesCreate(InputObject.SubscriptionId ?? null, InputObject.ResourceGroupName ?? null, InputObject.AzureLargeStorageInstanceName ?? null, _resourceBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.SerializationMode.IncludeCreate);
+                        await this.Client.AzureLargeStorageInstanceCreate(InputObject.SubscriptionId ?? null, InputObject.ResourceGroupName ?? null, InputObject.AzureLargeStorageInstanceName ?? null, _resourceBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.SerializationMode.IncludeCreate);
                     }
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }

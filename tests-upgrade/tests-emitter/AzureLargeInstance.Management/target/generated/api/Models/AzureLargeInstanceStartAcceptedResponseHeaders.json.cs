@@ -5,7 +5,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
 {
     using static Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Extensions;
 
-    public partial class AzureLargeInstancesRestartAcceptedResponseHeaders
+    public partial class AzureLargeInstanceStartAcceptedResponseHeaders
     {
 
         /// <summary>
@@ -51,11 +51,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
         partial void BeforeToJson(ref Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonObject container, ref bool returnNow);
 
         /// <summary>
-        /// Deserializes a Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonObject into a new instance of <see cref="AzureLargeInstancesRestartAcceptedResponseHeaders"
+        /// Deserializes a Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonObject into a new instance of <see cref="AzureLargeInstanceStartAcceptedResponseHeaders"
         /// />.
         /// </summary>
         /// <param name="json">A Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonObject instance to deserialize from.</param>
-        internal AzureLargeInstancesRestartAcceptedResponseHeaders(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonObject json)
+        internal AzureLargeInstanceStartAcceptedResponseHeaders(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonObject json)
         {
             bool returnNow = false;
             BeforeFromJson(json, ref returnNow);
@@ -67,26 +67,26 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
         }
 
         /// <summary>
-        /// Deserializes a <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonNode"/> into an instance of Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesRestartAcceptedResponseHeaders.
+        /// Deserializes a <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonNode"/> into an instance of Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceStartAcceptedResponseHeaders.
         /// </summary>
         /// <param name="node">a <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonNode" /> to deserialize from.</param>
         /// <returns>
-        /// an instance of Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesRestartAcceptedResponseHeaders.
+        /// an instance of Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceStartAcceptedResponseHeaders.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesRestartAcceptedResponseHeaders FromJson(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonNode node)
+        public static Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceStartAcceptedResponseHeaders FromJson(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonNode node)
         {
-            return node is Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonObject json ? new AzureLargeInstancesRestartAcceptedResponseHeaders(json) : null;
+            return node is Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonObject json ? new AzureLargeInstanceStartAcceptedResponseHeaders(json) : null;
         }
 
         /// <summary>
-        /// Serializes this instance of <see cref="AzureLargeInstancesRestartAcceptedResponseHeaders" /> into a <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonNode"
+        /// Serializes this instance of <see cref="AzureLargeInstanceStartAcceptedResponseHeaders" /> into a <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonNode"
         /// />.
         /// </summary>
         /// <param name="container">The <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonObject"/> container to serialize this object into. If the caller
         /// passes in <c>null</c>, a new instance will be created and returned to the caller.</param>
         /// <param name="serializationMode">Allows the caller to choose the depth of the serialization. See <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.SerializationMode"/>.</param>
         /// <returns>
-        /// a serialized instance of <see cref="AzureLargeInstancesRestartAcceptedResponseHeaders" /> as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonNode"
+        /// a serialized instance of <see cref="AzureLargeInstanceStartAcceptedResponseHeaders" /> as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonNode"
         /// />.
         /// </returns>
         public Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonNode ToJson(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonObject container, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.SerializationMode serializationMode)
