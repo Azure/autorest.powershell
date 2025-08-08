@@ -5,9 +5,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
 {
     using static Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Extensions;
 
-    public partial class AzureLargeInstancesStartAcceptedResponseHeaders :
-        Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeaders,
-        Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeadersInternal,
+    public partial class AzureLargeInstanceShutdownAcceptedResponseHeaders :
+        Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceShutdownAcceptedResponseHeaders,
+        Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceShutdownAcceptedResponseHeadersInternal,
         Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IHeaderSerializable
     {
 
@@ -24,9 +24,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
         public int? RetryAfter { get => this._retryAfter; set => this._retryAfter = value; }
 
         /// <summary>
-        /// Creates an new <see cref="AzureLargeInstancesStartAcceptedResponseHeaders" /> instance.
+        /// Creates an new <see cref="AzureLargeInstanceShutdownAcceptedResponseHeaders" /> instance.
         /// </summary>
-        public AzureLargeInstancesStartAcceptedResponseHeaders()
+        public AzureLargeInstanceShutdownAcceptedResponseHeaders()
         {
 
         }
@@ -36,15 +36,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
         {
             if (headers.TryGetValues("Location", out var __locationHeader0))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeadersInternal)this).Location = System.Linq.Enumerable.FirstOrDefault(__locationHeader0) is string __headerLocationHeader0 ? __headerLocationHeader0 : (string)null;
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceShutdownAcceptedResponseHeadersInternal)this).Location = System.Linq.Enumerable.FirstOrDefault(__locationHeader0) is string __headerLocationHeader0 ? __headerLocationHeader0 : (string)null;
             }
             if (headers.TryGetValues("Retry-After", out var __retryAfterHeader1))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstancesStartAcceptedResponseHeadersInternal)this).RetryAfter = System.Linq.Enumerable.FirstOrDefault(__retryAfterHeader1) is string __headerRetryAfterHeader1 ? int.TryParse( __headerRetryAfterHeader1, out int __headerRetryAfterHeader1Value ) ? __headerRetryAfterHeader1Value : default(int?) : default(int?);
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceShutdownAcceptedResponseHeadersInternal)this).RetryAfter = System.Linq.Enumerable.FirstOrDefault(__retryAfterHeader1) is string __headerRetryAfterHeader1 ? int.TryParse( __headerRetryAfterHeader1, out int __headerRetryAfterHeader1Value ) ? __headerRetryAfterHeader1Value : default(int?) : default(int?);
             }
         }
     }
-    public partial interface IAzureLargeInstancesStartAcceptedResponseHeaders
+    public partial interface IAzureLargeInstanceShutdownAcceptedResponseHeaders
 
     {
         [Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Info(
@@ -70,7 +70,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
         int? RetryAfter { get; set; }
 
     }
-    internal partial interface IAzureLargeInstancesStartAcceptedResponseHeadersInternal
+    internal partial interface IAzureLargeInstanceShutdownAcceptedResponseHeadersInternal
 
     {
         string Location { get; set; }

@@ -335,7 +335,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
             try
             {
                 // work
-                if (ShouldProcess($"Call remote 'AzureLargeInstancesShutdown' operation"))
+                if (ShouldProcess($"Call remote 'AzureLargeInstanceShutdown' operation"))
                 {
                     if (true == MyInvocation?.BoundParameters?.ContainsKey("AsJob"))
                     {
@@ -401,7 +401,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                     if (InputObject?.Id != null)
                     {
-                        await this.Client.AzureLargeInstancesShutdownViaIdentity(InputObject.Id, onOk, onDefault, this, Pipeline);
+                        await this.Client.AzureLargeInstanceShutdownViaIdentity(InputObject.Id, onOk, onDefault, this, Pipeline);
                     }
                     else
                     {
@@ -418,7 +418,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
                         {
                             ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.AzureLargeInstanceName"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject) );
                         }
-                        await this.Client.AzureLargeInstancesShutdown(InputObject.SubscriptionId ?? null, InputObject.ResourceGroupName ?? null, InputObject.AzureLargeInstanceName ?? null, onOk, onDefault, this, Pipeline);
+                        await this.Client.AzureLargeInstanceShutdown(InputObject.SubscriptionId ?? null, InputObject.ResourceGroupName ?? null, InputObject.AzureLargeInstanceName ?? null, onOk, onDefault, this, Pipeline);
                     }
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }
