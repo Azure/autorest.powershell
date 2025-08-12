@@ -15,8 +15,7 @@ import { camelCase, deconstruct, pascalCase, serialize } from "@azure-tools/code
 import { PSOptions } from "../types/interfaces.js";
 import { Request, ImplementationLocation, OperationGroup, Operation, Parameter, Schema, Protocol, Response, HttpHeader } from "@autorest/codemodel";
 import { stat } from "fs";
-import { extractPagedMetadataNested } from "../utils/operationUtil.js";
-import { parseNextLinkName } from "../utils/operationUtil.js";
+import { extractPageDetails } from "../utils/operationUtil.js";
 import { getLroMetadata } from "@azure-tools/typespec-azure-core";
 import { getOperationId } from "@typespec/openapi";
 import { listOperations } from "../utils/clientUtils.js";
@@ -264,14 +263,13 @@ function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: 
 
 function addExtensions(psContext: SdkContext, op: HttpOperation, newOperation: Operation, model: PwshModel) {
   // Add extensions for pageable
-  const paged = extractPagedMetadataNested(psContext.program, op.responses[0].type as Model);
-  if (paged) {
+  const pagedDetail = extractPageDetails(psContext.program, op);
+  if (pagedDetail) {
     newOperation.extensions = newOperation.extensions || {};
-    //ToDo: add value if it is specified by xiaogang
     newOperation.extensions['x-ms-pageable'] = newOperation.extensions['x-ms-pageable'] || {};
-    newOperation.extensions['x-ms-pageable']['nextLinkName'] = parseNextLinkName(paged) ?? "nextLink";
+    newOperation.extensions['x-ms-pageable']['nextLinkName'] = pagedDetail.nextLinkNames[0] ?? "nextLink";
     newOperation.language.default.paging = newOperation.language.default.paging || {};
-    newOperation.language.default.paging.nextLinkName = parseNextLinkName(paged) ?? "nextLink";
+    newOperation.language.default.paging.nextLinkName = pagedDetail.nextLinkNames[0] ?? "nextLink";
   }
   // Add extensions for long running operation
   const lro = getLroMetadata(psContext.program, op.operation);

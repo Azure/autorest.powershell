@@ -60,7 +60,7 @@ import {
   createMetadataInfo,
   Visibility
 } from "@typespec/http";
-import { getPagedResult, isFixed, getUnionAsEnum } from "@azure-tools/typespec-azure-core";
+import { getPagedResult, getUnionAsEnum } from "@azure-tools/typespec-azure-core";
 import { extractPagedMetadataNested } from "./operationUtil.js";
 import { pascalCase, deconstruct } from "@azure-tools/codegen";
 import {
