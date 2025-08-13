@@ -336,6 +336,31 @@ function addResponses(psContext: SdkContext, op: HttpOperation, newOperation: Op
       }
     }
   }
+
+  // Add LRO final result response if it exists
+  const lro = getLroMetadata(psContext.program, op.operation);
+  if (lro && lro.finalResult && lro.finalResult !== "void") {
+    // Check if there's already a 200 status code response
+    const has200Response = newOperation.responses.some(response =>
+      response.protocol.http?.statusCodes?.includes("200")
+    );
+
+    if (!has200Response) {
+      const finalResponse = new Response();
+      finalResponse.language.default.name = '';
+      finalResponse.language.default.description = "Final result of the long running operation";
+      finalResponse.protocol.http = finalResponse.protocol.http ?? new Protocol();
+      finalResponse.protocol.http.statusCodes = ["200"];
+      finalResponse.protocol.http.knownMediaType = "json";
+      finalResponse.protocol.http.mediaTypes = ["application/json"];
+
+      // Add schema for the final result
+      const schema = getSchemaForType(psContext, lro.finalResult);
+      (<any>finalResponse).schema = schema;
+
+      newOperation.responses.push(finalResponse);
+    }
+  }
 }
 
 function createBodyParameter(psContext: SdkContext, parameter: HttpOperationBody, model: PwshModel): Parameter {

@@ -1377,7 +1377,7 @@ function getSchemaForStdScalar(
   const description = getSummary(dpgContext.program, type);
   switch (name) {
     case "bytes":
-      return { type: "string", format: "bytes", description };
+      return { type: SchemaType.ByteArray, description };
     case "integer":
       return applyIntrinsicDecorators(dpgContext, type, {
         type: "integer"
