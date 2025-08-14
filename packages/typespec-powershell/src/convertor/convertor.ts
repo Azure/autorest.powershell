@@ -420,7 +420,7 @@ function createParameter(psContext: SdkContext, parameter: HttpOperationParamete
   } else {
     // always create the parameter
     const paramSchema = parameter.param.sourceProperty ? getSchemaForType(psContext, parameter.param.sourceProperty) : getSchemaForType(psContext, parameter.param);
-    const newParameter = new Parameter(parameter.name, getDoc(psContext.program, parameter.param) || "", paramSchema);
+    const newParameter = new Parameter(parameter.name, getDoc(psContext.program, parameter.param) || paramSchema.description || "", paramSchema);
     newParameter.language.default.serializedName = parameter.name;
     newParameter.protocol.http = newParameter.protocol.http ?? new Protocol();
     newParameter.protocol.http.in = parameter.type;
