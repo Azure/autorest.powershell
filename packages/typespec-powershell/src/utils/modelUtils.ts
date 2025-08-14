@@ -1227,7 +1227,9 @@ function getSchemaForArrayModel(
     //   }),
     //   description: getDoc(program, type)
     // };
-    schema = new ArraySchema("", "", getSchemaForType(dpgContext, indexer.value!));
+    schema = new ArraySchema("", getDoc(program, type) || (indexer.value && "name" in indexer.value && typeof indexer.value.name === "string"
+      ? "Array of " + indexer.value.name
+      : ""), getSchemaForType(dpgContext, indexer.value!));
     // circle reference, resolve it later
     if (!getSchemaForType(dpgContext, indexer.value!)) {
       schema.delayType = indexer.value!;
