@@ -216,8 +216,8 @@ function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: 
     newOperation.parameters = newOperation.parameters || [];
     newOperation.parameters.push(...urlParameters);
   }
-  // Add query and path parameters
-  const parameters = op.parameters.parameters.filter(p => p.type === "path" || p.type === "query");
+  // Add header, query and path parameters
+  const parameters = op.parameters.parameters.filter(p => p.type === "header" || p.type === "path" || p.type === "query");
   for (const parameter of parameters) {
     const newParameter = createParameter(psContext, parameter, model);
     newOperation.parameters = newOperation.parameters || [];
@@ -227,12 +227,7 @@ function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: 
   newOperation.requests = newOperation.requests || [];
   const newRequest = new Request();
   newOperation.requests.push(newRequest);
-  const headerParameters = op.parameters.parameters.filter(p => p.type === "header");
-  for (const parameter of headerParameters) {
-    const newParameter = createParameter(psContext, parameter, model);
-    newRequest.parameters = newRequest.parameters || [];
-    newOperation.requests[0].parameters?.push(newParameter);
-  }
+
   // Add host parameter
   if (endpoint === '{$host}') {
     const hostParameter = createHostParameter(psContext, model);
