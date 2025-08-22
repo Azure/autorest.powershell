@@ -1515,7 +1515,7 @@ export class CmdletClass extends Class {
               yield `global::System.IO.File.WriteAllBytes(${paths.value}[0],${result.value});`;
             }
 
-            yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
+            yield If('true == InvocationInformation?.BoundParameters?.ContainsKey("PassThru")', function* () {
               // no return type. Let's just return ... true?
               yield 'WriteObject(true);';
             });
@@ -1555,14 +1555,14 @@ export class CmdletClass extends Class {
             });
 
 
-            yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
+            yield If('true == InvocationInformation?.BoundParameters?.ContainsKey("PassThru")', function* () {
               // no return type. Let's just return ... true?
               yield 'WriteObject(true);';
             });
             return;
           }
         }
-        yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
+        yield If('true == InvocationInformation?.BoundParameters?.ContainsKey("PassThru")', function* () {
           // no return type. Let's just return ... true?
           yield 'WriteObject(true);';
         });
