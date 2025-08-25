@@ -2310,7 +2310,7 @@ export class CmdletClass extends Class {
       if (!breakingChange.cmdlet.replacement && breakingChange.cmdlet.changeDescription) {
         // use GenericBreakingChangeAttribute because CmdletBreakingChangeAttribute has a predefined message that's weired
         // when the change description is present https://github.com/Azure/autorest.powershell/issues/1487
-        parameters.push(`""`);
+        parameters.push('""');
         parameters.push(`"${breakingChange.cmdlet.deprecateByAzVersion}"`);
         parameters.push(`"${breakingChange.cmdlet.deprecateByVersion}"`);
         parameters.push(`ChangeDescription = "${breakingChange.cmdlet.changeDescription}"`);
