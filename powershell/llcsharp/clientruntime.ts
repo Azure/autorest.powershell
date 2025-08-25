@@ -36,7 +36,7 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   InfoAttribute: new ClassType(clientRuntimeNamespace, 'Info'),
   CompleterInfoAttribute: new ClassType(clientRuntimeNamespace, 'CompleterInfo'),
   DefaultInfoAttribute: new ClassType(clientRuntimeNamespace, 'DefaultInfo'),
-  GeneraricBreakingChangeAttribute: new ClassType(clientRuntimeNamespace, 'GeneraricBreakingChange'),
+  GenericBreakingChangeAttribute: new ClassType(clientRuntimeNamespace, 'GenericBreakingChange'),
   CmdletBreakingChangeAttribute: new ClassType(clientRuntimeNamespace, 'CmdletBreakingChange'),
   ParameterSetBreakingChangeAttribute: new ClassType(clientRuntimeNamespace, 'ParameterSetBreakingChange'),
   OutputBreakingChangeAttribute: new ClassType(clientRuntimeNamespace, 'OutputBreakingChange'),
