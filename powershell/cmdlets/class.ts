@@ -1307,11 +1307,11 @@ export class CmdletClass extends Class {
           description: `the body result as a <see cref="${each.language.csharp?.responseType.replace(/\[|\]|\?/g, '')}">${each.language.csharp?.responseType}</see> from the remote call`
         }));
       }
-      
+
       if (isBinary) {
         parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: 'global::System.IO.Stream' }), { description: 'the body result as a <see cref="global::System.IO.Stream" /> from the remote call' }));
       }
-      
+
       if (each.language.csharp?.headerType) {
         parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.language.csharp.headerType }), { description: `the header result as a <see cref="${each.language.csharp.headerType}" /> from the remote call` }));
       }
@@ -2251,60 +2251,9 @@ export class CmdletClass extends Class {
     //add breaking change attributes for cmdlet, variant, output type
     if (operation.details.csharp.breakingChange) {
       const breakingChange = operation.details.csharp.breakingChange;
-      if (breakingChange.cmdlet) {
-        const parameters = [];
-        if (!breakingChange.cmdlet.deprecateByVersion || !breakingChange.cmdlet.deprecateByAzVersion) {
-          throw new Error('Cmdlet breaking change requires both \'deprecateByVersion\' and \'deprecateByAzVersion\', please refer to https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/breakingchange-for-autogen-module.md for more details.');
-        }
-        parameters.push(`"${breakingChange.cmdlet.deprecateByAzVersion}"`);
-        parameters.push(`"${breakingChange.cmdlet.deprecateByVersion}"`);
-        if (breakingChange.cmdlet.changeInEfectByDate) parameters.push(`"${breakingChange.cmdlet.changeInEfectByDate}"`);
-        if (breakingChange.cmdlet.replacement) parameters.push(`ReplacementCmdletName = "${breakingChange.cmdlet.replacement}"`);
-        if (breakingChange.cmdlet.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.cmdlet.changeDescription}"`);
-
-        this.add(new Attribute(ClientRuntime.CmdletBreakingChangeAttribute, { parameters: parameters }));
-      }
-      if (breakingChange.variant) {
-        const parameters = [];
-        parameters.push(`new string[] {"${breakingChange.variant.name}"}`);
-        if (!breakingChange.variant.deprecateByVersion || !breakingChange.variant.deprecateByAzVersion) {
-          throw new Error('Cmdlet breaking change requires both \'deprecateByVersion\' and \'deprecateByAzVersion\', please refer to https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/breakingchange-for-autogen-module.md for more details.');
-        }
-        parameters.push(`"${breakingChange.variant.deprecateByAzVersion}"`);
-        parameters.push(`"${breakingChange.variant.deprecateByVersion}"`);
-        if (breakingChange.variant.changeInEfectByDate) parameters.push(`"${breakingChange.variant.changeInEfectByDate}"`);
-        if (breakingChange.variant.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.variant.changeDescription}"`);
-
-        this.add(new Attribute(ClientRuntime.ParameterSetBreakingChangeAttribute, { parameters: parameters }));
-      }
-      if (breakingChange.output) {
-        const parameters = [];
-        // if deprecated output types are set in directive, use it
-        if (breakingChange.output.deprecatedCmdLetOutputType) {
-          parameters.push(`"${breakingChange.output.deprecatedCmdLetOutputType}"`);
-        } else {
-          parameters.push(`"${outputTypes.values().next().value.replace(/typeof\((.*)\)/, '$1')}"`);
-        }
-        if (!breakingChange.output.deprecateByVersion || !breakingChange.output.deprecateByAzVersion) {
-          throw new Error('Cmdlet breaking change requires both \'deprecateByVersion\' and \'deprecateByAzVersion\', please refer to https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/breakingchange-for-autogen-module.md for more details.');
-        }
-        parameters.push(`"${breakingChange.output.deprecateByAzVersion}"`);
-        parameters.push(`"${breakingChange.output.deprecateByVersion}"`);
-        if (breakingChange.output.changeInEfectByDate) parameters.push(`"${breakingChange.output.changeInEfectByDate}"`);
-        if (breakingChange.output.replacement) parameters.push(`ReplacementCmdletOutputType = "${breakingChange.output.replacement}"`);
-        if (breakingChange.output.deprecatedOutputProperties) {
-          const properties: Array<string> = Object.assign([], breakingChange.output.deprecatedOutputProperties);
-          properties.forEach((element, index) => properties[index] = '"' + element + '"');
-          parameters.push(`DeprecatedOutputProperties = new string[] {${properties.join(',')}}`);
-        }
-        if (breakingChange.output.newOutputProperties) {
-          const properties: Array<string> = Object.assign([], breakingChange.output.newOutputProperties);
-          properties.forEach((element, index) => properties[index] = '"' + element + '"');
-          parameters.push(`NewOutputProperties = new string[] {${properties.join(',')} } `);
-        }
-        if (breakingChange.output.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.output.changeDescription}"`);
-
-        this.add(new Attribute(ClientRuntime.OutputBreakingChangeAttribute, { parameters: parameters }));
+      const breakingChangeAttribute = this.inferBreakingChangeAttribute(breakingChange, outputTypes);
+      if (breakingChangeAttribute) {
+        this.add(breakingChangeAttribute);
       }
     }
 
@@ -2349,5 +2298,77 @@ export class CmdletClass extends Class {
     if (variantName.includes('ViaJsonString') || variantName.includes('ViaJsonFilePath')) {
       this.add(new Attribute(NotSuggestDefaultParameterSetAttribute));
     }
+  }
+
+  private inferBreakingChangeAttribute(breakingChange: any, outputTypes: Set<string>) : Attribute | null {
+    if (breakingChange.cmdlet) {
+      const parameters = [];
+      if (!breakingChange.cmdlet.deprecateByVersion || !breakingChange.cmdlet.deprecateByAzVersion) {
+        throw new Error('Cmdlet breaking change requires both \'deprecateByVersion\' and \'deprecateByAzVersion\', please refer to https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/breakingchange-for-autogen-module.md for more details.');
+      }
+
+      if (!breakingChange.cmdlet.replacement && breakingChange.cmdlet.changeDescription) {
+        // use GenericBreakingChangeAttribute because CmdletBreakingChangeAttribute has a predefined message that's weired
+        // when the change description is present https://github.com/Azure/autorest.powershell/issues/1487
+        parameters.push('""');
+        parameters.push(`"${breakingChange.cmdlet.deprecateByAzVersion}"`);
+        parameters.push(`"${breakingChange.cmdlet.deprecateByVersion}"`);
+        parameters.push(`ChangeDescription = "${breakingChange.cmdlet.changeDescription}"`);
+        if (breakingChange.cmdlet.changeInEfectByDate) parameters.push(`"${breakingChange.cmdlet.changeInEfectByDate}"`);
+        return new Attribute(ClientRuntime.GenericBreakingChangeAttribute, { parameters: parameters });
+      } else {
+        // use CmdletBreakingChangeAttribute
+        parameters.push(`"${breakingChange.cmdlet.deprecateByAzVersion}"`);
+        parameters.push(`"${breakingChange.cmdlet.deprecateByVersion}"`);
+        if (breakingChange.cmdlet.changeInEfectByDate) parameters.push(`"${breakingChange.cmdlet.changeInEfectByDate}"`);
+        if (breakingChange.cmdlet.replacement) parameters.push(`ReplacementCmdletName = "${breakingChange.cmdlet.replacement}"`);
+        if (breakingChange.cmdlet.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.cmdlet.changeDescription}"`);
+
+        return new Attribute(ClientRuntime.CmdletBreakingChangeAttribute, { parameters: parameters });
+      }
+    }
+    if (breakingChange.variant) {
+      const parameters = [];
+      parameters.push(`new string[] {"${breakingChange.variant.name}"}`);
+      if (!breakingChange.variant.deprecateByVersion || !breakingChange.variant.deprecateByAzVersion) {
+        throw new Error('Cmdlet breaking change requires both \'deprecateByVersion\' and \'deprecateByAzVersion\', please refer to https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/breakingchange-for-autogen-module.md for more details.');
+      }
+      parameters.push(`"${breakingChange.variant.deprecateByAzVersion}"`);
+      parameters.push(`"${breakingChange.variant.deprecateByVersion}"`);
+      if (breakingChange.variant.changeInEfectByDate) parameters.push(`"${breakingChange.variant.changeInEfectByDate}"`);
+      if (breakingChange.variant.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.variant.changeDescription}"`);
+
+      return new Attribute(ClientRuntime.ParameterSetBreakingChangeAttribute, { parameters: parameters });
+    }
+    if (breakingChange.output) {
+      const parameters = [];
+      // if deprecated output types are set in directive, use it
+      if (breakingChange.output.deprecatedCmdLetOutputType) {
+        parameters.push(`"${breakingChange.output.deprecatedCmdLetOutputType}"`);
+      } else {
+        parameters.push(`"${outputTypes.values().next().value.replace(/typeof\((.*)\)/, '$1')}"`);
+      }
+      if (!breakingChange.output.deprecateByVersion || !breakingChange.output.deprecateByAzVersion) {
+        throw new Error('Cmdlet breaking change requires both \'deprecateByVersion\' and \'deprecateByAzVersion\', please refer to https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/breakingchange-for-autogen-module.md for more details.');
+      }
+      parameters.push(`"${breakingChange.output.deprecateByAzVersion}"`);
+      parameters.push(`"${breakingChange.output.deprecateByVersion}"`);
+      if (breakingChange.output.changeInEfectByDate) parameters.push(`"${breakingChange.output.changeInEfectByDate}"`);
+      if (breakingChange.output.replacement) parameters.push(`ReplacementCmdletOutputType = "${breakingChange.output.replacement}"`);
+      if (breakingChange.output.deprecatedOutputProperties) {
+        const properties: Array<string> = Object.assign([], breakingChange.output.deprecatedOutputProperties);
+        properties.forEach((element, index) => properties[index] = '"' + element + '"');
+        parameters.push(`DeprecatedOutputProperties = new string[] {${properties.join(',')}}`);
+      }
+      if (breakingChange.output.newOutputProperties) {
+        const properties: Array<string> = Object.assign([], breakingChange.output.newOutputProperties);
+        properties.forEach((element, index) => properties[index] = '"' + element + '"');
+        parameters.push(`NewOutputProperties = new string[] {${properties.join(',')} } `);
+      }
+      if (breakingChange.output.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.output.changeDescription}"`);
+
+      return new Attribute(ClientRuntime.OutputBreakingChangeAttribute, { parameters: parameters });
+    }
+    return null;
   }
 }
