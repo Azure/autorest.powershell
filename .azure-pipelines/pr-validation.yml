@@ -13,7 +13,7 @@ pr:
 jobs:
 - job: prepare
   displayName: generate matrix
-  pool: pool-ubuntu-2004
+  pool: pool-ubuntu-2404
   steps:
   - powershell: |
       $ServiceNames = $env:ServiceNames -split ',' | ForEach-Object {$_.Trim()}
