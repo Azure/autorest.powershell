@@ -70,8 +70,8 @@ The output will be in the `./generated` folder by default
 - [Options](./options.md) details about some of the configuration options for manipulating the cmdlet generation process.
 - [Release Notes](./release-notes.md) information about the current build.
 - [Filing Bugs](https://github.com/azure/autorest) make sure that you tag it with the 'powershell' label.
-- [Command-line-interface](../user/command-line-interface.md) - about the autorest command line
-- [Configuration Files](../user/configuration.md)
+- **Coming Soon**: [Command-line-interface](../user/command-line-interface.md) - about the autorest command line
+- **Coming Soon**: [Configuration Files](../user/configuration.md)
 - **Coming Soon**: [Debugging](./debugging-modules.md) modules with VSCode made easy.
 - **Coming Soon**: [Testing](./testing-with-pester.md) modules with [Pester](https://github.com/pester/Pester/wiki/Pester)
 - **Coming Soon**: [Packaging](./packaging-the-module.md) modules 
