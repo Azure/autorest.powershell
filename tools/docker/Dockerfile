@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/powershell:lts-7.2-ubuntu-22.04
+FROM mcr.microsoft.com/dotnet/sdk:8.0.413-noble
 
 # Install dependencies and clean up
 RUN apt-get update \
