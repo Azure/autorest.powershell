@@ -5,6 +5,7 @@ RUN apt-get update \
     && apt-get install -y curl \
     && apt-get install -y dotnet-sdk-8.0 \
     && apt-get install -y git \
+    && apt-get install -y locales \
     && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
     && . /root/.bashrc \
     && nvm install 20.19.0 \
@@ -13,8 +14,6 @@ RUN apt-get update \
     && apt-get -o Acquire::Check-Valid-Until=false install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && apt-get update \
-    && apt-get install -y locales \
     && locale-gen $LANG && update-locale \
     && pwsh -Command Install-Module -Name platyPS -Force -AllowClobber -Repository PSGallery
 
