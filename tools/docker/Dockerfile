@@ -13,6 +13,8 @@ RUN apt-get update \
     && apt-get -o Acquire::Check-Valid-Until=false install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
+    && apt-get update \
+    && apt-get install -y locales \
     && locale-gen $LANG && update-locale \
     && pwsh -Command Install-Module -Name platyPS -Force -AllowClobber -Repository PSGallery
 
