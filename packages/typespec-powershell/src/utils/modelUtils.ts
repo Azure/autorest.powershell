@@ -936,7 +936,7 @@ function getSchemaForModel(
       (<Schema>propSchema).language.default.name = (<Schema>propSchema).language.default.name || name;
     }
     // ToDo: need to confirm there is no duplicated properties.
-    const property = new Property(name, getDoc(program, prop) || "", propSchema || new ObjectSchema(name, ""));
+    const property = new Property(name, getDoc(program, prop) || propSchema.language.default.description || "", propSchema || new ObjectSchema(name, ""));
     if (!prop.optional) {
       property.required = true;
     }
