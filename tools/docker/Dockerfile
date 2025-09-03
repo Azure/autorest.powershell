@@ -1,10 +1,11 @@
-FROM mcr.microsoft.com/powershell:lts-7.2-ubuntu-22.04
+FROM mcr.microsoft.com/dotnet/sdk:8.0.413-noble
 
 # Install dependencies and clean up
 RUN apt-get update \
     && apt-get install -y curl \
     && apt-get install -y dotnet-sdk-8.0 \
     && apt-get install -y git \
+    && apt-get install -y locales \
     && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
     && . /root/.bashrc \
     && nvm install 20.19.0 \
