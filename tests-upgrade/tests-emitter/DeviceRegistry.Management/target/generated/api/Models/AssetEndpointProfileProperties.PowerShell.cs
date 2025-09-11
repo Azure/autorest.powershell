@@ -114,13 +114,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).AuthenticationMethod = (string) content.GetValueForProperty("AuthenticationMethod",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).AuthenticationMethod, global::System.Convert.ToString);
             }
-            if (content.Contains("StatusError"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).StatusError = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileStatusError>) content.GetValueForProperty("StatusError",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).StatusError, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileStatusError>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetEndpointProfileStatusErrorTypeConverter.ConvertFrom));
-            }
             if (content.Contains("AuthenticationUsernamePasswordCredentials"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).AuthenticationUsernamePasswordCredentials = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IUsernamePasswordCredentials) content.GetValueForProperty("AuthenticationUsernamePasswordCredentials",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).AuthenticationUsernamePasswordCredentials, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.UsernamePasswordCredentialsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("StatusError"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).StatusError = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileStatusError>) content.GetValueForProperty("StatusError",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).StatusError, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileStatusError>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetEndpointProfileStatusErrorTypeConverter.ConvertFrom));
             }
             if (content.Contains("UsernamePasswordCredentialsUsernameSecretName"))
             {
@@ -191,13 +191,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).AuthenticationMethod = (string) content.GetValueForProperty("AuthenticationMethod",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).AuthenticationMethod, global::System.Convert.ToString);
             }
-            if (content.Contains("StatusError"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).StatusError = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileStatusError>) content.GetValueForProperty("StatusError",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).StatusError, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileStatusError>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetEndpointProfileStatusErrorTypeConverter.ConvertFrom));
-            }
             if (content.Contains("AuthenticationUsernamePasswordCredentials"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).AuthenticationUsernamePasswordCredentials = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IUsernamePasswordCredentials) content.GetValueForProperty("AuthenticationUsernamePasswordCredentials",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).AuthenticationUsernamePasswordCredentials, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.UsernamePasswordCredentialsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("StatusError"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).StatusError = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileStatusError>) content.GetValueForProperty("StatusError",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfilePropertiesInternal)this).StatusError, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileStatusError>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetEndpointProfileStatusErrorTypeConverter.ConvertFrom));
             }
             if (content.Contains("UsernamePasswordCredentialsUsernameSecretName"))
             {

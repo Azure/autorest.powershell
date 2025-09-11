@@ -153,13 +153,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceInternal)this).Type, global::System.Convert.ToString);
             }
-            if (content.Contains("Answer"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResourceInternal)this).Answer = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer>) content.GetValueForProperty("Answer",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResourceInternal)this).Answer, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ScopingAnswerTypeConverter.ConvertFrom));
-            }
             if (content.Contains("ProvisioningState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResourceInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResourceInternal)this).ProvisioningState, global::System.Convert.ToString);
+            }
+            if (content.Contains("Answer"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResourceInternal)this).Answer = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer>) content.GetValueForProperty("Answer",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResourceInternal)this).Answer, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ScopingAnswerTypeConverter.ConvertFrom));
             }
             AfterDeserializeDictionary(content);
         }
@@ -222,13 +222,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceInternal)this).Type, global::System.Convert.ToString);
             }
-            if (content.Contains("Answer"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResourceInternal)this).Answer = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer>) content.GetValueForProperty("Answer",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResourceInternal)this).Answer, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ScopingAnswerTypeConverter.ConvertFrom));
-            }
             if (content.Contains("ProvisioningState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResourceInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResourceInternal)this).ProvisioningState, global::System.Convert.ToString);
+            }
+            if (content.Contains("Answer"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResourceInternal)this).Answer = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer>) content.GetValueForProperty("Answer",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResourceInternal)this).Answer, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ScopingAnswerTypeConverter.ConvertFrom));
             }
             AfterDeserializePSObject(content);
         }

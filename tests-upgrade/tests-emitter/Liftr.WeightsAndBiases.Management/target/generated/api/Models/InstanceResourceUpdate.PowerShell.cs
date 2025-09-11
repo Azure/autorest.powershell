@@ -113,7 +113,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.InstanceResourceUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("IdentityPrincipalId"))
             {
@@ -129,7 +129,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             AfterDeserializeDictionary(content);
         }
@@ -154,7 +154,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.InstanceResourceUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("IdentityPrincipalId"))
             {
@@ -170,7 +170,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             AfterDeserializePSObject(content);
         }

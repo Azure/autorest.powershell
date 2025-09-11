@@ -128,7 +128,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             // actually deserialize
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.TrackedResourceTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Location"))
             {
@@ -193,7 +193,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             // actually deserialize
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.TrackedResourceTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Location"))
             {

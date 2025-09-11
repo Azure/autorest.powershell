@@ -118,11 +118,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.TagsTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("Zone"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Zone = (System.Collections.Generic.List<string>) content.GetValueForProperty("Zone",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Zone, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+                ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.StandbyContainerGroupPoolResourceUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("ElasticityProfile"))
             {
@@ -131,6 +127,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
             if (content.Contains("ContainerGroupProperty"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).ContainerGroupProperty = (Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IContainerGroupProperties) content.GetValueForProperty("ContainerGroupProperty",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).ContainerGroupProperty, Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ContainerGroupPropertiesTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("Zone"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Zone = (System.Collections.Generic.List<string>) content.GetValueForProperty("Zone",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Zone, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("ElasticityProfileRefillPolicy"))
             {
@@ -179,11 +179,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.TagsTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("Zone"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Zone = (System.Collections.Generic.List<string>) content.GetValueForProperty("Zone",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Zone, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+                ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.StandbyContainerGroupPoolResourceUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("ElasticityProfile"))
             {
@@ -192,6 +188,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
             if (content.Contains("ContainerGroupProperty"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).ContainerGroupProperty = (Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IContainerGroupProperties) content.GetValueForProperty("ContainerGroupProperty",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).ContainerGroupProperty, Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ContainerGroupPropertiesTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("Zone"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Zone = (System.Collections.Generic.List<string>) content.GetValueForProperty("Zone",((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateInternal)this).Zone, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("ElasticityProfileRefillPolicy"))
             {

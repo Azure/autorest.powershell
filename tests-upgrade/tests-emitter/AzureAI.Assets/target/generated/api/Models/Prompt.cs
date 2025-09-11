@@ -55,13 +55,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
         global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal.SystemDataLastModifiedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).LastModifiedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).LastModifiedAt = value ?? default(global::System.DateTime); }
 
         /// <summary>Backing field for <see cref="Property" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags _property;
+        private Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptProperties _property;
 
         /// <summary>
         /// Asset's properties. Unlike tags, properties are add-only. Once added, a property cannot be removed.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.Tags()); set => this._property = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptProperties Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.PromptProperties()); set => this._property = value; }
 
         /// <summary>Gets the resource group name</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.PropertyOrigin.Owned)]
@@ -100,11 +100,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
         public global::System.DateTime? SystemDataLastModifiedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ISystemDataInternal)SystemData).LastModifiedAt; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptTags _tag;
 
         /// <summary>Asset's tags. Unlike properties, tags are fully mutable.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.PromptTags()); set => this._tag = value; }
 
         /// <summary>Backing field for <see cref="TemplatePath" /> property.</summary>
         private string _templatePath;
@@ -171,8 +171,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
         Update = true,
         Description = @"Asset's properties. Unlike tags, properties are add-only. Once added, a property cannot be removed.",
         SerializedName = @"properties",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags Property { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptProperties) })]
+        Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptProperties Property { get; set; }
         /// <summary>
         /// Update stage to 'Archive' to archive the asset. Default is Development, which means the asset is under development.
         /// </summary>
@@ -239,8 +239,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
         Update = true,
         Description = @"Asset's tags. Unlike properties, tags are fully mutable.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptTags Tag { get; set; }
         /// <summary>Relative path of the prompt data file at the dataUri location</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Info(
         Required = true,
@@ -271,7 +271,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
         /// <summary>
         /// Asset's properties. Unlike tags, properties are add-only. Once added, a property cannot be removed.
         /// </summary>
-        Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags Property { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptProperties Property { get; set; }
         /// <summary>
         /// Update stage to 'Archive' to archive the asset. Default is Development, which means the asset is under development.
         /// </summary>
@@ -287,7 +287,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
         /// <summary>The timestamp of resource last modification (UTC)</summary>
         global::System.DateTime? SystemDataLastModifiedAt { get; set; }
         /// <summary>Asset's tags. Unlike properties, tags are fully mutable.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptTags Tag { get; set; }
         /// <summary>Relative path of the prompt data file at the dataUri location</summary>
         string TemplatePath { get; set; }
 

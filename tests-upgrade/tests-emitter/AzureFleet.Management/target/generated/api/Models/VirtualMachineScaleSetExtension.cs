@@ -82,7 +82,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// protectedSettingsFromKeyVault or no protected settings at all.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISettings ProtectedSetting { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesInternal)Property).ProtectedSetting; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesInternal)Property).ProtectedSetting = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesProtectedSettings ProtectedSetting { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesInternal)Property).ProtectedSetting; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesInternal)Property).ProtectedSetting = value ?? null /* model class */; }
 
         /// <summary>The URL referencing a secret in a Key Vault.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
@@ -105,7 +105,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
 
         /// <summary>Json formatted public settings for the extension.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISettings Setting { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesInternal)Property).Setting; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesInternal)Property).Setting = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesSettings Setting { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesInternal)Property).Setting; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesInternal)Property).Setting = value ?? null /* model class */; }
 
         /// <summary>Resource Id</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
@@ -235,8 +235,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Description = @"The extension can contain either protectedSettings or
         protectedSettingsFromKeyVault or no protected settings at all.",
         SerializedName = @"protectedSettings",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISettings) })]
-        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISettings ProtectedSetting { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesProtectedSettings) })]
+        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesProtectedSettings ProtectedSetting { get; set; }
         /// <summary>The URL referencing a secret in a Key Vault.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -294,8 +294,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Json formatted public settings for the extension.",
         SerializedName = @"settings",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISettings) })]
-        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISettings Setting { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesSettings) })]
+        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesSettings Setting { get; set; }
         /// <summary>Resource Id</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -381,7 +381,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// The extension can contain either protectedSettings or
         /// protectedSettingsFromKeyVault or no protected settings at all.
         /// </summary>
-        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISettings ProtectedSetting { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesProtectedSettings ProtectedSetting { get; set; }
         /// <summary>The URL referencing a secret in a Key Vault.</summary>
         string ProtectedSettingFromKeyVaultSecretUrl { get; set; }
         /// <summary>The relative URL of the Key Vault containing the secret.</summary>
@@ -401,7 +401,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// <summary>The name of the extension handler publisher.</summary>
         string Publisher { get; set; }
         /// <summary>Json formatted public settings for the extension.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISettings Setting { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesSettings Setting { get; set; }
         /// <summary>Resource Id</summary>
         string SourceVaultId { get; set; }
         /// <summary>

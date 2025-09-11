@@ -151,10 +151,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).ErrorProperty = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IErrorDefinition) content.GetValueForProperty("ErrorProperty",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).ErrorProperty, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ErrorDefinitionTypeConverter.ConvertFrom);
             }
-            if (content.Contains("Detail"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IErrorDefinition>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IErrorDefinition>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ErrorDefinitionTypeConverter.ConvertFrom));
-            }
             if (content.Contains("Code"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Code = (string) content.GetValueForProperty("Code",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Code, global::System.Convert.ToString);
@@ -162,6 +158,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             if (content.Contains("Message"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Message = (string) content.GetValueForProperty("Message",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Message, global::System.Convert.ToString);
+            }
+            if (content.Contains("Detail"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IErrorDefinition>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IErrorDefinition>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ErrorDefinitionTypeConverter.ConvertFrom));
             }
             AfterDeserializeDictionary(content);
         }
@@ -224,10 +224,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).ErrorProperty = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IErrorDefinition) content.GetValueForProperty("ErrorProperty",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).ErrorProperty, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ErrorDefinitionTypeConverter.ConvertFrom);
             }
-            if (content.Contains("Detail"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IErrorDefinition>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IErrorDefinition>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ErrorDefinitionTypeConverter.ConvertFrom));
-            }
             if (content.Contains("Code"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Code = (string) content.GetValueForProperty("Code",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Code, global::System.Convert.ToString);
@@ -235,6 +231,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             if (content.Contains("Message"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Message = (string) content.GetValueForProperty("Message",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Message, global::System.Convert.ToString);
+            }
+            if (content.Contains("Detail"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IErrorDefinition>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDatabasePropertiesInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IErrorDefinition>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ErrorDefinitionTypeConverter.ConvertFrom));
             }
             AfterDeserializePSObject(content);
         }

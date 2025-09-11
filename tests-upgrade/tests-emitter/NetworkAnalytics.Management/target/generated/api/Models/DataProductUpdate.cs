@@ -40,7 +40,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
 
         /// <summary>The identities assigned to this resource by the user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Origin(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4Internal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4Internal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4UserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4Internal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4Internal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
 
         /// <summary>Internal Acessors for Identity</summary>
         Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4 Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal.Identity { get => (this._identity = this._identity ?? new Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ManagedServiceIdentityV4()); set { {_identity = value;} } }
@@ -78,11 +78,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
         public string PurviewCollection { get => ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdatePropertiesInternal)Property).PurviewCollection; set => ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdatePropertiesInternal)Property).PurviewCollection = value ?? null; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Origin(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.DataProductUpdateTags()); set => this._tag = value; }
 
         /// <summary>Creates an new <see cref="DataProductUpdate" /> instance.</summary>
         public DataProductUpdate()
@@ -152,8 +152,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
         Update = true,
         Description = @"The identities assigned to this resource by the user.",
         SerializedName = @"userAssignedIdentities",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IUserAssignedIdentities) })]
-        Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4UserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4UserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>List of name or email associated with data product resource deployment.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Info(
         Required = false,
@@ -208,8 +208,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateTags Tag { get; set; }
 
     }
     /// The type used for update operations of the DataProduct.
@@ -232,7 +232,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned, UserAssigned")]
         string IdentityType { get; set; }
         /// <summary>The identities assigned to this resource by the user.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4UserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>List of name or email associated with data product resource deployment.</summary>
         System.Collections.Generic.List<string> Owner { get; set; }
         /// <summary>Flag to enable or disable private link for data product resource.</summary>
@@ -245,7 +245,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
         /// <summary>Purview collection url for data product to connect to.</summary>
         string PurviewCollection { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateTags Tag { get; set; }
 
     }
 }

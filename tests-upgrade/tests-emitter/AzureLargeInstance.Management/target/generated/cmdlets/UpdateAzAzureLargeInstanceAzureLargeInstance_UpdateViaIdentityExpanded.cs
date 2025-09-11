@@ -137,8 +137,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Cmdlets
         ReadOnly = false,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITags Tag { get => _propertiesBody.Tag ?? null /* object */; set => _propertiesBody.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceTagsUpdateTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceTagsUpdateTags Tag { get => _propertiesBody.Tag ?? null /* object */; set => _propertiesBody.Tag = value; }
 
         /// <summary>
         /// <c>overrideOnDefault</c> will be called before the regular onDefault has been processed, allowing customization of what

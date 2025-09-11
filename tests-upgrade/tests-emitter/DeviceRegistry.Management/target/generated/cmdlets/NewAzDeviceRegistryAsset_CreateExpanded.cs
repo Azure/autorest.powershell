@@ -69,8 +69,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         ReadOnly = false,
         Description = @"A set of key-value pairs that contain custom attributes set by the customer.",
         SerializedName = @"attributes",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes Attribute { get => _resourceBody.Attribute ?? null /* object */; set => _resourceBody.Attribute = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes Attribute { get => _resourceBody.Attribute ?? null /* object */; set => _resourceBody.Attribute = value; }
 
         /// <summary>Wait for .NET debugger to attach</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Wait for .NET debugger to attach")]
@@ -466,8 +466,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         ReadOnly = false,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceTags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
 
         /// <summary>
         /// <c>overrideOnDefault</c> will be called before the regular onDefault has been processed, allowing customization of what

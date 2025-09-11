@@ -79,8 +79,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
             {_id = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Json.JsonString>("id"), out var __jsonId) ? (string)__jsonId : (string)_id;}
             {_stage = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Json.JsonString>("stage"), out var __jsonStage) ? (string)__jsonStage : (string)_stage;}
             {_description = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Json.JsonString>("description"), out var __jsonDescription) ? (string)__jsonDescription : (string)_description;}
-            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.Tags.FromJson(__jsonTags) : _tag;}
-            {_property = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Json.JsonObject>("properties"), out var __jsonProperties) ? Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.Tags.FromJson(__jsonProperties) : _property;}
+            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IndexTags.FromJson(__jsonTags) : _tag;}
+            {_property = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Json.JsonObject>("properties"), out var __jsonProperties) ? Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IndexProperties.FromJson(__jsonProperties) : _property;}
             {_storageUri = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Json.JsonString>("storageUri"), out var __jsonStorageUri) ? (string)__jsonStorageUri : (string)_storageUri;}
             AfterFromJson(json);
         }

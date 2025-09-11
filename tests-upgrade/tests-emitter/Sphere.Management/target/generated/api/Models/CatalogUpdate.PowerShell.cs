@@ -76,7 +76,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             // actually deserialize
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.CatalogUpdateTagsTypeConverter.ConvertFrom);
             }
             AfterDeserializeDictionary(content);
         }
@@ -97,7 +97,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             // actually deserialize
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.CatalogUpdateTagsTypeConverter.ConvertFrom);
             }
             AfterDeserializePSObject(content);
         }

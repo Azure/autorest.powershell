@@ -76,7 +76,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
                 return;
             }
             {_identity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Runtime.Json.JsonObject>("identity"), out var __jsonIdentity) ? Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ManagedServiceIdentity.FromJson(__jsonIdentity) : _identity;}
-            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.Tags.FromJson(__jsonTags) : _tag;}
+            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.OrganizationResourceUpdateTags.FromJson(__jsonTags) : _tag;}
             AfterFromJson(json);
         }
 

@@ -125,11 +125,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IndexTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Property"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IndexPropertiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("StorageUri"))
             {
@@ -186,11 +186,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IndexTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Property"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IndexPropertiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("StorageUri"))
             {

@@ -43,11 +43,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         public string Type { get => this._type; set => this._type = value; }
 
         /// <summary>Backing field for <see cref="UserAssignedIdentity" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities _userAssignedIdentity;
+        private Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities _userAssignedIdentity;
 
         /// <summary>The identities assigned to this resource by the user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Astro.Origin(Microsoft.Azure.PowerShell.Cmdlets.Astro.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities UserAssignedIdentity { get => (this._userAssignedIdentity = this._userAssignedIdentity ?? new Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.UserAssignedIdentities()); set => this._userAssignedIdentity = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities UserAssignedIdentity { get => (this._userAssignedIdentity = this._userAssignedIdentity ?? new Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ManagedServiceIdentityV4UserAssignedIdentities()); set => this._userAssignedIdentity = value; }
 
         /// <summary>Creates an new <see cref="ManagedServiceIdentityV4" /> instance.</summary>
         public ManagedServiceIdentityV4()
@@ -106,8 +106,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         Update = true,
         Description = @"The identities assigned to this resource by the user.",
         SerializedName = @"userAssignedIdentities",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities) })]
-        Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities UserAssignedIdentity { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities UserAssignedIdentity { get; set; }
 
     }
     /// Managed service identity (system assigned and/or user assigned identities)
@@ -126,7 +126,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.Astro.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned, UserAssigned")]
         string Type { get; set; }
         /// <summary>The identities assigned to this resource by the user.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities UserAssignedIdentity { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities UserAssignedIdentity { get; set; }
 
     }
 }

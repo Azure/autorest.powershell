@@ -79,7 +79,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
 
         /// <summary>The identities assigned to this resource by the user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
 
         /// <summary>The geo-location where the resource lives</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inherited)]
@@ -212,7 +212,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inherited)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITags Tag { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceInternal)__trackedResource).Tag; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceInternal)__trackedResource).Tag = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceTags Tag { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceInternal)__trackedResource).Tag; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceInternal)__trackedResource).Tag = value ?? null /* model class */; }
 
         /// <summary>
         /// The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
@@ -343,8 +343,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         Update = true,
         Description = @"The identities assigned to this resource by the user.",
         SerializedName = @"userAssignedIdentities",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IUserAssignedIdentities) })]
-        Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IManagedServiceIdentityUserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Defines how many resources can there be created at any given time.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
         Required = false,
@@ -436,7 +436,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned")]
         string IdentityType { get; set; }
         /// <summary>The identities assigned to this resource by the user.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Defines how many resources can there be created at any given time.</summary>
         int? MaximumConcurrency { get; set; }
         /// <summary>Defines the organization in which the pool will be used.</summary>

@@ -127,7 +127,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITrackedResourceTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.TrackedResourceTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Location"))
             {
@@ -159,7 +159,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("StoragePropertyStorageBillingProperty"))
             {
@@ -260,7 +260,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITrackedResourceTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.TrackedResourceTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Location"))
             {
@@ -292,7 +292,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeStorageInstanceInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("StoragePropertyStorageBillingProperty"))
             {

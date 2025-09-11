@@ -6,7 +6,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
     using static Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.Extensions;
 
     /// <summary>
-    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/microsoft/api-guidelines/blob/vNext/azure/Guidelines.md#handling-errors.
+    /// An object containing more specific information about the error. As per Azure REST API guidelines - https://aka.ms/AzureRestApiGuidelines#handling-errors.
     /// </summary>
     public partial class InnerError :
         Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IInnerError,
@@ -33,7 +33,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
 
         }
     }
-    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/microsoft/api-guidelines/blob/vNext/azure/Guidelines.md#handling-errors.
+    /// An object containing more specific information about the error. As per Azure REST API guidelines - https://aka.ms/AzureRestApiGuidelines#handling-errors.
     public partial interface IInnerError :
         Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.IJsonSerializable
     {
@@ -61,7 +61,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
         Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IInnerError Innererror { get; set; }
 
     }
-    /// An object containing more specific information about the error. As per Microsoft One API guidelines - https://github.com/microsoft/api-guidelines/blob/vNext/azure/Guidelines.md#handling-errors.
+    /// An object containing more specific information about the error. As per Azure REST API guidelines - https://aka.ms/AzureRestApiGuidelines#handling-errors.
     internal partial interface IInnerErrorInternal
 
     {

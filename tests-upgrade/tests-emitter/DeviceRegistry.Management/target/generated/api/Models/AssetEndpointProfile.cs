@@ -190,7 +190,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Inherited)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags Tag { get => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)__trackedResource).Tag; set => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)__trackedResource).Tag = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceTags Tag { get => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)__trackedResource).Tag; set => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)__trackedResource).Tag = value ?? null /* model class */; }
 
         /// <summary>
         /// The local valid URI specifying the network address/DNS name of a southbound device. The scheme part of the targetAddress

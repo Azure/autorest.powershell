@@ -146,8 +146,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Cmdlets
         ReadOnly = false,
         Description = @"Asset's properties. Unlike tags, properties are add-only. Once added, a property cannot be removed.",
         SerializedName = @"properties",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags Property { get => _body.Property ?? null /* object */; set => _body.Property = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexProperties) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexProperties Property { get => _body.Property ?? null /* object */; set => _body.Property = value; }
 
         /// <summary>The URI for the proxy server to use</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "The URI for the proxy server to use")]
@@ -233,8 +233,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Cmdlets
         ReadOnly = false,
         Description = @"Asset's tags. Unlike properties, tags are fully mutable.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags Tag { get => _body.Tag ?? null /* object */; set => _body.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndexTags Tag { get => _body.Tag ?? null /* object */; set => _body.Tag = value; }
 
         /// <summary>Backing field for <see cref="Version" /> property.</summary>
         private string _version;

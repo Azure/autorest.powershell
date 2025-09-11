@@ -222,6 +222,10 @@ export function getSchemaForType(
       propertySchema.language.default.description = getDoc(program, type) || "";
       schemaCache.set(type, <Schema>propertySchema);
       return propertySchema;
+    } else if (type.type.kind === "Model" && isRecordModelType(program, type.type) && type.type.name === "Record") {
+      const propertySchema = { ...typeSchema };
+      schemaCache.set(type, <Schema>propertySchema);
+      return propertySchema;
     } else {
       return typeSchema;
     }
@@ -933,7 +937,7 @@ function getSchemaForModel(
       (<Schema>propSchema).language = (<Schema>propSchema).language || {};
       (<Schema>propSchema).language.default = (<Schema>propSchema).language.default || {};
       (<Schema>propSchema).language.default.description = (<Schema>propSchema).language.default.description || propertyDescription || "";
-      (<Schema>propSchema).language.default.name = (<Schema>propSchema).language.default.name || name;
+      (<Schema>propSchema).language.default.name = (<Schema>propSchema).language.default.name || modelSchema.language.default.name + '-' + name;
     }
     // ToDo: need to confirm there is no duplicated properties.
     const property = new Property(name, getDoc(program, prop) || propSchema.language.default.description || "", propSchema || new ObjectSchema(name, ""));
@@ -1315,8 +1319,12 @@ function getSchemaForRecordModel(
     schema = {
       type: "dictionary",
       elementType: valueType,
-      description: getDoc(program, type)
+      description: getDoc(program, type),
     };
+    // If name is Record, it is an anonymous dict. And for anonymous dict, we will create schema in each used property and let `default` created later.
+    if (type.name !== "Record") {
+      schema.default = { name: type.name, description: getDoc(program, type) };
+    }
     if (
       !program.checker.isStdType(indexer.value) &&
       !isUnknownType(indexer.value!) &&

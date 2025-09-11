@@ -157,10 +157,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IResourceInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IResourceInternal)this).Type, global::System.Convert.ToString);
             }
-            if (content.Contains("ServiceSelector"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).ServiceSelector = (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IServiceSelector) content.GetValueForProperty("ServiceSelector",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).ServiceSelector, Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ServiceSelectorTypeConverter.ConvertFrom);
-            }
             if (content.Contains("AdvertiseMode"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).AdvertiseMode = (string) content.GetValueForProperty("AdvertiseMode",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).AdvertiseMode, global::System.Convert.ToString);
@@ -172,6 +168,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             if (content.Contains("Address"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).Address = (System.Collections.Generic.List<string>) content.GetValueForProperty("Address",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).Address, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+            }
+            if (content.Contains("ServiceSelector"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).ServiceSelector = (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesServiceSelector) content.GetValueForProperty("ServiceSelector",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).ServiceSelector, Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.LoadBalancerPropertiesServiceSelectorTypeConverter.ConvertFrom);
             }
             if (content.Contains("BgpPeer"))
             {
@@ -242,10 +242,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IResourceInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IResourceInternal)this).Type, global::System.Convert.ToString);
             }
-            if (content.Contains("ServiceSelector"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).ServiceSelector = (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IServiceSelector) content.GetValueForProperty("ServiceSelector",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).ServiceSelector, Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ServiceSelectorTypeConverter.ConvertFrom);
-            }
             if (content.Contains("AdvertiseMode"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).AdvertiseMode = (string) content.GetValueForProperty("AdvertiseMode",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).AdvertiseMode, global::System.Convert.ToString);
@@ -257,6 +253,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             if (content.Contains("Address"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).Address = (System.Collections.Generic.List<string>) content.GetValueForProperty("Address",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).Address, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+            }
+            if (content.Contains("ServiceSelector"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).ServiceSelector = (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesServiceSelector) content.GetValueForProperty("ServiceSelector",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerInternal)this).ServiceSelector, Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.LoadBalancerPropertiesServiceSelectorTypeConverter.ConvertFrom);
             }
             if (content.Contains("BgpPeer"))
             {

@@ -128,7 +128,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             // actually deserialize
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapDatabaseInstanceRequestInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapDatabaseInstanceRequestInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapDatabaseInstanceRequestInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapDatabaseInstanceRequestTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapDatabaseInstanceRequestInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.UpdateSapDatabaseInstanceRequestTagsTypeConverter.ConvertFrom);
             }
             AfterDeserializeDictionary(content);
         }
@@ -149,7 +149,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             // actually deserialize
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapDatabaseInstanceRequestInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapDatabaseInstanceRequestInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapDatabaseInstanceRequestInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapDatabaseInstanceRequestTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapDatabaseInstanceRequestInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.UpdateSapDatabaseInstanceRequestTagsTypeConverter.ConvertFrom);
             }
             AfterDeserializePSObject(content);
         }

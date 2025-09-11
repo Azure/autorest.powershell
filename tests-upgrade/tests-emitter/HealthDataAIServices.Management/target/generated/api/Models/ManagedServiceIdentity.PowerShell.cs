@@ -121,7 +121,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             }
             if (content.Contains("UserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             AfterDeserializeDictionary(content);
         }
@@ -154,7 +154,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             }
             if (content.Contains("UserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             AfterDeserializePSObject(content);
         }

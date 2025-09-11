@@ -63,7 +63,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
             {
                 return;
             }
-            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.Tags.FromJson(__jsonTags) : _tag;}
+            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.AzureLargeInstanceTagsUpdateTags.FromJson(__jsonTags) : _tag;}
             AfterFromJson(json);
         }
 

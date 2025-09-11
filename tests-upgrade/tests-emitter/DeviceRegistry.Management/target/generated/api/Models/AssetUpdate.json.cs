@@ -64,7 +64,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
                 return;
             }
             {_property = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject>("properties"), out var __jsonProperties) ? Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetUpdateProperties.FromJson(__jsonProperties) : _property;}
-            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.Tags.FromJson(__jsonTags) : _tag;}
+            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetUpdateTags.FromJson(__jsonTags) : _tag;}
             AfterFromJson(json);
         }
 

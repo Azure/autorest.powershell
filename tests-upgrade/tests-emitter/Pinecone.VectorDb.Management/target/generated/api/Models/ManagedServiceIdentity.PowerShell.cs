@@ -121,7 +121,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
             }
             if (content.Contains("UserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             AfterDeserializeDictionary(content);
         }
@@ -154,7 +154,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
             }
             if (content.Contains("UserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             AfterDeserializePSObject(content);
         }

@@ -121,7 +121,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
             }
             if (content.Contains("UserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ManagedServiceIdentityV4UserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             AfterDeserializeDictionary(content);
         }
@@ -154,7 +154,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
             }
             if (content.Contains("UserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ManagedServiceIdentityV4UserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             AfterDeserializePSObject(content);
         }

@@ -19,11 +19,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         public string Type { get => this._type; set => this._type = value; }
 
         /// <summary>Backing field for <see cref="UserAssignedIdentity" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities _userAssignedIdentity;
+        private Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateUserAssignedIdentities _userAssignedIdentity;
 
         /// <summary>The identities assigned to this resource by the user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities UserAssignedIdentity { get => (this._userAssignedIdentity = this._userAssignedIdentity ?? new Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.UserAssignedIdentities()); set => this._userAssignedIdentity = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateUserAssignedIdentities UserAssignedIdentity { get => (this._userAssignedIdentity = this._userAssignedIdentity ?? new Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ManagedServiceIdentityUpdateUserAssignedIdentities()); set => this._userAssignedIdentity = value; }
 
         /// <summary>Creates an new <see cref="ManagedServiceIdentityUpdate" /> instance.</summary>
         public ManagedServiceIdentityUpdate()
@@ -56,8 +56,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         Update = true,
         Description = @"The identities assigned to this resource by the user.",
         SerializedName = @"userAssignedIdentities",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities) })]
-        Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities UserAssignedIdentity { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateUserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateUserAssignedIdentities UserAssignedIdentity { get; set; }
 
     }
     /// The template for adding optional properties.
@@ -68,7 +68,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned")]
         string Type { get; set; }
         /// <summary>The identities assigned to this resource by the user.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities UserAssignedIdentity { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateUserAssignedIdentities UserAssignedIdentity { get; set; }
 
     }
 }

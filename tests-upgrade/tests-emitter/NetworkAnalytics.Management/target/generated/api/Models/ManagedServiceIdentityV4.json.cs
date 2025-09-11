@@ -78,7 +78,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             {_principalId = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Json.JsonString>("principalId"), out var __jsonPrincipalId) ? (string)__jsonPrincipalId : (string)_principalId;}
             {_tenantId = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Json.JsonString>("tenantId"), out var __jsonTenantId) ? (string)__jsonTenantId : (string)_tenantId;}
             {_type = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Json.JsonString>("type"), out var __jsonType) ? (string)__jsonType : (string)_type;}
-            {_userAssignedIdentity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Json.JsonObject>("userAssignedIdentities"), out var __jsonUserAssignedIdentities) ? Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.UserAssignedIdentities.FromJson(__jsonUserAssignedIdentities) : _userAssignedIdentity;}
+            {_userAssignedIdentity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Runtime.Json.JsonObject>("userAssignedIdentities"), out var __jsonUserAssignedIdentities) ? Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ManagedServiceIdentityV4UserAssignedIdentities.FromJson(__jsonUserAssignedIdentities) : _userAssignedIdentity;}
             AfterFromJson(json);
         }
 

@@ -22,11 +22,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         public string AssetEndpointProfileRef { get => this._assetEndpointProfileRef; set => this._assetEndpointProfileRef = value; }
 
         /// <summary>Backing field for <see cref="Attribute" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes _attribute;
+        private Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes _attribute;
 
         /// <summary>A set of key-value pairs that contain custom attributes set by the customer.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes Attribute { get => (this._attribute = this._attribute ?? new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.Attributes()); set => this._attribute = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes Attribute { get => (this._attribute = this._attribute ?? new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetPropertiesAttributes()); set => this._attribute = value; }
 
         /// <summary>Backing field for <see cref="Dataset" /> property.</summary>
         private System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDataset> _dataset;
@@ -287,8 +287,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         Update = true,
         Description = @"A set of key-value pairs that contain custom attributes set by the customer.",
         SerializedName = @"attributes",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes) })]
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes Attribute { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes) })]
+        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes Attribute { get; set; }
         /// <summary>
         /// Array of datasets that are part of the asset. Each dataset describes the data points that make up the set.
         /// </summary>
@@ -608,7 +608,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// </summary>
         string AssetEndpointProfileRef { get; set; }
         /// <summary>A set of key-value pairs that contain custom attributes set by the customer.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes Attribute { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes Attribute { get; set; }
         /// <summary>
         /// Array of datasets that are part of the asset. Each dataset describes the data points that make up the set.
         /// </summary>

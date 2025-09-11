@@ -177,8 +177,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         ReadOnly = false,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags Tag { get => _propertiesBody.Tag ?? null /* object */; set => _propertiesBody.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateTags Tag { get => _propertiesBody.Tag ?? null /* object */; set => _propertiesBody.Tag = value; }
 
         /// <summary>
         /// The local valid URI specifying the network address/DNS name of a southbound device. The scheme part of the targetAddress

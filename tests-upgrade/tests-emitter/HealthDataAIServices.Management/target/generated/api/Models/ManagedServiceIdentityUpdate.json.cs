@@ -76,7 +76,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
                 return;
             }
             {_type = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Json.JsonString>("type"), out var __jsonType) ? (string)__jsonType : (string)_type;}
-            {_userAssignedIdentity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Json.JsonObject>("userAssignedIdentities"), out var __jsonUserAssignedIdentities) ? Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.UserAssignedIdentities.FromJson(__jsonUserAssignedIdentities) : _userAssignedIdentity;}
+            {_userAssignedIdentity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Json.JsonObject>("userAssignedIdentities"), out var __jsonUserAssignedIdentities) ? Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ManagedServiceIdentityUpdateUserAssignedIdentities.FromJson(__jsonUserAssignedIdentities) : _userAssignedIdentity;}
             AfterFromJson(json);
         }
 

@@ -21,11 +21,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models
         public Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IOrganizationPropertiesCustomUpdate Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.OrganizationPropertiesCustomUpdate()); set => this._property = value; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Informatica.Origin(Microsoft.Azure.PowerShell.Cmdlets.Informatica.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.InformaticaOrganizationResourceUpdateTags()); set => this._tag = value; }
 
         /// <summary>Creates an new <see cref="InformaticaOrganizationResourceUpdate" /> instance.</summary>
         public InformaticaOrganizationResourceUpdate()
@@ -59,8 +59,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateTags Tag { get; set; }
 
     }
     /// The template for adding optional properties.
@@ -72,7 +72,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models
         /// </summary>
         Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IOrganizationPropertiesCustomUpdate Property { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateTags Tag { get; set; }
 
     }
 }

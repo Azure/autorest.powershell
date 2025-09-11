@@ -103,7 +103,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             }
             {_identity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Runtime.Json.JsonObject>("identity"), out var __jsonIdentity) ? Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.SapVirtualInstanceIdentity1.FromJson(__jsonIdentity) : _identity;}
             {_property = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Runtime.Json.JsonObject>("properties"), out var __jsonProperties) ? Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.UpdateSapVirtualInstanceProperties.FromJson(__jsonProperties) : _property;}
-            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.Tags.FromJson(__jsonTags) : _tag;}
+            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.UpdateSapVirtualInstanceRequestTags.FromJson(__jsonTags) : _tag;}
             AfterFromJson(json);
         }
     }

@@ -80,7 +80,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.CodeSigningAccountPatchTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Sku"))
             {
@@ -113,7 +113,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.CodeSigningAccountPatchTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Sku"))
             {

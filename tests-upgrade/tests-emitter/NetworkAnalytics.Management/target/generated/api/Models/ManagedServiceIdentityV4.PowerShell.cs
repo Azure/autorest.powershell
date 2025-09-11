@@ -121,7 +121,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             }
             if (content.Contains("UserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IUserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4UserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ManagedServiceIdentityV4UserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             AfterDeserializeDictionary(content);
         }
@@ -154,7 +154,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             }
             if (content.Contains("UserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IUserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4UserAssignedIdentities) content.GetValueForProperty("UserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4Internal)this).UserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ManagedServiceIdentityV4UserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             AfterDeserializePSObject(content);
         }

@@ -267,7 +267,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             }
             if (content.Contains("DiskConfigurationDiskVolumeConfiguration"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierConfigurationInternal)this).DiskConfigurationDiskVolumeConfiguration = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations) content.GetValueForProperty("DiskConfigurationDiskVolumeConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierConfigurationInternal)this).DiskConfigurationDiskVolumeConfiguration, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DiskVolumeConfigurationsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierConfigurationInternal)this).DiskConfigurationDiskVolumeConfiguration = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations) content.GetValueForProperty("DiskConfigurationDiskVolumeConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierConfigurationInternal)this).DiskConfigurationDiskVolumeConfiguration, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DiskConfigurationDiskVolumeConfigurationsTypeConverter.ConvertFrom);
             }
             if (content.Contains("TransportFileShareConfigurationType"))
             {
@@ -532,7 +532,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             }
             if (content.Contains("DiskConfigurationDiskVolumeConfiguration"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierConfigurationInternal)this).DiskConfigurationDiskVolumeConfiguration = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations) content.GetValueForProperty("DiskConfigurationDiskVolumeConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierConfigurationInternal)this).DiskConfigurationDiskVolumeConfiguration, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DiskVolumeConfigurationsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierConfigurationInternal)this).DiskConfigurationDiskVolumeConfiguration = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations) content.GetValueForProperty("DiskConfigurationDiskVolumeConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierConfigurationInternal)this).DiskConfigurationDiskVolumeConfiguration, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DiskConfigurationDiskVolumeConfigurationsTypeConverter.ConvertFrom);
             }
             if (content.Contains("TransportFileShareConfigurationType"))
             {

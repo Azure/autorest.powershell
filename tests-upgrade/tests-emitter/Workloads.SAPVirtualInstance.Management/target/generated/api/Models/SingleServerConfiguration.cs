@@ -55,7 +55,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
         /// 'os'], Optional volume : ['backup'].
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Origin(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations DbDiskConfigurationDiskVolumeConfiguration { get => ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationInternal)DbDiskConfiguration).DiskVolumeConfiguration; set => ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationInternal)DbDiskConfiguration).DiskVolumeConfiguration = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations DbDiskConfigurationDiskVolumeConfiguration { get => ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationInternal)DbDiskConfiguration).DiskVolumeConfiguration; set => ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationInternal)DbDiskConfiguration).DiskVolumeConfiguration = value ?? null /* model class */; }
 
         /// <summary>The SAP deployment type. Eg: SingleServer/ThreeTier.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Constant]
@@ -237,8 +237,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
         Update = true,
         Description = @"The disk configuration for the db volume. For HANA, Required volumes are: ['hana/data', 'hana/log', hana/shared', 'usr/sap', 'os'], Optional volume : ['backup'].",
         SerializedName = @"diskVolumeConfigurations",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations) })]
-        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations DbDiskConfigurationDiskVolumeConfiguration { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations) })]
+        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations DbDiskConfigurationDiskVolumeConfiguration { get; set; }
         /// <summary>
         /// Specifies the ARM resource ID of the Azure Compute Gallery image version used for creating ACSS VMs. You will need to
         /// provide this input when you choose to deploy virtual machines in ACSS with OS image from the Azure Compute gallery.
@@ -410,7 +410,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
         /// The disk configuration for the db volume. For HANA, Required volumes are: ['hana/data', 'hana/log', hana/shared', 'usr/sap',
         /// 'os'], Optional volume : ['backup'].
         /// </summary>
-        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations DbDiskConfigurationDiskVolumeConfiguration { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations DbDiskConfigurationDiskVolumeConfiguration { get; set; }
         /// <summary>
         /// Specifies the ARM resource ID of the Azure Compute Gallery image version used for creating ACSS VMs. You will need to
         /// provide this input when you choose to deploy virtual machines in ACSS with OS image from the Azure Compute gallery.

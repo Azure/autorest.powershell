@@ -56,7 +56,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
 
         /// <summary>The identities assigned to this resource by the user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Origin(Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
 
         /// <summary>The geo-location where the resource lives</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Origin(Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.PropertyOrigin.Inherited)]
@@ -238,7 +238,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Origin(Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.PropertyOrigin.Inherited)]
-        public Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITags Tag { get => ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceInternal)__trackedResource).Tag; set => ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceInternal)__trackedResource).Tag = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceTags Tag { get => ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceInternal)__trackedResource).Tag; set => ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceInternal)__trackedResource).Tag = value ?? null /* model class */; }
 
         /// <summary>
         /// The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
@@ -359,8 +359,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
         Update = true,
         Description = @"The identities assigned to this resource by the user.",
         SerializedName = @"userAssignedIdentities",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IUserAssignedIdentities) })]
-        Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IManagedServiceIdentityUserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Azure subscription id for the the marketplace offer is purchased from</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Runtime.Info(
         Required = false,
@@ -617,7 +617,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned")]
         string IdentityType { get; set; }
         /// <summary>The identities assigned to this resource by the user.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Marketplace details of the resource.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IMarketplaceDetails Marketplace { get; set; }
         /// <summary>Offer details for the marketplace that is selected by the user</summary>

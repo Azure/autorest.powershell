@@ -154,10 +154,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).KeyVaultUrl = (string) content.GetValueForProperty("KeyVaultUrl",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).KeyVaultUrl, global::System.Convert.ToString);
             }
-            if (content.Contains("NetworkaclIPRule"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclIPRule = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IIPRules>) content.GetValueForProperty("NetworkaclIPRule",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclIPRule, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IIPRules>(__y, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IPRulesTypeConverter.ConvertFrom));
-            }
             if (content.Contains("NetworkaclDefaultAction"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclDefaultAction = (string) content.GetValueForProperty("NetworkaclDefaultAction",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclDefaultAction, global::System.Convert.ToString);
@@ -177,6 +173,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             if (content.Contains("NetworkaclVirtualNetworkRule"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclVirtualNetworkRule = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IVirtualNetworkRule>) content.GetValueForProperty("NetworkaclVirtualNetworkRule",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclVirtualNetworkRule, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IVirtualNetworkRule>(__y, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.VirtualNetworkRuleTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("NetworkaclIPRule"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclIPRule = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IIPRules>) content.GetValueForProperty("NetworkaclIPRule",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclIPRule, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IIPRules>(__y, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IPRulesTypeConverter.ConvertFrom));
             }
             if (content.Contains("NetworkaclAllowedQueryIPRangeList"))
             {
@@ -311,10 +311,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).KeyVaultUrl = (string) content.GetValueForProperty("KeyVaultUrl",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).KeyVaultUrl, global::System.Convert.ToString);
             }
-            if (content.Contains("NetworkaclIPRule"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclIPRule = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IIPRules>) content.GetValueForProperty("NetworkaclIPRule",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclIPRule, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IIPRules>(__y, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IPRulesTypeConverter.ConvertFrom));
-            }
             if (content.Contains("NetworkaclDefaultAction"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclDefaultAction = (string) content.GetValueForProperty("NetworkaclDefaultAction",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclDefaultAction, global::System.Convert.ToString);
@@ -334,6 +330,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             if (content.Contains("NetworkaclVirtualNetworkRule"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclVirtualNetworkRule = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IVirtualNetworkRule>) content.GetValueForProperty("NetworkaclVirtualNetworkRule",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclVirtualNetworkRule, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IVirtualNetworkRule>(__y, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.VirtualNetworkRuleTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("NetworkaclIPRule"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclIPRule = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IIPRules>) content.GetValueForProperty("NetworkaclIPRule",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductPropertiesInternal)this).NetworkaclIPRule, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IIPRules>(__y, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IPRulesTypeConverter.ConvertFrom));
             }
             if (content.Contains("NetworkaclAllowedQueryIPRangeList"))
             {

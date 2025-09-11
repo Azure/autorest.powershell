@@ -20,7 +20,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
 
         /// <summary>A set of key-value pairs that contain custom attributes set by the customer.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes Attribute { get => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesInternal)Property).Attribute; set => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesInternal)Property).Attribute = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes Attribute { get => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesInternal)Property).Attribute; set => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesInternal)Property).Attribute = value ?? null /* model class */; }
 
         /// <summary>Backing field for <see cref="AzureAsyncOperation" /> property.</summary>
         private string _azureAsyncOperation;
@@ -291,7 +291,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Inherited)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags Tag { get => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)__trackedResource).Tag; set => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)__trackedResource).Tag = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceTags Tag { get => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)__trackedResource).Tag; set => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)__trackedResource).Tag = value ?? null /* model class */; }
 
         /// <summary>
         /// The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
@@ -352,8 +352,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         Update = true,
         Description = @"A set of key-value pairs that contain custom attributes set by the customer.",
         SerializedName = @"attributes",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes) })]
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes Attribute { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes) })]
+        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes Attribute { get; set; }
 
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Info(
         Required = false,
@@ -726,7 +726,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal
     {
         /// <summary>A set of key-value pairs that contain custom attributes set by the customer.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes Attribute { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes Attribute { get; set; }
 
         string AzureAsyncOperation { get; set; }
         /// <summary>

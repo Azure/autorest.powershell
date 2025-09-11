@@ -124,7 +124,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             }
             if (content.Contains("Attribute"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)this).Attribute = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes) content.GetValueForProperty("Attribute",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)this).Attribute, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AttributesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)this).Attribute = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesAttributes) content.GetValueForProperty("Attribute",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)this).Attribute, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetUpdatePropertiesAttributesTypeConverter.ConvertFrom);
             }
             if (content.Contains("DefaultDatasetsConfiguration"))
             {
@@ -217,7 +217,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             }
             if (content.Contains("Attribute"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)this).Attribute = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes) content.GetValueForProperty("Attribute",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)this).Attribute, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AttributesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)this).Attribute = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesAttributes) content.GetValueForProperty("Attribute",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)this).Attribute, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetUpdatePropertiesAttributesTypeConverter.ConvertFrom);
             }
             if (content.Contains("DefaultDatasetsConfiguration"))
             {

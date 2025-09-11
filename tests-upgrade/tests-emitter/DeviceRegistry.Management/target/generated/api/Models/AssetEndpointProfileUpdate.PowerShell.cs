@@ -80,7 +80,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetEndpointProfileUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Authentication"))
             {
@@ -145,7 +145,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetEndpointProfileUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Authentication"))
             {

@@ -12,11 +12,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
     {
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapCentralInstanceRequestTags _tag;
 
         /// <summary>Gets or sets the Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Origin(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapCentralInstanceRequestTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.UpdateSapCentralInstanceRequestTags()); set => this._tag = value; }
 
         /// <summary>Creates an new <see cref="UpdateSapCentralInstanceRequest" /> instance.</summary>
         public UpdateSapCentralInstanceRequest()
@@ -37,8 +37,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
         Update = true,
         Description = @"Gets or sets the Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapCentralInstanceRequestTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapCentralInstanceRequestTags Tag { get; set; }
 
     }
     /// Defines the request body for updating SAP Central Instance.
@@ -46,7 +46,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
 
     {
         /// <summary>Gets or sets the Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapCentralInstanceRequestTags Tag { get; set; }
 
     }
 }

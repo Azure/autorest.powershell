@@ -165,8 +165,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Cmdlets
         ReadOnly = false,
         Description = @"Asset's properties. Unlike tags, properties are add-only. Once added, a property cannot be removed.",
         SerializedName = @"properties",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags Property { get => _body.Property ?? null /* object */; set => _body.Property = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptProperties) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptProperties Property { get => _body.Property ?? null /* object */; set => _body.Property = value; }
 
         /// <summary>The URI for the proxy server to use</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "The URI for the proxy server to use")]
@@ -239,8 +239,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Cmdlets
         ReadOnly = false,
         Description = @"Asset's tags. Unlike properties, tags are fully mutable.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags Tag { get => _body.Tag ?? null /* object */; set => _body.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptTags Tag { get => _body.Tag ?? null /* object */; set => _body.Tag = value; }
 
         /// <summary>Relative path of the prompt data file at the dataUri location</summary>
         [global::System.Management.Automation.Parameter(Mandatory = true, HelpMessage = "Relative path of the prompt data file at the dataUri location")]

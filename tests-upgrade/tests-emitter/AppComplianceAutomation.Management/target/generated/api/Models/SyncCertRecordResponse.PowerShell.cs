@@ -111,10 +111,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecord = (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ICertSyncRecord) content.GetValueForProperty("CertRecord",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecord, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.CertSyncRecordTypeConverter.ConvertFrom);
             }
-            if (content.Contains("CertRecordControl"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordControl = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IControlSyncRecord>) content.GetValueForProperty("CertRecordControl",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordControl, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IControlSyncRecord>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ControlSyncRecordTypeConverter.ConvertFrom));
-            }
             if (content.Contains("CertRecordOfferGuid"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordOfferGuid = (string) content.GetValueForProperty("CertRecordOfferGuid",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordOfferGuid, global::System.Convert.ToString);
@@ -126,6 +122,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             if (content.Contains("CertRecordIngestionStatus"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordIngestionStatus = (string) content.GetValueForProperty("CertRecordIngestionStatus",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordIngestionStatus, global::System.Convert.ToString);
+            }
+            if (content.Contains("CertRecordControl"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordControl = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IControlSyncRecord>) content.GetValueForProperty("CertRecordControl",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordControl, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IControlSyncRecord>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ControlSyncRecordTypeConverter.ConvertFrom));
             }
             AfterDeserializeDictionary(content);
         }
@@ -148,10 +148,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecord = (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ICertSyncRecord) content.GetValueForProperty("CertRecord",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecord, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.CertSyncRecordTypeConverter.ConvertFrom);
             }
-            if (content.Contains("CertRecordControl"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordControl = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IControlSyncRecord>) content.GetValueForProperty("CertRecordControl",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordControl, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IControlSyncRecord>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ControlSyncRecordTypeConverter.ConvertFrom));
-            }
             if (content.Contains("CertRecordOfferGuid"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordOfferGuid = (string) content.GetValueForProperty("CertRecordOfferGuid",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordOfferGuid, global::System.Convert.ToString);
@@ -163,6 +159,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             if (content.Contains("CertRecordIngestionStatus"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordIngestionStatus = (string) content.GetValueForProperty("CertRecordIngestionStatus",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordIngestionStatus, global::System.Convert.ToString);
+            }
+            if (content.Contains("CertRecordControl"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordControl = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IControlSyncRecord>) content.GetValueForProperty("CertRecordControl",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISyncCertRecordResponseInternal)this).CertRecordControl, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IControlSyncRecord>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ControlSyncRecordTypeConverter.ConvertFrom));
             }
             AfterDeserializePSObject(content);
         }

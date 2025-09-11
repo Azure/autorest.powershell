@@ -97,11 +97,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         public string SystemDataLastModifiedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourceInternal)__resource).SystemDataLastModifiedByType; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.TrackedResourceTags()); set => this._tag = value; }
 
         /// <summary>
         /// The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
@@ -152,8 +152,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceTags Tag { get; set; }
 
     }
     /// The resource model definition for an Azure Resource Manager tracked top level resource which has 'tags' and a 'location'
@@ -163,7 +163,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         /// <summary>The geo-location where the resource lives</summary>
         string Location { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceTags Tag { get; set; }
 
     }
 }

@@ -125,11 +125,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.PromptTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Property"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.PromptPropertiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("DataUri"))
             {
@@ -190,11 +190,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.PromptTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Property"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.ITags) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IPromptInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.PromptPropertiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("DataUri"))
             {

@@ -12,14 +12,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
     {
 
         /// <summary>Backing field for <see cref="DiskVolumeConfiguration" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations _diskVolumeConfiguration;
+        private Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations _diskVolumeConfiguration;
 
         /// <summary>
         /// The disk configuration for the db volume. For HANA, Required volumes are: ['hana/data', 'hana/log', hana/shared', 'usr/sap',
         /// 'os'], Optional volume : ['backup'].
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Origin(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations DiskVolumeConfiguration { get => (this._diskVolumeConfiguration = this._diskVolumeConfiguration ?? new Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DiskVolumeConfigurations()); set => this._diskVolumeConfiguration = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations DiskVolumeConfiguration { get => (this._diskVolumeConfiguration = this._diskVolumeConfiguration ?? new Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DiskConfigurationDiskVolumeConfigurations()); set => this._diskVolumeConfiguration = value; }
 
         /// <summary>Creates an new <see cref="DiskConfiguration" /> instance.</summary>
         public DiskConfiguration()
@@ -43,8 +43,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
         Update = true,
         Description = @"The disk configuration for the db volume. For HANA, Required volumes are: ['hana/data', 'hana/log', hana/shared', 'usr/sap', 'os'], Optional volume : ['backup'].",
         SerializedName = @"diskVolumeConfigurations",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations) })]
-        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations DiskVolumeConfiguration { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations) })]
+        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations DiskVolumeConfiguration { get; set; }
 
     }
     /// The Disk Configuration Details.
@@ -55,7 +55,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
         /// The disk configuration for the db volume. For HANA, Required volumes are: ['hana/data', 'hana/log', hana/shared', 'usr/sap',
         /// 'os'], Optional volume : ['backup'].
         /// </summary>
-        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations DiskVolumeConfiguration { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations DiskVolumeConfiguration { get; set; }
 
     }
 }

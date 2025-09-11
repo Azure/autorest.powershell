@@ -132,7 +132,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.TrackedResourceTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Location"))
             {
@@ -141,18 +141,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             if (content.Contains("Version"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Version = (long?) content.GetValueForProperty("Version",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Version, (__y)=> (long) global::System.Convert.ChangeType(__y, typeof(long)));
-            }
-            if (content.Contains("Attribute"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Attribute = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes) content.GetValueForProperty("Attribute",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Attribute, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AttributesTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("Dataset"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Dataset = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDataset>) content.GetValueForProperty("Dataset",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Dataset, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDataset>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.DatasetTypeConverter.ConvertFrom));
-            }
-            if (content.Contains("Event"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Event = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IEvent>) content.GetValueForProperty("Event",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Event, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IEvent>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.EventTypeConverter.ConvertFrom));
             }
             if (content.Contains("ProvisioningState"))
             {
@@ -222,6 +210,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).SerialNumber = (string) content.GetValueForProperty("SerialNumber",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).SerialNumber, global::System.Convert.ToString);
             }
+            if (content.Contains("Attribute"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Attribute = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes) content.GetValueForProperty("Attribute",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Attribute, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetPropertiesAttributesTypeConverter.ConvertFrom);
+            }
             if (content.Contains("DiscoveredAssetRef"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).DiscoveredAssetRef = (System.Collections.Generic.List<string>) content.GetValueForProperty("DiscoveredAssetRef",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).DiscoveredAssetRef, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
@@ -234,21 +226,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).DefaultEventsConfiguration = (string) content.GetValueForProperty("DefaultEventsConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).DefaultEventsConfiguration, global::System.Convert.ToString);
             }
-            if (content.Contains("StatusError"))
+            if (content.Contains("Dataset"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusError = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusError>) content.GetValueForProperty("StatusError",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusError, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusError>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetStatusErrorTypeConverter.ConvertFrom));
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Dataset = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDataset>) content.GetValueForProperty("Dataset",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Dataset, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDataset>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.DatasetTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("Event"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Event = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IEvent>) content.GetValueForProperty("Event",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Event, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IEvent>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.EventTypeConverter.ConvertFrom));
             }
             if (content.Contains("StatusVersion"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusVersion = (long?) content.GetValueForProperty("StatusVersion",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusVersion, (__y)=> (long) global::System.Convert.ChangeType(__y, typeof(long)));
-            }
-            if (content.Contains("StatusDataset"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusDataset = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusDataset>) content.GetValueForProperty("StatusDataset",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusDataset, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusDataset>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetStatusDatasetTypeConverter.ConvertFrom));
-            }
-            if (content.Contains("StatusEvent"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusEvent = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusEvent>) content.GetValueForProperty("StatusEvent",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusEvent, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusEvent>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetStatusEventTypeConverter.ConvertFrom));
             }
             if (content.Contains("ExtendedLocationType"))
             {
@@ -265,6 +253,18 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             if (content.Contains("DefaultTopicRetain"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).DefaultTopicRetain = (string) content.GetValueForProperty("DefaultTopicRetain",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).DefaultTopicRetain, global::System.Convert.ToString);
+            }
+            if (content.Contains("StatusError"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusError = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusError>) content.GetValueForProperty("StatusError",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusError, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusError>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetStatusErrorTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("StatusDataset"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusDataset = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusDataset>) content.GetValueForProperty("StatusDataset",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusDataset, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusDataset>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetStatusDatasetTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("StatusEvent"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusEvent = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusEvent>) content.GetValueForProperty("StatusEvent",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusEvent, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusEvent>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetStatusEventTypeConverter.ConvertFrom));
             }
             AfterDeserializeDictionary(content);
         }
@@ -341,7 +341,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.TrackedResourceTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Location"))
             {
@@ -350,18 +350,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             if (content.Contains("Version"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Version = (long?) content.GetValueForProperty("Version",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Version, (__y)=> (long) global::System.Convert.ChangeType(__y, typeof(long)));
-            }
-            if (content.Contains("Attribute"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Attribute = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes) content.GetValueForProperty("Attribute",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Attribute, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AttributesTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("Dataset"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Dataset = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDataset>) content.GetValueForProperty("Dataset",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Dataset, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDataset>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.DatasetTypeConverter.ConvertFrom));
-            }
-            if (content.Contains("Event"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Event = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IEvent>) content.GetValueForProperty("Event",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Event, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IEvent>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.EventTypeConverter.ConvertFrom));
             }
             if (content.Contains("ProvisioningState"))
             {
@@ -431,6 +419,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).SerialNumber = (string) content.GetValueForProperty("SerialNumber",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).SerialNumber, global::System.Convert.ToString);
             }
+            if (content.Contains("Attribute"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Attribute = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetPropertiesAttributes) content.GetValueForProperty("Attribute",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Attribute, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetPropertiesAttributesTypeConverter.ConvertFrom);
+            }
             if (content.Contains("DiscoveredAssetRef"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).DiscoveredAssetRef = (System.Collections.Generic.List<string>) content.GetValueForProperty("DiscoveredAssetRef",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).DiscoveredAssetRef, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
@@ -443,21 +435,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).DefaultEventsConfiguration = (string) content.GetValueForProperty("DefaultEventsConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).DefaultEventsConfiguration, global::System.Convert.ToString);
             }
-            if (content.Contains("StatusError"))
+            if (content.Contains("Dataset"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusError = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusError>) content.GetValueForProperty("StatusError",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusError, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusError>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetStatusErrorTypeConverter.ConvertFrom));
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Dataset = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDataset>) content.GetValueForProperty("Dataset",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Dataset, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDataset>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.DatasetTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("Event"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Event = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IEvent>) content.GetValueForProperty("Event",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).Event, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IEvent>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.EventTypeConverter.ConvertFrom));
             }
             if (content.Contains("StatusVersion"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusVersion = (long?) content.GetValueForProperty("StatusVersion",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusVersion, (__y)=> (long) global::System.Convert.ChangeType(__y, typeof(long)));
-            }
-            if (content.Contains("StatusDataset"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusDataset = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusDataset>) content.GetValueForProperty("StatusDataset",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusDataset, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusDataset>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetStatusDatasetTypeConverter.ConvertFrom));
-            }
-            if (content.Contains("StatusEvent"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusEvent = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusEvent>) content.GetValueForProperty("StatusEvent",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusEvent, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusEvent>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetStatusEventTypeConverter.ConvertFrom));
             }
             if (content.Contains("ExtendedLocationType"))
             {
@@ -474,6 +462,18 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             if (content.Contains("DefaultTopicRetain"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).DefaultTopicRetain = (string) content.GetValueForProperty("DefaultTopicRetain",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).DefaultTopicRetain, global::System.Convert.ToString);
+            }
+            if (content.Contains("StatusError"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusError = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusError>) content.GetValueForProperty("StatusError",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusError, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusError>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetStatusErrorTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("StatusDataset"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusDataset = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusDataset>) content.GetValueForProperty("StatusDataset",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusDataset, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusDataset>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetStatusDatasetTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("StatusEvent"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusEvent = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusEvent>) content.GetValueForProperty("StatusEvent",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetInternal)this).StatusEvent, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetStatusEvent>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetStatusEventTypeConverter.ConvertFrom));
             }
             AfterDeserializePSObject(content);
         }

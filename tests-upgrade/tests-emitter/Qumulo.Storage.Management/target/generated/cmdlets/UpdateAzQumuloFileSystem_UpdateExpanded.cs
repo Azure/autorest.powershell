@@ -307,8 +307,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Cmdlets
         ReadOnly = false,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceTags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
 
         /// <summary>
         /// The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in
@@ -680,7 +680,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Cmdlets
         {
             if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("Tag")))
             {
-                this.Tag = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags)(this.MyInvocation?.BoundParameters["Tag"]);
+                this.Tag = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITrackedResourceTags)(this.MyInvocation?.BoundParameters["Tag"]);
             }
             if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("StorageSku")))
             {

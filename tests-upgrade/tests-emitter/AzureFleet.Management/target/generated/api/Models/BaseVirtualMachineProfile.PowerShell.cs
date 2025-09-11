@@ -146,10 +146,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).DiagnosticProfileBootDiagnostic = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBootDiagnostics) content.GetValueForProperty("DiagnosticProfileBootDiagnostic",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).DiagnosticProfileBootDiagnostic, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.BootDiagnosticsTypeConverter.ConvertFrom);
             }
-            if (content.Contains("ExtensionProfileExtension"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ExtensionProfileExtension = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtension>) content.GetValueForProperty("ExtensionProfileExtension",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ExtensionProfileExtension, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtension>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VirtualMachineScaleSetExtensionTypeConverter.ConvertFrom));
-            }
             if (content.Contains("ApplicationProfileGalleryApplication"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ApplicationProfileGalleryApplication = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMGalleryApplication>) content.GetValueForProperty("ApplicationProfileGalleryApplication",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ApplicationProfileGalleryApplication, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMGalleryApplication>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VMGalleryApplicationTypeConverter.ConvertFrom));
@@ -189,6 +185,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             if (content.Contains("ProxyAgentSettingMode"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ProxyAgentSettingMode = (string) content.GetValueForProperty("ProxyAgentSettingMode",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ProxyAgentSettingMode, global::System.Convert.ToString);
+            }
+            if (content.Contains("ExtensionProfileExtension"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ExtensionProfileExtension = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtension>) content.GetValueForProperty("ExtensionProfileExtension",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ExtensionProfileExtension, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtension>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VirtualMachineScaleSetExtensionTypeConverter.ConvertFrom));
             }
             if (content.Contains("ExtensionProfileExtensionsTimeBudget"))
             {
@@ -367,10 +367,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).DiagnosticProfileBootDiagnostic = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBootDiagnostics) content.GetValueForProperty("DiagnosticProfileBootDiagnostic",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).DiagnosticProfileBootDiagnostic, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.BootDiagnosticsTypeConverter.ConvertFrom);
             }
-            if (content.Contains("ExtensionProfileExtension"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ExtensionProfileExtension = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtension>) content.GetValueForProperty("ExtensionProfileExtension",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ExtensionProfileExtension, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtension>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VirtualMachineScaleSetExtensionTypeConverter.ConvertFrom));
-            }
             if (content.Contains("ApplicationProfileGalleryApplication"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ApplicationProfileGalleryApplication = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMGalleryApplication>) content.GetValueForProperty("ApplicationProfileGalleryApplication",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ApplicationProfileGalleryApplication, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMGalleryApplication>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VMGalleryApplicationTypeConverter.ConvertFrom));
@@ -410,6 +406,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             if (content.Contains("ProxyAgentSettingMode"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ProxyAgentSettingMode = (string) content.GetValueForProperty("ProxyAgentSettingMode",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ProxyAgentSettingMode, global::System.Convert.ToString);
+            }
+            if (content.Contains("ExtensionProfileExtension"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ExtensionProfileExtension = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtension>) content.GetValueForProperty("ExtensionProfileExtension",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IBaseVirtualMachineProfileInternal)this).ExtensionProfileExtension, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtension>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VirtualMachineScaleSetExtensionTypeConverter.ConvertFrom));
             }
             if (content.Contains("ExtensionProfileExtensionsTimeBudget"))
             {

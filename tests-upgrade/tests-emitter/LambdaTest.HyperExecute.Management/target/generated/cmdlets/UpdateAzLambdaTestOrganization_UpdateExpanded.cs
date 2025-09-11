@@ -331,8 +331,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Cmdlets
         ReadOnly = false,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceTags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
 
         /// <summary>
         /// The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in
@@ -748,7 +748,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Cmdlets
         {
             if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("Tag")))
             {
-                this.Tag = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITags)(this.MyInvocation?.BoundParameters["Tag"]);
+                this.Tag = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceTags)(this.MyInvocation?.BoundParameters["Tag"]);
             }
             if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("UserEmailAddress")))
             {
@@ -761,10 +761,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Cmdlets
             if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("SingleSignOnPropertyUrl")))
             {
                 this.SingleSignOnPropertyUrl = (string)(this.MyInvocation?.BoundParameters["SingleSignOnPropertyUrl"]);
-            }
-            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("SingleSignOnPropertyAadDomain")))
-            {
-                this.SingleSignOnPropertyAadDomain = (string[])(this.MyInvocation?.BoundParameters["SingleSignOnPropertyAadDomain"]);
             }
             if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("MarketplaceSubscriptionId")))
             {
@@ -797,6 +793,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Cmdlets
             if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("SingleSignOnPropertyEnterpriseAppId")))
             {
                 this.SingleSignOnPropertyEnterpriseAppId = (string)(this.MyInvocation?.BoundParameters["SingleSignOnPropertyEnterpriseAppId"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("SingleSignOnPropertyAadDomain")))
+            {
+                this.SingleSignOnPropertyAadDomain = (string[])(this.MyInvocation?.BoundParameters["SingleSignOnPropertyAadDomain"]);
             }
             if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("OfferDetailPublisherId")))
             {

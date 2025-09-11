@@ -167,7 +167,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITrackedResourceTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.TrackedResourceTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Location"))
             {
@@ -213,10 +213,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyUrl = (string) content.GetValueForProperty("SingleSignOnPropertyUrl",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyUrl, global::System.Convert.ToString);
             }
-            if (content.Contains("SingleSignOnPropertyAadDomain"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyAadDomain = (System.Collections.Generic.List<string>) content.GetValueForProperty("SingleSignOnPropertyAadDomain",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyAadDomain, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
             if (content.Contains("IdentityPrincipalId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
@@ -231,7 +227,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("MarketplaceSubscriptionId"))
             {
@@ -268,6 +264,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             if (content.Contains("SingleSignOnPropertyEnterpriseAppId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyEnterpriseAppId = (string) content.GetValueForProperty("SingleSignOnPropertyEnterpriseAppId",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyEnterpriseAppId, global::System.Convert.ToString);
+            }
+            if (content.Contains("SingleSignOnPropertyAadDomain"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyAadDomain = (System.Collections.Generic.List<string>) content.GetValueForProperty("SingleSignOnPropertyAadDomain",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyAadDomain, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("OfferDetailPublisherId"))
             {
@@ -368,7 +368,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITrackedResourceTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.TrackedResourceTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Location"))
             {
@@ -414,10 +414,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyUrl = (string) content.GetValueForProperty("SingleSignOnPropertyUrl",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyUrl, global::System.Convert.ToString);
             }
-            if (content.Contains("SingleSignOnPropertyAadDomain"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyAadDomain = (System.Collections.Generic.List<string>) content.GetValueForProperty("SingleSignOnPropertyAadDomain",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyAadDomain, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
             if (content.Contains("IdentityPrincipalId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
@@ -432,7 +428,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("MarketplaceSubscriptionId"))
             {
@@ -469,6 +465,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             if (content.Contains("SingleSignOnPropertyEnterpriseAppId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyEnterpriseAppId = (string) content.GetValueForProperty("SingleSignOnPropertyEnterpriseAppId",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyEnterpriseAppId, global::System.Convert.ToString);
+            }
+            if (content.Contains("SingleSignOnPropertyAadDomain"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyAadDomain = (System.Collections.Generic.List<string>) content.GetValueForProperty("SingleSignOnPropertyAadDomain",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).SingleSignOnPropertyAadDomain, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("OfferDetailPublisherId"))
             {

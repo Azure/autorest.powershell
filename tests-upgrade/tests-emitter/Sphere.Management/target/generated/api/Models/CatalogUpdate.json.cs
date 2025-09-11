@@ -63,7 +63,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             {
                 return;
             }
-            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.Tags.FromJson(__jsonTags) : _tag;}
+            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.CatalogUpdateTags.FromJson(__jsonTags) : _tag;}
             AfterFromJson(json);
         }
 

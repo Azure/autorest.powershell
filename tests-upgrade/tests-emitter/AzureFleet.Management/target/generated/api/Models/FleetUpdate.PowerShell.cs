@@ -114,7 +114,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.FleetUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("ComputeProfile"))
             {
@@ -134,7 +134,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IManagedServiceIdentityUpdateUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ManagedServiceIdentityUpdateUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("PlanName"))
             {
@@ -275,7 +275,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.FleetUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("ComputeProfile"))
             {
@@ -295,7 +295,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IManagedServiceIdentityUpdateUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ManagedServiceIdentityUpdateUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("PlanName"))
             {

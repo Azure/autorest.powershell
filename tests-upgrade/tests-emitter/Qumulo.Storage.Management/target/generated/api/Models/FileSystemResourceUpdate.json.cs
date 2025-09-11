@@ -65,7 +65,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             }
             {_identity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonObject>("identity"), out var __jsonIdentity) ? Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ManagedServiceIdentity.FromJson(__jsonIdentity) : _identity;}
             {_property = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonObject>("properties"), out var __jsonProperties) ? Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.FileSystemResourceUpdateProperties.FromJson(__jsonProperties) : _property;}
-            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.Tags.FromJson(__jsonTags) : _tag;}
+            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.FileSystemResourceUpdateTags.FromJson(__jsonTags) : _tag;}
             AfterFromJson(json);
         }
 

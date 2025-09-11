@@ -55,8 +55,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         ReadOnly = false,
         Description = @"A set of key-value pairs that contain custom attributes set by the customer.",
         SerializedName = @"attributes",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes Attribute { get => _propertiesBody.Attribute ?? null /* object */; set => _propertiesBody.Attribute = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesAttributes) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesAttributes Attribute { get => _propertiesBody.Attribute ?? null /* object */; set => _propertiesBody.Attribute = value; }
 
         /// <summary>Wait for .NET debugger to attach</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Wait for .NET debugger to attach")]
@@ -353,8 +353,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         ReadOnly = false,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags Tag { get => _propertiesBody.Tag ?? null /* object */; set => _propertiesBody.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdateTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdateTags Tag { get => _propertiesBody.Tag ?? null /* object */; set => _propertiesBody.Tag = value; }
 
         /// <summary>
         /// <c>overrideOnDefault</c> will be called before the regular onDefault has been processed, allowing customization of what

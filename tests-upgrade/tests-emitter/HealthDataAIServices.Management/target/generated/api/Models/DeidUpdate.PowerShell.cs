@@ -84,7 +84,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.DeidUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("IdentityType"))
             {
@@ -92,7 +92,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ManagedServiceIdentityUpdateUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("PublicNetworkAccess"))
             {
@@ -125,7 +125,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.DeidUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("IdentityType"))
             {
@@ -133,7 +133,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ManagedServiceIdentityUpdateUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("PublicNetworkAccess"))
             {

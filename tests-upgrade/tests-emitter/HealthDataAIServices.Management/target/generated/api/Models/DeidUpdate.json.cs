@@ -65,7 +65,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             }
             {_identity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Json.JsonObject>("identity"), out var __jsonIdentity) ? Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ManagedServiceIdentityUpdate.FromJson(__jsonIdentity) : _identity;}
             {_property = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Json.JsonObject>("properties"), out var __jsonProperties) ? Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.DeidPropertiesUpdate.FromJson(__jsonProperties) : _property;}
-            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.Tags.FromJson(__jsonTags) : _tag;}
+            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.DeidUpdateTags.FromJson(__jsonTags) : _tag;}
             AfterFromJson(json);
         }
 
