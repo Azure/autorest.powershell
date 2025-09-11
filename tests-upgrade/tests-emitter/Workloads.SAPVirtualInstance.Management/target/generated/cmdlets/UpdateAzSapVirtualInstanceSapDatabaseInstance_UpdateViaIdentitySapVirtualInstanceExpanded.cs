@@ -151,8 +151,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Cmdlets
         ReadOnly = false,
         Description = @"Gets or sets the Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ITags Tag { get => _propertiesBody.Tag ?? null /* object */; set => _propertiesBody.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapDatabaseInstanceRequestTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IUpdateSapDatabaseInstanceRequestTags Tag { get => _propertiesBody.Tag ?? null /* object */; set => _propertiesBody.Tag = value; }
 
         /// <summary>
         /// <c>overrideOnDefault</c> will be called before the regular onDefault has been processed, allowing customization of what

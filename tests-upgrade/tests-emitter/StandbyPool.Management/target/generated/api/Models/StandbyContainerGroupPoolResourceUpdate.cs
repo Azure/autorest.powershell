@@ -51,11 +51,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         internal Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateProperties Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.StandbyContainerGroupPoolResourceUpdateProperties()); set => this._property = value; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.StandbyContainerGroupPoolResourceUpdateTags()); set => this._tag = value; }
 
         /// <summary>Specifies zones of standby container group pools.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Inlined)]
@@ -136,8 +136,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateTags Tag { get; set; }
         /// <summary>Specifies zones of standby container group pools.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
         Required = false,
@@ -175,7 +175,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         /// <summary>The resource-specific properties for this resource.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateProperties Property { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdateTags Tag { get; set; }
         /// <summary>Specifies zones of standby container group pools.</summary>
         System.Collections.Generic.List<string> Zone { get; set; }
 

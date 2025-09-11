@@ -155,10 +155,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ProvisioningState, global::System.Convert.ToString);
             }
-            if (content.Contains("ComplianceResult"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ComplianceResult = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IComplianceResult>) content.GetValueForProperty("ComplianceResult",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ComplianceResult, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IComplianceResult>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ComplianceResultTypeConverter.ConvertFrom));
-            }
             if (content.Contains("ReportProperty"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ReportProperty = (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportProperties) content.GetValueForProperty("ReportProperty",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ReportProperty, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ReportPropertiesTypeConverter.ConvertFrom);
@@ -174,6 +170,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             if (content.Contains("CreatedAt"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).CreatedAt = (global::System.DateTime?) content.GetValueForProperty("CreatedAt",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).CreatedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+            }
+            if (content.Contains("ComplianceResult"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ComplianceResult = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IComplianceResult>) content.GetValueForProperty("ComplianceResult",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ComplianceResult, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IComplianceResult>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ComplianceResultTypeConverter.ConvertFrom));
             }
             if (content.Contains("ReportSystemDataCreatedBy"))
             {
@@ -264,10 +264,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ProvisioningState, global::System.Convert.ToString);
             }
-            if (content.Contains("ComplianceResult"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ComplianceResult = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IComplianceResult>) content.GetValueForProperty("ComplianceResult",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ComplianceResult, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IComplianceResult>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ComplianceResultTypeConverter.ConvertFrom));
-            }
             if (content.Contains("ReportProperty"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ReportProperty = (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportProperties) content.GetValueForProperty("ReportProperty",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ReportProperty, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ReportPropertiesTypeConverter.ConvertFrom);
@@ -283,6 +279,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             if (content.Contains("CreatedAt"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).CreatedAt = (global::System.DateTime?) content.GetValueForProperty("CreatedAt",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).CreatedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+            }
+            if (content.Contains("ComplianceResult"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ComplianceResult = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IComplianceResult>) content.GetValueForProperty("ComplianceResult",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ISnapshotResourceInternal)this).ComplianceResult, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IComplianceResult>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ComplianceResultTypeConverter.ConvertFrom));
             }
             if (content.Contains("ReportSystemDataCreatedBy"))
             {

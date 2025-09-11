@@ -45,14 +45,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         public string ProvisioningState { get => this._provisioningState; }
 
         /// <summary>Backing field for <see cref="ServiceSelector" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IServiceSelector _serviceSelector;
+        private Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesServiceSelector _serviceSelector;
 
         /// <summary>
         /// A dynamic label mapping to select related services. For instance, if you want to create a load balancer only for services
         /// with label "a=b", then please specify {"a": "b"} in the field.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IServiceSelector ServiceSelector { get => (this._serviceSelector = this._serviceSelector ?? new Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ServiceSelector()); set => this._serviceSelector = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesServiceSelector ServiceSelector { get => (this._serviceSelector = this._serviceSelector ?? new Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.LoadBalancerPropertiesServiceSelector()); set => this._serviceSelector = value; }
 
         /// <summary>Creates an new <see cref="LoadBalancerProperties" /> instance.</summary>
         public LoadBalancerProperties()
@@ -124,8 +124,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         Update = true,
         Description = @"A dynamic label mapping to select related services. For instance, if you want to create a load balancer only for services with label ""a=b"", then please specify {""a"": ""b""} in the field.",
         SerializedName = @"serviceSelector",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IServiceSelector) })]
-        Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IServiceSelector ServiceSelector { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesServiceSelector) })]
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesServiceSelector ServiceSelector { get; set; }
 
     }
     /// Details of the LoadBalancer.
@@ -148,7 +148,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         /// A dynamic label mapping to select related services. For instance, if you want to create a load balancer only for services
         /// with label "a=b", then please specify {"a": "b"} in the field.
         /// </summary>
-        Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IServiceSelector ServiceSelector { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesServiceSelector ServiceSelector { get; set; }
 
     }
 }

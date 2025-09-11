@@ -152,10 +152,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).EnableVMAgentPlatformUpdate = (bool?) content.GetValueForProperty("EnableVMAgentPlatformUpdate",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).EnableVMAgentPlatformUpdate, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
-            if (content.Contains("WinRmListener"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).WinRmListener = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>) content.GetValueForProperty("WinRmListener",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).WinRmListener, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.WinRmListenerTypeConverter.ConvertFrom));
-            }
             if (content.Contains("PatchSettingAutomaticByPlatformSetting"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).PatchSettingAutomaticByPlatformSetting = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsVMGuestPatchAutomaticByPlatformSettings) content.GetValueForProperty("PatchSettingAutomaticByPlatformSetting",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).PatchSettingAutomaticByPlatformSetting, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.WindowsVMGuestPatchAutomaticByPlatformSettingsTypeConverter.ConvertFrom);
@@ -171,6 +167,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             if (content.Contains("PatchSettingAssessmentMode"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).PatchSettingAssessmentMode = (string) content.GetValueForProperty("PatchSettingAssessmentMode",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).PatchSettingAssessmentMode, global::System.Convert.ToString);
+            }
+            if (content.Contains("WinRmListener"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).WinRmListener = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>) content.GetValueForProperty("WinRmListener",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).WinRmListener, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.WinRmListenerTypeConverter.ConvertFrom));
             }
             if (content.Contains("AutomaticByPlatformSettingRebootSetting"))
             {
@@ -225,10 +225,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).EnableVMAgentPlatformUpdate = (bool?) content.GetValueForProperty("EnableVMAgentPlatformUpdate",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).EnableVMAgentPlatformUpdate, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
-            if (content.Contains("WinRmListener"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).WinRmListener = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>) content.GetValueForProperty("WinRmListener",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).WinRmListener, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.WinRmListenerTypeConverter.ConvertFrom));
-            }
             if (content.Contains("PatchSettingAutomaticByPlatformSetting"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).PatchSettingAutomaticByPlatformSetting = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsVMGuestPatchAutomaticByPlatformSettings) content.GetValueForProperty("PatchSettingAutomaticByPlatformSetting",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).PatchSettingAutomaticByPlatformSetting, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.WindowsVMGuestPatchAutomaticByPlatformSettingsTypeConverter.ConvertFrom);
@@ -244,6 +240,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             if (content.Contains("PatchSettingAssessmentMode"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).PatchSettingAssessmentMode = (string) content.GetValueForProperty("PatchSettingAssessmentMode",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).PatchSettingAssessmentMode, global::System.Convert.ToString);
+            }
+            if (content.Contains("WinRmListener"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).WinRmListener = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>) content.GetValueForProperty("WinRmListener",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsConfigurationInternal)this).WinRmListener, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.WinRmListenerTypeConverter.ConvertFrom));
             }
             if (content.Contains("AutomaticByPlatformSettingRebootSetting"))
             {

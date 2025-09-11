@@ -142,7 +142,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             }
             if (content.Contains("DataDiskName"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesInternal)this).DataDiskName = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDataDiskNames) content.GetValueForProperty("DataDiskName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesInternal)this).DataDiskName, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DataDiskNamesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesInternal)this).DataDiskName = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesDataDiskNames) content.GetValueForProperty("DataDiskName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesInternal)this).DataDiskName, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesDataDiskNamesTypeConverter.ConvertFrom);
             }
             AfterDeserializeDictionary(content);
         }
@@ -179,7 +179,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             }
             if (content.Contains("DataDiskName"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesInternal)this).DataDiskName = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDataDiskNames) content.GetValueForProperty("DataDiskName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesInternal)this).DataDiskName, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DataDiskNamesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesInternal)this).DataDiskName = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesDataDiskNames) content.GetValueForProperty("DataDiskName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesInternal)this).DataDiskName, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesDataDiskNamesTypeConverter.ConvertFrom);
             }
             AfterDeserializePSObject(content);
         }

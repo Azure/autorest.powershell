@@ -130,25 +130,21 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierCustomResourceNamesInternal)this).NamingPatternType = (string) content.GetValueForProperty("NamingPatternType",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierCustomResourceNamesInternal)this).NamingPatternType, global::System.Convert.ToString);
             }
-            if (content.Contains("CentralServerVirtualMachine"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerVirtualMachine = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>) content.GetValueForProperty("CentralServerVirtualMachine",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerVirtualMachine, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesTypeConverter.ConvertFrom));
-            }
-            if (content.Contains("ApplicationServerVirtualMachine"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).ApplicationServerVirtualMachine = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>) content.GetValueForProperty("ApplicationServerVirtualMachine",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).ApplicationServerVirtualMachine, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesTypeConverter.ConvertFrom));
-            }
-            if (content.Contains("DatabaseServerVirtualMachine"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).DatabaseServerVirtualMachine = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>) content.GetValueForProperty("DatabaseServerVirtualMachine",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).DatabaseServerVirtualMachine, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesTypeConverter.ConvertFrom));
-            }
             if (content.Contains("CentralServerLoadBalancer"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerLoadBalancer = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ILoadBalancerResourceNames) content.GetValueForProperty("CentralServerLoadBalancer",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerLoadBalancer, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.LoadBalancerResourceNamesTypeConverter.ConvertFrom);
             }
+            if (content.Contains("CentralServerVirtualMachine"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerVirtualMachine = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>) content.GetValueForProperty("CentralServerVirtualMachine",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerVirtualMachine, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesTypeConverter.ConvertFrom));
+            }
             if (content.Contains("CentralServerAvailabilitySetName"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerAvailabilitySetName = (string) content.GetValueForProperty("CentralServerAvailabilitySetName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerAvailabilitySetName, global::System.Convert.ToString);
+            }
+            if (content.Contains("ApplicationServerVirtualMachine"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).ApplicationServerVirtualMachine = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>) content.GetValueForProperty("ApplicationServerVirtualMachine",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).ApplicationServerVirtualMachine, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesTypeConverter.ConvertFrom));
             }
             if (content.Contains("ApplicationServerAvailabilitySetName"))
             {
@@ -157,6 +153,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             if (content.Contains("DatabaseServerLoadBalancer"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).DatabaseServerLoadBalancer = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ILoadBalancerResourceNames) content.GetValueForProperty("DatabaseServerLoadBalancer",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).DatabaseServerLoadBalancer, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.LoadBalancerResourceNamesTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("DatabaseServerVirtualMachine"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).DatabaseServerVirtualMachine = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>) content.GetValueForProperty("DatabaseServerVirtualMachine",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).DatabaseServerVirtualMachine, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesTypeConverter.ConvertFrom));
             }
             if (content.Contains("DatabaseServerAvailabilitySetName"))
             {
@@ -239,25 +239,21 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierCustomResourceNamesInternal)this).NamingPatternType = (string) content.GetValueForProperty("NamingPatternType",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierCustomResourceNamesInternal)this).NamingPatternType, global::System.Convert.ToString);
             }
-            if (content.Contains("CentralServerVirtualMachine"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerVirtualMachine = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>) content.GetValueForProperty("CentralServerVirtualMachine",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerVirtualMachine, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesTypeConverter.ConvertFrom));
-            }
-            if (content.Contains("ApplicationServerVirtualMachine"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).ApplicationServerVirtualMachine = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>) content.GetValueForProperty("ApplicationServerVirtualMachine",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).ApplicationServerVirtualMachine, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesTypeConverter.ConvertFrom));
-            }
-            if (content.Contains("DatabaseServerVirtualMachine"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).DatabaseServerVirtualMachine = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>) content.GetValueForProperty("DatabaseServerVirtualMachine",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).DatabaseServerVirtualMachine, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesTypeConverter.ConvertFrom));
-            }
             if (content.Contains("CentralServerLoadBalancer"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerLoadBalancer = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ILoadBalancerResourceNames) content.GetValueForProperty("CentralServerLoadBalancer",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerLoadBalancer, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.LoadBalancerResourceNamesTypeConverter.ConvertFrom);
             }
+            if (content.Contains("CentralServerVirtualMachine"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerVirtualMachine = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>) content.GetValueForProperty("CentralServerVirtualMachine",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerVirtualMachine, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesTypeConverter.ConvertFrom));
+            }
             if (content.Contains("CentralServerAvailabilitySetName"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerAvailabilitySetName = (string) content.GetValueForProperty("CentralServerAvailabilitySetName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).CentralServerAvailabilitySetName, global::System.Convert.ToString);
+            }
+            if (content.Contains("ApplicationServerVirtualMachine"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).ApplicationServerVirtualMachine = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>) content.GetValueForProperty("ApplicationServerVirtualMachine",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).ApplicationServerVirtualMachine, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesTypeConverter.ConvertFrom));
             }
             if (content.Contains("ApplicationServerAvailabilitySetName"))
             {
@@ -266,6 +262,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             if (content.Contains("DatabaseServerLoadBalancer"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).DatabaseServerLoadBalancer = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ILoadBalancerResourceNames) content.GetValueForProperty("DatabaseServerLoadBalancer",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).DatabaseServerLoadBalancer, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.LoadBalancerResourceNamesTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("DatabaseServerVirtualMachine"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).DatabaseServerVirtualMachine = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>) content.GetValueForProperty("DatabaseServerVirtualMachine",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IThreeTierFullResourceNamesInternal)this).DatabaseServerVirtualMachine, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesTypeConverter.ConvertFrom));
             }
             if (content.Contains("DatabaseServerAvailabilitySetName"))
             {

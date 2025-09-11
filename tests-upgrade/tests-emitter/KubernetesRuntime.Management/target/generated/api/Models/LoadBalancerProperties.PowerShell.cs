@@ -115,7 +115,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("ServiceSelector"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesInternal)this).ServiceSelector = (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IServiceSelector) content.GetValueForProperty("ServiceSelector",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesInternal)this).ServiceSelector, Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ServiceSelectorTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesInternal)this).ServiceSelector = (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesServiceSelector) content.GetValueForProperty("ServiceSelector",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesInternal)this).ServiceSelector, Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.LoadBalancerPropertiesServiceSelectorTypeConverter.ConvertFrom);
             }
             if (content.Contains("AdvertiseMode"))
             {
@@ -152,7 +152,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("ServiceSelector"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesInternal)this).ServiceSelector = (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IServiceSelector) content.GetValueForProperty("ServiceSelector",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesInternal)this).ServiceSelector, Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ServiceSelectorTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesInternal)this).ServiceSelector = (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesServiceSelector) content.GetValueForProperty("ServiceSelector",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesInternal)this).ServiceSelector, Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.LoadBalancerPropertiesServiceSelectorTypeConverter.ConvertFrom);
             }
             if (content.Contains("AdvertiseMode"))
             {

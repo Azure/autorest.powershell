@@ -140,10 +140,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).OperationStatus = (string) content.GetValueForProperty("OperationStatus",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).OperationStatus, global::System.Convert.ToString);
             }
-            if (content.Contains("Detail"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorBase>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorBase>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ApiErrorBaseTypeConverter.ConvertFrom));
-            }
             if (content.Contains("Innererror"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Innererror = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IInnerError) content.GetValueForProperty("Innererror",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Innererror, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.InnerErrorTypeConverter.ConvertFrom);
@@ -159,6 +155,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             if (content.Contains("Message"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Message = (string) content.GetValueForProperty("Message",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Message, global::System.Convert.ToString);
+            }
+            if (content.Contains("Detail"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorBase>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorBase>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ApiErrorBaseTypeConverter.ConvertFrom));
             }
             if (content.Contains("InnererrorErrorDetail"))
             {
@@ -201,10 +201,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).OperationStatus = (string) content.GetValueForProperty("OperationStatus",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).OperationStatus, global::System.Convert.ToString);
             }
-            if (content.Contains("Detail"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorBase>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorBase>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ApiErrorBaseTypeConverter.ConvertFrom));
-            }
             if (content.Contains("Innererror"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Innererror = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IInnerError) content.GetValueForProperty("Innererror",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Innererror, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.InnerErrorTypeConverter.ConvertFrom);
@@ -220,6 +216,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             if (content.Contains("Message"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Message = (string) content.GetValueForProperty("Message",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Message, global::System.Convert.ToString);
+            }
+            if (content.Contains("Detail"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorBase>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IApiErrorBase>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ApiErrorBaseTypeConverter.ConvertFrom));
             }
             if (content.Contains("InnererrorErrorDetail"))
             {

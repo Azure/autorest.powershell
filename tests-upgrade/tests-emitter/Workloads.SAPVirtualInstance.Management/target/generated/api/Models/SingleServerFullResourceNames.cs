@@ -44,7 +44,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
         /// For application and cs layers, only 'default' volume is supported
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Origin(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDataDiskNames VirtualMachineDataDiskName { get => ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesInternal)VirtualMachine).DataDiskName; set => ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesInternal)VirtualMachine).DataDiskName = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesDataDiskNames VirtualMachineDataDiskName { get => ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesInternal)VirtualMachine).DataDiskName; set => ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesInternal)VirtualMachine).DataDiskName = value ?? null /* model class */; }
 
         /// <summary>
         /// The full name for virtual-machine's host (computer name). Currently, ACSS only supports host names which are less than
@@ -114,8 +114,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
         Update = true,
         Description = @"The full resource names for virtual machine data disks. This is a dictionary containing list of names of data disks per volume. Currently supported volumes for database layer are ['hana/data', 'hana/log', hana/shared', 'usr/sap', 'os', 'backup']. For application and cs layers, only 'default' volume is supported",
         SerializedName = @"dataDiskNames",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDataDiskNames) })]
-        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDataDiskNames VirtualMachineDataDiskName { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesDataDiskNames) })]
+        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesDataDiskNames VirtualMachineDataDiskName { get; set; }
         /// <summary>
         /// The full name for virtual-machine's host (computer name). Currently, ACSS only supports host names which are less than
         /// or equal to 13 characters long. If this value is not provided, vmName will be used as host name.
@@ -189,7 +189,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
         /// volume. Currently supported volumes for database layer are ['hana/data', 'hana/log', hana/shared', 'usr/sap', 'os', 'backup'].
         /// For application and cs layers, only 'default' volume is supported
         /// </summary>
-        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDataDiskNames VirtualMachineDataDiskName { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesDataDiskNames VirtualMachineDataDiskName { get; set; }
         /// <summary>
         /// The full name for virtual-machine's host (computer name). Currently, ACSS only supports host names which are less than
         /// or equal to 13 characters long. If this value is not provided, vmName will be used as host name.

@@ -76,7 +76,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
                 return;
             }
             {_identity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonObject>("identity"), out var __jsonIdentity) ? Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ManagedServiceIdentity.FromJson(__jsonIdentity) : _identity;}
-            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.Tags.FromJson(__jsonTags) : _tag;}
+            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.InstanceResourceUpdateTags.FromJson(__jsonTags) : _tag;}
             AfterFromJson(json);
         }
 

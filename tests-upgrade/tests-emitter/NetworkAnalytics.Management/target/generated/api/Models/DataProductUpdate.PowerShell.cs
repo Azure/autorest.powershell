@@ -84,11 +84,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.TagsTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("Owner"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Owner = (System.Collections.Generic.List<string>) content.GetValueForProperty("Owner",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Owner, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.DataProductUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("IdentityPrincipalId"))
             {
@@ -104,7 +100,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4UserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ManagedServiceIdentityV4UserAssignedIdentitiesTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("Owner"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Owner = (System.Collections.Generic.List<string>) content.GetValueForProperty("Owner",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Owner, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("PurviewAccount"))
             {
@@ -149,11 +149,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.TagsTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("Owner"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Owner = (System.Collections.Generic.List<string>) content.GetValueForProperty("Owner",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Owner, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.DataProductUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("IdentityPrincipalId"))
             {
@@ -169,7 +165,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IManagedServiceIdentityV4UserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.ManagedServiceIdentityV4UserAssignedIdentitiesTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("Owner"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Owner = (System.Collections.Generic.List<string>) content.GetValueForProperty("Owner",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductUpdateInternal)this).Owner, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("PurviewAccount"))
             {

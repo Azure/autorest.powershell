@@ -75,7 +75,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models
             {
                 return;
             }
-            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.Informatica.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.Tags.FromJson(__jsonTags) : _tag;}
+            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.Informatica.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.InformaticaOrganizationResourceUpdateTags.FromJson(__jsonTags) : _tag;}
             {_property = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.Informatica.Runtime.Json.JsonObject>("properties"), out var __jsonProperties) ? Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.OrganizationPropertiesCustomUpdate.FromJson(__jsonProperties) : _property;}
             AfterFromJson(json);
         }

@@ -63,7 +63,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             {
                 return;
             }
-            {_diskVolumeConfiguration = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Runtime.Json.JsonObject>("diskVolumeConfigurations"), out var __jsonDiskVolumeConfigurations) ? Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DiskVolumeConfigurations.FromJson(__jsonDiskVolumeConfigurations) : _diskVolumeConfiguration;}
+            {_diskVolumeConfiguration = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Runtime.Json.JsonObject>("diskVolumeConfigurations"), out var __jsonDiskVolumeConfigurations) ? Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DiskConfigurationDiskVolumeConfigurations.FromJson(__jsonDiskVolumeConfigurations) : _diskVolumeConfiguration;}
             AfterFromJson(json);
         }
 

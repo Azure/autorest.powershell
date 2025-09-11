@@ -109,7 +109,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             // actually deserialize
             if (content.Contains("VolumeConfiguration"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDiskConfigurationsResultInternal)this).VolumeConfiguration = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVolumeConfigurations) content.GetValueForProperty("VolumeConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDiskConfigurationsResultInternal)this).VolumeConfiguration, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VolumeConfigurationsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDiskConfigurationsResultInternal)this).VolumeConfiguration = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDiskConfigurationsResultVolumeConfigurations) content.GetValueForProperty("VolumeConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDiskConfigurationsResultInternal)this).VolumeConfiguration, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.SapDiskConfigurationsResultVolumeConfigurationsTypeConverter.ConvertFrom);
             }
             AfterDeserializeDictionary(content);
         }
@@ -130,7 +130,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             // actually deserialize
             if (content.Contains("VolumeConfiguration"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDiskConfigurationsResultInternal)this).VolumeConfiguration = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVolumeConfigurations) content.GetValueForProperty("VolumeConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDiskConfigurationsResultInternal)this).VolumeConfiguration, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VolumeConfigurationsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDiskConfigurationsResultInternal)this).VolumeConfiguration = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDiskConfigurationsResultVolumeConfigurations) content.GetValueForProperty("VolumeConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISapDiskConfigurationsResultInternal)this).VolumeConfiguration, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.SapDiskConfigurationsResultVolumeConfigurationsTypeConverter.ConvertFrom);
             }
             AfterDeserializePSObject(content);
         }

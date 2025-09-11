@@ -36,7 +36,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
 
         /// <summary>The identities assigned to this resource by the user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Origin(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
 
         /// <summary>Internal Acessors for Identity</summary>
         Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentity Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal.Identity { get => (this._identity = this._identity ?? new Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ManagedServiceIdentity()); set { {_identity = value;} } }
@@ -48,11 +48,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
         string Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateInternal.IdentityTenantId { get => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityInternal)Identity).TenantId; set => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityInternal)Identity).TenantId = value ?? null; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Origin(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.InstanceResourceUpdateTags()); set => this._tag = value; }
 
         /// <summary>Creates an new <see cref="InstanceResourceUpdate" /> instance.</summary>
         public InstanceResourceUpdate()
@@ -111,8 +111,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
         Update = true,
         Description = @"The identities assigned to this resource by the user.",
         SerializedName = @"userAssignedIdentities",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IUserAssignedIdentities) })]
-        Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityUserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
         Required = false,
@@ -122,8 +122,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateTags Tag { get; set; }
 
     }
     /// The type used for update operations of the Instance Resource.
@@ -144,9 +144,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned")]
         string IdentityType { get; set; }
         /// <summary>The identities assigned to this resource by the user.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceUpdateTags Tag { get; set; }
 
     }
 }

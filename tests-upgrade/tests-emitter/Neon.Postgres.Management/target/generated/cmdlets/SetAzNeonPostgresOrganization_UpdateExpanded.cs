@@ -414,8 +414,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Cmdlets
         ReadOnly = false,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.ITags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.ITrackedResourceTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Models.ITrackedResourceTags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
 
         /// <summary>Email address of the user</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Email address of the user")]

@@ -24,7 +24,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
 
         /// <summary>The identities assigned to this resource by the user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
 
         /// <summary>Internal Acessors for Identity</summary>
         Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdate Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateInternal.Identity { get => (this._identity = this._identity ?? new Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ManagedServiceIdentityUpdate()); set { {_identity = value;} } }
@@ -44,11 +44,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         public string PublicNetworkAccess { get => ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidPropertiesUpdateInternal)Property).PublicNetworkAccess; set => ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidPropertiesUpdateInternal)Property).PublicNetworkAccess = value ?? null; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.DeidUpdateTags()); set => this._tag = value; }
 
         /// <summary>Creates an new <see cref="DeidUpdate" /> instance.</summary>
         public DeidUpdate()
@@ -81,8 +81,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         Update = true,
         Description = @"The identities assigned to this resource by the user.",
         SerializedName = @"userAssignedIdentities",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities) })]
-        Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateUserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Gets or sets allow or disallow public network access to resource</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Info(
         Required = false,
@@ -104,8 +104,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateTags Tag { get; set; }
 
     }
     /// Patch request body for DeidService
@@ -118,14 +118,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned")]
         string IdentityType { get; set; }
         /// <summary>The identities assigned to this resource by the user.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IManagedServiceIdentityUpdateUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>RP-specific properties</summary>
         Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidPropertiesUpdate Property { get; set; }
         /// <summary>Gets or sets allow or disallow public network access to resource</summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PSArgumentCompleterAttribute("Enabled", "Disabled")]
         string PublicNetworkAccess { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidUpdateTags Tag { get; set; }
 
     }
 }

@@ -215,8 +215,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Cmdlets
         ReadOnly = false,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITags Tag { get => _propertiesBody.Tag ?? null /* object */; set => _propertiesBody.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolResourceUpdateTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolResourceUpdateTags Tag { get => _propertiesBody.Tag ?? null /* object */; set => _propertiesBody.Tag = value; }
 
         /// <summary>Specifies the desired state of virtual machines in the pool.</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Specifies the desired state of virtual machines in the pool.")]

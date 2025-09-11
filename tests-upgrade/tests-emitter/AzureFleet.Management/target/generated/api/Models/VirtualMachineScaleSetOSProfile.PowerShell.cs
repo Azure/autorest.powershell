@@ -188,10 +188,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WindowConfigurationEnableVMAgentPlatformUpdate = (bool?) content.GetValueForProperty("WindowConfigurationEnableVMAgentPlatformUpdate",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WindowConfigurationEnableVMAgentPlatformUpdate, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
-            if (content.Contains("WinRmListener"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WinRmListener = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>) content.GetValueForProperty("WinRmListener",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WinRmListener, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.WinRmListenerTypeConverter.ConvertFrom));
-            }
             if (content.Contains("LinuxConfigurationSsh"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).LinuxConfigurationSsh = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISshConfiguration) content.GetValueForProperty("LinuxConfigurationSsh",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).LinuxConfigurationSsh, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SshConfigurationTypeConverter.ConvertFrom);
@@ -212,10 +208,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).LinuxConfigurationEnableVMAgentPlatformUpdate = (bool?) content.GetValueForProperty("LinuxConfigurationEnableVMAgentPlatformUpdate",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).LinuxConfigurationEnableVMAgentPlatformUpdate, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
-            if (content.Contains("SshPublicKey"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).SshPublicKey = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISshPublicKey>) content.GetValueForProperty("SshPublicKey",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).SshPublicKey, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISshPublicKey>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SshPublicKeyTypeConverter.ConvertFrom));
-            }
             if (content.Contains("WindowsConfigurationPatchSettingsAutomaticByPlatformSetting"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WindowsConfigurationPatchSettingsAutomaticByPlatformSetting = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsVMGuestPatchAutomaticByPlatformSettings) content.GetValueForProperty("WindowsConfigurationPatchSettingsAutomaticByPlatformSetting",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WindowsConfigurationPatchSettingsAutomaticByPlatformSetting, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.WindowsVMGuestPatchAutomaticByPlatformSettingsTypeConverter.ConvertFrom);
@@ -231,6 +223,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             if (content.Contains("WindowsConfigurationPatchSettingsAssessmentMode"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WindowsConfigurationPatchSettingsAssessmentMode = (string) content.GetValueForProperty("WindowsConfigurationPatchSettingsAssessmentMode",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WindowsConfigurationPatchSettingsAssessmentMode, global::System.Convert.ToString);
+            }
+            if (content.Contains("WinRmListener"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WinRmListener = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>) content.GetValueForProperty("WinRmListener",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WinRmListener, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.WinRmListenerTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("SshPublicKey"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).SshPublicKey = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISshPublicKey>) content.GetValueForProperty("SshPublicKey",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).SshPublicKey, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISshPublicKey>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SshPublicKeyTypeConverter.ConvertFrom));
             }
             if (content.Contains("LinuxConfigurationPatchSettingsAutomaticByPlatformSetting"))
             {
@@ -341,10 +341,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WindowConfigurationEnableVMAgentPlatformUpdate = (bool?) content.GetValueForProperty("WindowConfigurationEnableVMAgentPlatformUpdate",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WindowConfigurationEnableVMAgentPlatformUpdate, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
-            if (content.Contains("WinRmListener"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WinRmListener = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>) content.GetValueForProperty("WinRmListener",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WinRmListener, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.WinRmListenerTypeConverter.ConvertFrom));
-            }
             if (content.Contains("LinuxConfigurationSsh"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).LinuxConfigurationSsh = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISshConfiguration) content.GetValueForProperty("LinuxConfigurationSsh",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).LinuxConfigurationSsh, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SshConfigurationTypeConverter.ConvertFrom);
@@ -365,10 +361,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).LinuxConfigurationEnableVMAgentPlatformUpdate = (bool?) content.GetValueForProperty("LinuxConfigurationEnableVMAgentPlatformUpdate",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).LinuxConfigurationEnableVMAgentPlatformUpdate, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
-            if (content.Contains("SshPublicKey"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).SshPublicKey = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISshPublicKey>) content.GetValueForProperty("SshPublicKey",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).SshPublicKey, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISshPublicKey>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SshPublicKeyTypeConverter.ConvertFrom));
-            }
             if (content.Contains("WindowsConfigurationPatchSettingsAutomaticByPlatformSetting"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WindowsConfigurationPatchSettingsAutomaticByPlatformSetting = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWindowsVMGuestPatchAutomaticByPlatformSettings) content.GetValueForProperty("WindowsConfigurationPatchSettingsAutomaticByPlatformSetting",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WindowsConfigurationPatchSettingsAutomaticByPlatformSetting, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.WindowsVMGuestPatchAutomaticByPlatformSettingsTypeConverter.ConvertFrom);
@@ -384,6 +376,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             if (content.Contains("WindowsConfigurationPatchSettingsAssessmentMode"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WindowsConfigurationPatchSettingsAssessmentMode = (string) content.GetValueForProperty("WindowsConfigurationPatchSettingsAssessmentMode",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WindowsConfigurationPatchSettingsAssessmentMode, global::System.Convert.ToString);
+            }
+            if (content.Contains("WinRmListener"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WinRmListener = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>) content.GetValueForProperty("WinRmListener",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).WinRmListener, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IWinRmListener>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.WinRmListenerTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("SshPublicKey"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).SshPublicKey = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISshPublicKey>) content.GetValueForProperty("SshPublicKey",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).SshPublicKey, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISshPublicKey>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SshPublicKeyTypeConverter.ConvertFrom));
             }
             if (content.Contains("LinuxConfigurationPatchSettingsAutomaticByPlatformSetting"))
             {

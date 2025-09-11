@@ -78,7 +78,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             {_principalId = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Json.JsonString>("principalId"), out var __jsonPrincipalId) ? (string)__jsonPrincipalId : (string)_principalId;}
             {_tenantId = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Json.JsonString>("tenantId"), out var __jsonTenantId) ? (string)__jsonTenantId : (string)_tenantId;}
             {_type = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Json.JsonString>("type"), out var __jsonType) ? (string)__jsonType : (string)_type;}
-            {_userAssignedIdentity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Json.JsonObject>("userAssignedIdentities"), out var __jsonUserAssignedIdentities) ? Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.UserAssignedIdentities.FromJson(__jsonUserAssignedIdentities) : _userAssignedIdentity;}
+            {_userAssignedIdentity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Json.JsonObject>("userAssignedIdentities"), out var __jsonUserAssignedIdentities) ? Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.ManagedServiceIdentityUserAssignedIdentities.FromJson(__jsonUserAssignedIdentities) : _userAssignedIdentity;}
             AfterFromJson(json);
         }
 

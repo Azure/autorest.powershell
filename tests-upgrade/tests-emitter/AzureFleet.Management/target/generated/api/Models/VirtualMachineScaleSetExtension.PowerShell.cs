@@ -140,10 +140,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).Type, global::System.Convert.ToString);
             }
-            if (content.Contains("Setting"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).Setting = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISettings) content.GetValueForProperty("Setting",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).Setting, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SettingsTypeConverter.ConvertFrom);
-            }
             if (content.Contains("ProtectedSettingsFromKeyVault"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).ProtectedSettingsFromKeyVault = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IKeyVaultSecretReference) content.GetValueForProperty("ProtectedSettingsFromKeyVault",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).ProtectedSettingsFromKeyVault, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.KeyVaultSecretReferenceTypeConverter.ConvertFrom);
@@ -172,9 +168,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).EnableAutomaticUpgrade = (bool?) content.GetValueForProperty("EnableAutomaticUpgrade",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).EnableAutomaticUpgrade, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
+            if (content.Contains("Setting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).Setting = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesSettings) content.GetValueForProperty("Setting",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).Setting, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VirtualMachineScaleSetExtensionPropertiesSettingsTypeConverter.ConvertFrom);
+            }
             if (content.Contains("ProtectedSetting"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).ProtectedSetting = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISettings) content.GetValueForProperty("ProtectedSetting",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).ProtectedSetting, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SettingsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).ProtectedSetting = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesProtectedSettings) content.GetValueForProperty("ProtectedSetting",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).ProtectedSetting, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VirtualMachineScaleSetExtensionPropertiesProtectedSettingsTypeConverter.ConvertFrom);
             }
             if (content.Contains("ProvisioningState"))
             {
@@ -233,10 +233,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).Type, global::System.Convert.ToString);
             }
-            if (content.Contains("Setting"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).Setting = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISettings) content.GetValueForProperty("Setting",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).Setting, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SettingsTypeConverter.ConvertFrom);
-            }
             if (content.Contains("ProtectedSettingsFromKeyVault"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).ProtectedSettingsFromKeyVault = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IKeyVaultSecretReference) content.GetValueForProperty("ProtectedSettingsFromKeyVault",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).ProtectedSettingsFromKeyVault, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.KeyVaultSecretReferenceTypeConverter.ConvertFrom);
@@ -265,9 +261,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).EnableAutomaticUpgrade = (bool?) content.GetValueForProperty("EnableAutomaticUpgrade",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).EnableAutomaticUpgrade, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
+            if (content.Contains("Setting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).Setting = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesSettings) content.GetValueForProperty("Setting",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).Setting, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VirtualMachineScaleSetExtensionPropertiesSettingsTypeConverter.ConvertFrom);
+            }
             if (content.Contains("ProtectedSetting"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).ProtectedSetting = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISettings) content.GetValueForProperty("ProtectedSetting",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).ProtectedSetting, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SettingsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).ProtectedSetting = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionPropertiesProtectedSettings) content.GetValueForProperty("ProtectedSetting",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetExtensionInternal)this).ProtectedSetting, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VirtualMachineScaleSetExtensionPropertiesProtectedSettingsTypeConverter.ConvertFrom);
             }
             if (content.Contains("ProvisioningState"))
             {

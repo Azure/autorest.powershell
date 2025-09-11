@@ -167,7 +167,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.TrackedResourceTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Location"))
             {
@@ -213,10 +213,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyUrl = (string) content.GetValueForProperty("SingleSignOnPropertyUrl",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyUrl, global::System.Convert.ToString);
             }
-            if (content.Contains("SingleSignOnPropertyAadDomain"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain = (System.Collections.Generic.List<string>) content.GetValueForProperty("SingleSignOnPropertyAadDomain",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
             if (content.Contains("IdentityPrincipalId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
@@ -231,7 +227,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("MarketplaceSubscriptionId"))
             {
@@ -264,6 +260,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             if (content.Contains("SingleSignOnPropertyEnterpriseAppId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyEnterpriseAppId = (string) content.GetValueForProperty("SingleSignOnPropertyEnterpriseAppId",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyEnterpriseAppId, global::System.Convert.ToString);
+            }
+            if (content.Contains("SingleSignOnPropertyAadDomain"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain = (System.Collections.Generic.List<string>) content.GetValueForProperty("SingleSignOnPropertyAadDomain",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("OfferDetailPublisherId"))
             {
@@ -364,7 +364,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITrackedResourceInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.TrackedResourceTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Location"))
             {
@@ -410,10 +410,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyUrl = (string) content.GetValueForProperty("SingleSignOnPropertyUrl",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyUrl, global::System.Convert.ToString);
             }
-            if (content.Contains("SingleSignOnPropertyAadDomain"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain = (System.Collections.Generic.List<string>) content.GetValueForProperty("SingleSignOnPropertyAadDomain",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
             if (content.Contains("IdentityPrincipalId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
@@ -428,7 +424,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("MarketplaceSubscriptionId"))
             {
@@ -461,6 +457,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             if (content.Contains("SingleSignOnPropertyEnterpriseAppId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyEnterpriseAppId = (string) content.GetValueForProperty("SingleSignOnPropertyEnterpriseAppId",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyEnterpriseAppId, global::System.Convert.ToString);
+            }
+            if (content.Contains("SingleSignOnPropertyAadDomain"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain = (System.Collections.Generic.List<string>) content.GetValueForProperty("SingleSignOnPropertyAadDomain",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("OfferDetailPublisherId"))
             {

@@ -159,10 +159,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).ProvisioningState, global::System.Convert.ToString);
             }
-            if (content.Contains("PreviewFeature"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PreviewFeature = (System.Collections.Generic.List<string>) content.GetValueForProperty("PreviewFeature",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PreviewFeature, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
             if (content.Contains("RestoreParameter"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).RestoreParameter = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterRestoreParameters) content.GetValueForProperty("RestoreParameter",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).RestoreParameter, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.MongoClusterRestoreParametersTypeConverter.ConvertFrom);
@@ -222,6 +218,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             if (content.Contains("PrivateEndpointConnection"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PrivateEndpointConnection = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnection>) content.GetValueForProperty("PrivateEndpointConnection",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PrivateEndpointConnection, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnection>(__y, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.PrivateEndpointConnectionTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("PreviewFeature"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PreviewFeature = (System.Collections.Generic.List<string>) content.GetValueForProperty("PreviewFeature",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PreviewFeature, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("InfrastructureVersion"))
             {
@@ -356,10 +356,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).ProvisioningState, global::System.Convert.ToString);
             }
-            if (content.Contains("PreviewFeature"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PreviewFeature = (System.Collections.Generic.List<string>) content.GetValueForProperty("PreviewFeature",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PreviewFeature, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
             if (content.Contains("RestoreParameter"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).RestoreParameter = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterRestoreParameters) content.GetValueForProperty("RestoreParameter",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).RestoreParameter, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.MongoClusterRestoreParametersTypeConverter.ConvertFrom);
@@ -419,6 +415,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             if (content.Contains("PrivateEndpointConnection"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PrivateEndpointConnection = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnection>) content.GetValueForProperty("PrivateEndpointConnection",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PrivateEndpointConnection, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnection>(__y, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.PrivateEndpointConnectionTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("PreviewFeature"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PreviewFeature = (System.Collections.Generic.List<string>) content.GetValueForProperty("PreviewFeature",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PreviewFeature, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("InfrastructureVersion"))
             {

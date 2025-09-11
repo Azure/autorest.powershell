@@ -113,14 +113,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassPropertiesUpdate) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.StorageClassPropertiesUpdateTypeConverter.ConvertFrom);
             }
-            if (content.Contains("MountOption"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).MountOption = (System.Collections.Generic.List<string>) content.GetValueForProperty("MountOption",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).MountOption, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
-            if (content.Contains("AccessMode"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).AccessMode = (System.Collections.Generic.List<string>) content.GetValueForProperty("AccessMode",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).AccessMode, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
             if (content.Contains("Priority"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).Priority = (long?) content.GetValueForProperty("Priority",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).Priority, (__y)=> (long) global::System.Convert.ChangeType(__y, typeof(long)));
@@ -132,6 +124,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             if (content.Contains("AllowVolumeExpansion"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).AllowVolumeExpansion = (string) content.GetValueForProperty("AllowVolumeExpansion",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).AllowVolumeExpansion, global::System.Convert.ToString);
+            }
+            if (content.Contains("MountOption"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).MountOption = (System.Collections.Generic.List<string>) content.GetValueForProperty("MountOption",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).MountOption, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+            }
+            if (content.Contains("AccessMode"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).AccessMode = (System.Collections.Generic.List<string>) content.GetValueForProperty("AccessMode",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).AccessMode, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("DataResilience"))
             {
@@ -218,14 +218,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassPropertiesUpdate) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.StorageClassPropertiesUpdateTypeConverter.ConvertFrom);
             }
-            if (content.Contains("MountOption"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).MountOption = (System.Collections.Generic.List<string>) content.GetValueForProperty("MountOption",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).MountOption, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
-            if (content.Contains("AccessMode"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).AccessMode = (System.Collections.Generic.List<string>) content.GetValueForProperty("AccessMode",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).AccessMode, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
             if (content.Contains("Priority"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).Priority = (long?) content.GetValueForProperty("Priority",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).Priority, (__y)=> (long) global::System.Convert.ChangeType(__y, typeof(long)));
@@ -237,6 +229,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             if (content.Contains("AllowVolumeExpansion"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).AllowVolumeExpansion = (string) content.GetValueForProperty("AllowVolumeExpansion",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).AllowVolumeExpansion, global::System.Convert.ToString);
+            }
+            if (content.Contains("MountOption"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).MountOption = (System.Collections.Generic.List<string>) content.GetValueForProperty("MountOption",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).MountOption, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+            }
+            if (content.Contains("AccessMode"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).AccessMode = (System.Collections.Generic.List<string>) content.GetValueForProperty("AccessMode",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).AccessMode, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("DataResilience"))
             {

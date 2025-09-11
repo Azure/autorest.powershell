@@ -13,7 +13,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
 
         /// <summary>A set of key-value pairs that contain custom attributes set by the customer.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes Attribute { get => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)Property).Attribute; set => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)Property).Attribute = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesAttributes Attribute { get => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)Property).Attribute; set => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)Property).Attribute = value ?? null /* model class */; }
 
         /// <summary>
         /// Array of datasets that are part of the asset. Each dataset describes the data points that make up the set.
@@ -109,11 +109,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         public string SoftwareRevision { get => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)Property).SoftwareRevision; set => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesInternal)Property).SoftwareRevision = value ?? null; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetUpdateTags()); set => this._tag = value; }
 
         /// <summary>Creates an new <see cref="AssetUpdate" /> instance.</summary>
         public AssetUpdate()
@@ -134,8 +134,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         Update = true,
         Description = @"A set of key-value pairs that contain custom attributes set by the customer.",
         SerializedName = @"attributes",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes) })]
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes Attribute { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesAttributes) })]
+        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesAttributes Attribute { get; set; }
         /// <summary>
         /// Array of datasets that are part of the asset. Each dataset describes the data points that make up the set.
         /// </summary>
@@ -345,8 +345,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdateTags Tag { get; set; }
 
     }
     /// The type used for update operations of the Asset.
@@ -354,7 +354,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
 
     {
         /// <summary>A set of key-value pairs that contain custom attributes set by the customer.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAttributes Attribute { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdatePropertiesAttributes Attribute { get; set; }
         /// <summary>
         /// Array of datasets that are part of the asset. Each dataset describes the data points that make up the set.
         /// </summary>
@@ -407,7 +407,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// <summary>Revision number of the software.</summary>
         string SoftwareRevision { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetUpdateTags Tag { get; set; }
 
     }
 }

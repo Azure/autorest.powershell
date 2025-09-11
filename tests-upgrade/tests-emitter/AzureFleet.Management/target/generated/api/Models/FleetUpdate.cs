@@ -64,7 +64,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
 
         /// <summary>The identities assigned to this resource by the user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IManagedServiceIdentityUpdateInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IManagedServiceIdentityUpdateInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IManagedServiceIdentityUpdateUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IManagedServiceIdentityUpdateInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IManagedServiceIdentityUpdateInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
 
         /// <summary>Internal Acessors for AdditionalLocationsProfile</summary>
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IAdditionalLocationsProfile Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateInternal.AdditionalLocationsProfile { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetPropertiesInternal)Property).AdditionalLocationsProfile; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetPropertiesInternal)Property).AdditionalLocationsProfile = value ?? null /* model class */; }
@@ -195,11 +195,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         public int? SpotPriorityProfileMinCapacity { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetPropertiesInternal)Property).SpotPriorityProfileMinCapacity; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetPropertiesInternal)Property).SpotPriorityProfileMinCapacity = value ?? default(int); }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.FleetUpdateTags()); set => this._tag = value; }
 
         /// <summary>Specifies the time at which the Compute Fleet is created.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
@@ -336,8 +336,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"The identities assigned to this resource by the user.",
         SerializedName = @"userAssignedIdentities",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IUserAssignedIdentities) })]
-        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IManagedServiceIdentityUpdateUserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IManagedServiceIdentityUpdateUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>A user defined name of the 3rd Party Artifact that is being procured.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -540,8 +540,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateTags Tag { get; set; }
         /// <summary>Specifies the time at which the Compute Fleet is created.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -639,7 +639,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned")]
         string IdentityType { get; set; }
         /// <summary>The identities assigned to this resource by the user.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IManagedServiceIdentityUpdateUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Updatable resource plan</summary>
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IResourcePlanUpdate Plan { get; set; }
         /// <summary>A user defined name of the 3rd Party Artifact that is being procured.</summary>
@@ -704,7 +704,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// </summary>
         int? SpotPriorityProfileMinCapacity { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetUpdateTags Tag { get; set; }
         /// <summary>Specifies the time at which the Compute Fleet is created.</summary>
         global::System.DateTime? TimeCreated { get; set; }
         /// <summary>Specifies the ID which uniquely identifies a Compute Fleet.</summary>

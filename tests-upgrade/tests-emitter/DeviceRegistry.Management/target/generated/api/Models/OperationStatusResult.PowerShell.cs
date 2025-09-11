@@ -143,14 +143,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).ResourceId = (string) content.GetValueForProperty("ResourceId",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).ResourceId, global::System.Convert.ToString);
             }
-            if (content.Contains("Detail"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorDetailTypeConverter.ConvertFrom));
-            }
-            if (content.Contains("AdditionalInfo"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).AdditionalInfo = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo>) content.GetValueForProperty("AdditionalInfo",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).AdditionalInfo, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorAdditionalInfoTypeConverter.ConvertFrom));
-            }
             if (content.Contains("Code"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Code = (string) content.GetValueForProperty("Code",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Code, global::System.Convert.ToString);
@@ -162,6 +154,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             if (content.Contains("Target"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Target = (string) content.GetValueForProperty("Target",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Target, global::System.Convert.ToString);
+            }
+            if (content.Contains("Detail"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorDetailTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("AdditionalInfo"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).AdditionalInfo = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo>) content.GetValueForProperty("AdditionalInfo",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).AdditionalInfo, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorAdditionalInfoTypeConverter.ConvertFrom));
             }
             AfterDeserializeDictionary(content);
         }
@@ -216,14 +216,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).ResourceId = (string) content.GetValueForProperty("ResourceId",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).ResourceId, global::System.Convert.ToString);
             }
-            if (content.Contains("Detail"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorDetailTypeConverter.ConvertFrom));
-            }
-            if (content.Contains("AdditionalInfo"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).AdditionalInfo = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo>) content.GetValueForProperty("AdditionalInfo",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).AdditionalInfo, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorAdditionalInfoTypeConverter.ConvertFrom));
-            }
             if (content.Contains("Code"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Code = (string) content.GetValueForProperty("Code",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Code, global::System.Convert.ToString);
@@ -235,6 +227,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             if (content.Contains("Target"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Target = (string) content.GetValueForProperty("Target",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Target, global::System.Convert.ToString);
+            }
+            if (content.Contains("Detail"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorDetailTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("AdditionalInfo"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).AdditionalInfo = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo>) content.GetValueForProperty("AdditionalInfo",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).AdditionalInfo, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorAdditionalInfoTypeConverter.ConvertFrom));
             }
             AfterDeserializePSObject(content);
         }

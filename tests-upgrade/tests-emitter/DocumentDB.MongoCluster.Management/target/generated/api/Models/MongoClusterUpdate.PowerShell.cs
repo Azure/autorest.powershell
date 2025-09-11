@@ -113,11 +113,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.TagsTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("PreviewFeature"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).PreviewFeature = (System.Collections.Generic.List<string>) content.GetValueForProperty("PreviewFeature",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).PreviewFeature, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.MongoClusterUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Administrator"))
             {
@@ -154,6 +150,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             if (content.Contains("PublicNetworkAccess"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).PublicNetworkAccess = (string) content.GetValueForProperty("PublicNetworkAccess",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).PublicNetworkAccess, global::System.Convert.ToString);
+            }
+            if (content.Contains("PreviewFeature"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).PreviewFeature = (System.Collections.Generic.List<string>) content.GetValueForProperty("PreviewFeature",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).PreviewFeature, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("StorageSizeGb"))
             {
@@ -210,11 +210,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.TagsTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("PreviewFeature"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).PreviewFeature = (System.Collections.Generic.List<string>) content.GetValueForProperty("PreviewFeature",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).PreviewFeature, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.MongoClusterUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Administrator"))
             {
@@ -251,6 +247,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             if (content.Contains("PublicNetworkAccess"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).PublicNetworkAccess = (string) content.GetValueForProperty("PublicNetworkAccess",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).PublicNetworkAccess, global::System.Convert.ToString);
+            }
+            if (content.Contains("PreviewFeature"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).PreviewFeature = (System.Collections.Generic.List<string>) content.GetValueForProperty("PreviewFeature",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateInternal)this).PreviewFeature, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("StorageSizeGb"))
             {

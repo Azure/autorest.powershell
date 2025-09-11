@@ -389,8 +389,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Informatica.Cmdlets
         ReadOnly = false,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.ITags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.ITrackedResourceTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.ITrackedResourceTags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
 
         /// <summary>User email address.</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "User email address.")]

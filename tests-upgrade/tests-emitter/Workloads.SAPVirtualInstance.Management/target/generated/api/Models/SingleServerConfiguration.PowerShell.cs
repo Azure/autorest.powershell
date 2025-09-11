@@ -167,7 +167,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             }
             if (content.Contains("DbDiskConfigurationDiskVolumeConfiguration"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerConfigurationInternal)this).DbDiskConfigurationDiskVolumeConfiguration = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations) content.GetValueForProperty("DbDiskConfigurationDiskVolumeConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerConfigurationInternal)this).DbDiskConfigurationDiskVolumeConfiguration, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DiskVolumeConfigurationsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerConfigurationInternal)this).DbDiskConfigurationDiskVolumeConfiguration = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations) content.GetValueForProperty("DbDiskConfigurationDiskVolumeConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerConfigurationInternal)this).DbDiskConfigurationDiskVolumeConfiguration, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DiskConfigurationDiskVolumeConfigurationsTypeConverter.ConvertFrom);
             }
             if (content.Contains("CustomResourceNameNamingPatternType"))
             {
@@ -276,7 +276,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             }
             if (content.Contains("DbDiskConfigurationDiskVolumeConfiguration"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerConfigurationInternal)this).DbDiskConfigurationDiskVolumeConfiguration = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskVolumeConfigurations) content.GetValueForProperty("DbDiskConfigurationDiskVolumeConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerConfigurationInternal)this).DbDiskConfigurationDiskVolumeConfiguration, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DiskVolumeConfigurationsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerConfigurationInternal)this).DbDiskConfigurationDiskVolumeConfiguration = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDiskConfigurationDiskVolumeConfigurations) content.GetValueForProperty("DbDiskConfigurationDiskVolumeConfiguration",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerConfigurationInternal)this).DbDiskConfigurationDiskVolumeConfiguration, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DiskConfigurationDiskVolumeConfigurationsTypeConverter.ConvertFrom);
             }
             if (content.Contains("CustomResourceNameNamingPatternType"))
             {

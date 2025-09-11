@@ -64,7 +64,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
                 return;
             }
             {_property = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonObject>("properties"), out var __jsonProperties) ? Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.CodeSigningAccountPatchProperties.FromJson(__jsonProperties) : _property;}
-            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.Tags.FromJson(__jsonTags) : _tag;}
+            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.CodeSigningAccountPatchTags.FromJson(__jsonTags) : _tag;}
             AfterFromJson(json);
         }
 

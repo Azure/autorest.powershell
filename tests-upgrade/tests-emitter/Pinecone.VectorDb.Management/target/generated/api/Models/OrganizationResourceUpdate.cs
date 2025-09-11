@@ -36,7 +36,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
 
         /// <summary>The identities assigned to this resource by the user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Origin(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
 
         /// <summary>Internal Acessors for Identity</summary>
         Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentity Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceUpdateInternal.Identity { get => (this._identity = this._identity ?? new Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.ManagedServiceIdentity()); set { {_identity = value;} } }
@@ -48,11 +48,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
         string Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceUpdateInternal.IdentityTenantId { get => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)Identity).TenantId; set => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityInternal)Identity).TenantId = value ?? null; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Origin(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.OrganizationResourceUpdateTags()); set => this._tag = value; }
 
         /// <summary>Creates an new <see cref="OrganizationResourceUpdate" /> instance.</summary>
         public OrganizationResourceUpdate()
@@ -111,8 +111,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
         Update = true,
         Description = @"The identities assigned to this resource by the user.",
         SerializedName = @"userAssignedIdentities",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserAssignedIdentities) })]
-        Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityUserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Info(
         Required = false,
@@ -122,8 +122,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceUpdateTags Tag { get; set; }
 
     }
     /// The type used for update operations of the Organization Resource.
@@ -144,9 +144,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.Pinecone.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned")]
         string IdentityType { get; set; }
         /// <summary>The identities assigned to this resource by the user.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IOrganizationResourceUpdateTags Tag { get; set; }
 
     }
 }

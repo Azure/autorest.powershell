@@ -95,11 +95,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         public long? StorageSizeGb { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)Property).StorageSizeGb; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)Property).StorageSizeGb = value ?? default(long); }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Origin(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.MongoClusterUpdateTags()); set => this._tag = value; }
 
         /// <summary>Creates an new <see cref="MongoClusterUpdate" /> instance.</summary>
         public MongoClusterUpdate()
@@ -250,8 +250,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateTags Tag { get; set; }
 
     }
     /// The type used for update operations of the MongoCluster.
@@ -306,7 +306,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         /// <summary>The size of the data disk assigned to each server.</summary>
         long? StorageSizeGb { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdateTags Tag { get; set; }
 
     }
 }

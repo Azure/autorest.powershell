@@ -201,8 +201,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Cmdlets
         ReadOnly = false,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ITags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ITrackedResourceTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ITrackedResourceTags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
 
         /// <summary>
         /// <c>overrideOnDefault</c> will be called before the regular onDefault has been processed, allowing customization of what

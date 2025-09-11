@@ -36,7 +36,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
 
         /// <summary>The identities assigned to this resource by the user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Astro.Origin(Microsoft.Azure.PowerShell.Cmdlets.Astro.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4Internal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4Internal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4Internal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4Internal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
 
         /// <summary>Azure subscription id for the the marketplace offer is purchased from</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Astro.Origin(Microsoft.Azure.PowerShell.Cmdlets.Astro.PropertyOrigin.Inlined)]
@@ -155,11 +155,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         public string SingleSignOnPropertySingleSignOnUrl { get => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdatePropertiesInternal)Property).SingleSignOnPropertySingleSignOnUrl; set => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdatePropertiesInternal)Property).SingleSignOnPropertySingleSignOnUrl = value ?? null; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Astro.Origin(Microsoft.Azure.PowerShell.Cmdlets.Astro.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.OrganizationResourceUpdateTags()); set => this._tag = value; }
 
         /// <summary>Email address of the user</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Astro.Origin(Microsoft.Azure.PowerShell.Cmdlets.Astro.PropertyOrigin.Inlined)]
@@ -238,8 +238,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         Update = true,
         Description = @"The identities assigned to this resource by the user.",
         SerializedName = @"userAssignedIdentities",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities) })]
-        Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Azure subscription id for the the marketplace offer is purchased from</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Astro.Runtime.Info(
         Required = false,
@@ -462,8 +462,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateTags Tag { get; set; }
         /// <summary>Email address of the user</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Astro.Runtime.Info(
         Required = false,
@@ -539,7 +539,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.Astro.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned, UserAssigned")]
         string IdentityType { get; set; }
         /// <summary>The identities assigned to this resource by the user.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Marketplace details of the resource.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IMarketplaceDetails Marketplace { get; set; }
         /// <summary>Offer details for the marketplace that is selected by the user</summary>
@@ -593,7 +593,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         /// <summary>URL for SSO to be used by the partner to redirect the user to their system</summary>
         string SingleSignOnPropertySingleSignOnUrl { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateTags Tag { get; set; }
         /// <summary>Details of the user.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserDetails User { get; set; }
         /// <summary>Email address of the user</summary>

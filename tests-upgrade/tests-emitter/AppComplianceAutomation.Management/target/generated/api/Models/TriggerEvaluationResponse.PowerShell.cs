@@ -130,10 +130,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationProperty) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.TriggerEvaluationPropertyTypeConverter.ConvertFrom);
             }
-            if (content.Contains("QuickAssessment"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).QuickAssessment = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IQuickAssessment>) content.GetValueForProperty("QuickAssessment",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).QuickAssessment, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IQuickAssessment>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.QuickAssessmentTypeConverter.ConvertFrom));
-            }
             if (content.Contains("TriggerTime"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).TriggerTime = (global::System.DateTime?) content.GetValueForProperty("TriggerTime",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).TriggerTime, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
@@ -145,6 +141,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             if (content.Contains("ResourceId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).ResourceId = (System.Collections.Generic.List<string>) content.GetValueForProperty("ResourceId",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).ResourceId, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+            }
+            if (content.Contains("QuickAssessment"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).QuickAssessment = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IQuickAssessment>) content.GetValueForProperty("QuickAssessment",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).QuickAssessment, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IQuickAssessment>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.QuickAssessmentTypeConverter.ConvertFrom));
             }
             AfterDeserializeDictionary(content);
         }
@@ -167,10 +167,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationProperty) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.TriggerEvaluationPropertyTypeConverter.ConvertFrom);
             }
-            if (content.Contains("QuickAssessment"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).QuickAssessment = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IQuickAssessment>) content.GetValueForProperty("QuickAssessment",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).QuickAssessment, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IQuickAssessment>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.QuickAssessmentTypeConverter.ConvertFrom));
-            }
             if (content.Contains("TriggerTime"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).TriggerTime = (global::System.DateTime?) content.GetValueForProperty("TriggerTime",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).TriggerTime, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
@@ -182,6 +178,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             if (content.Contains("ResourceId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).ResourceId = (System.Collections.Generic.List<string>) content.GetValueForProperty("ResourceId",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).ResourceId, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+            }
+            if (content.Contains("QuickAssessment"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).QuickAssessment = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IQuickAssessment>) content.GetValueForProperty("QuickAssessment",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ITriggerEvaluationResponseInternal)this).QuickAssessment, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IQuickAssessment>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.QuickAssessmentTypeConverter.ConvertFrom));
             }
             AfterDeserializePSObject(content);
         }

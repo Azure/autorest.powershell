@@ -68,6 +68,9 @@ function getSchemas(program: Program, client: SdkClient, psContext: SdkContext, 
       schema.language.default.description = "Anything";
       schemas["any"] = schemas["any"] || [];
       schemas["any"].push(schema);
+    } else if (schema.type === SchemaType.Dictionary && !schema.language) {
+      // skip anonymous dictionary schema
+      continue;
     } else {
       if (schema.type === SchemaType.Array && (<any>schema).delayType) {
         (<ArraySchema>schema).elementType = getSchemaForType(psContext, (<any>schema).delayType as Type);

@@ -113,7 +113,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.OrganizationResourceUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("IdentityPrincipalId"))
             {
@@ -129,7 +129,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             AfterDeserializeDictionary(content);
         }
@@ -154,7 +154,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.OrganizationResourceUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("IdentityPrincipalId"))
             {
@@ -170,7 +170,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             AfterDeserializePSObject(content);
         }

@@ -110,7 +110,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.FileSystemResourceUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("MarketplaceDetail"))
             {
@@ -134,7 +134,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("DelegatedSubnetId"))
             {
@@ -195,7 +195,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.FileSystemResourceUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("MarketplaceDetail"))
             {
@@ -219,7 +219,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IManagedServiceIdentityUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ManagedServiceIdentityUserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("DelegatedSubnetId"))
             {

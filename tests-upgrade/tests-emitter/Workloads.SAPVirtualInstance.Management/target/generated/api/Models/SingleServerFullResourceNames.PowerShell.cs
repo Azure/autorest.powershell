@@ -120,10 +120,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerCustomResourceNamesInternal)this).NamingPatternType = (string) content.GetValueForProperty("NamingPatternType",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerCustomResourceNamesInternal)this).NamingPatternType, global::System.Convert.ToString);
             }
-            if (content.Contains("VirtualMachineNetworkInterface"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineNetworkInterface = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.INetworkInterfaceResourceNames>) content.GetValueForProperty("VirtualMachineNetworkInterface",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineNetworkInterface, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.INetworkInterfaceResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.NetworkInterfaceResourceNamesTypeConverter.ConvertFrom));
-            }
             if (content.Contains("VirtualMachineVMName"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineVMName = (string) content.GetValueForProperty("VirtualMachineVMName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineVMName, global::System.Convert.ToString);
@@ -132,13 +128,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineHostName = (string) content.GetValueForProperty("VirtualMachineHostName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineHostName, global::System.Convert.ToString);
             }
+            if (content.Contains("VirtualMachineNetworkInterface"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineNetworkInterface = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.INetworkInterfaceResourceNames>) content.GetValueForProperty("VirtualMachineNetworkInterface",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineNetworkInterface, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.INetworkInterfaceResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.NetworkInterfaceResourceNamesTypeConverter.ConvertFrom));
+            }
             if (content.Contains("VirtualMachineOSDiskName"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineOSDiskName = (string) content.GetValueForProperty("VirtualMachineOSDiskName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineOSDiskName, global::System.Convert.ToString);
             }
             if (content.Contains("VirtualMachineDataDiskName"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineDataDiskName = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDataDiskNames) content.GetValueForProperty("VirtualMachineDataDiskName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineDataDiskName, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DataDiskNamesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineDataDiskName = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesDataDiskNames) content.GetValueForProperty("VirtualMachineDataDiskName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineDataDiskName, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesDataDiskNamesTypeConverter.ConvertFrom);
             }
             AfterDeserializeDictionary(content);
         }
@@ -165,10 +165,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerCustomResourceNamesInternal)this).NamingPatternType = (string) content.GetValueForProperty("NamingPatternType",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerCustomResourceNamesInternal)this).NamingPatternType, global::System.Convert.ToString);
             }
-            if (content.Contains("VirtualMachineNetworkInterface"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineNetworkInterface = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.INetworkInterfaceResourceNames>) content.GetValueForProperty("VirtualMachineNetworkInterface",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineNetworkInterface, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.INetworkInterfaceResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.NetworkInterfaceResourceNamesTypeConverter.ConvertFrom));
-            }
             if (content.Contains("VirtualMachineVMName"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineVMName = (string) content.GetValueForProperty("VirtualMachineVMName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineVMName, global::System.Convert.ToString);
@@ -177,13 +173,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineHostName = (string) content.GetValueForProperty("VirtualMachineHostName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineHostName, global::System.Convert.ToString);
             }
+            if (content.Contains("VirtualMachineNetworkInterface"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineNetworkInterface = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.INetworkInterfaceResourceNames>) content.GetValueForProperty("VirtualMachineNetworkInterface",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineNetworkInterface, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.INetworkInterfaceResourceNames>(__y, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.NetworkInterfaceResourceNamesTypeConverter.ConvertFrom));
+            }
             if (content.Contains("VirtualMachineOSDiskName"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineOSDiskName = (string) content.GetValueForProperty("VirtualMachineOSDiskName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineOSDiskName, global::System.Convert.ToString);
             }
             if (content.Contains("VirtualMachineDataDiskName"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineDataDiskName = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IDataDiskNames) content.GetValueForProperty("VirtualMachineDataDiskName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineDataDiskName, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.DataDiskNamesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineDataDiskName = (Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IVirtualMachineResourceNamesDataDiskNames) content.GetValueForProperty("VirtualMachineDataDiskName",((Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.ISingleServerFullResourceNamesInternal)this).VirtualMachineDataDiskName, Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.VirtualMachineResourceNamesDataDiskNamesTypeConverter.ConvertFrom);
             }
             AfterDeserializePSObject(content);
         }

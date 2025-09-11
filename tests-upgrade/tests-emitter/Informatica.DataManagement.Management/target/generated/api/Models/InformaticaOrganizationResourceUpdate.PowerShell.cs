@@ -114,7 +114,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models
             // actually deserialize
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.InformaticaOrganizationResourceUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Property"))
             {
@@ -139,7 +139,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models
             // actually deserialize
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.IInformaticaOrganizationResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Informatica.Models.InformaticaOrganizationResourceUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("Property"))
             {

@@ -47,11 +47,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         internal Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateProperties Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetEndpointProfileUpdateProperties()); set => this._property = value; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AssetEndpointProfileUpdateTags()); set => this._tag = value; }
 
         /// <summary>
         /// The local valid URI specifying the network address/DNS name of a southbound device. The scheme part of the targetAddress
@@ -131,8 +131,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateTags Tag { get; set; }
         /// <summary>
         /// The local valid URI specifying the network address/DNS name of a southbound device. The scheme part of the targetAddress
         /// URI specifies the type of the device. The additionalConfiguration field holds further connector type specific configuration.
@@ -212,7 +212,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// <summary>The resource-specific properties for this resource.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateProperties Property { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAssetEndpointProfileUpdateTags Tag { get; set; }
         /// <summary>
         /// The local valid URI specifying the network address/DNS name of a southbound device. The scheme part of the targetAddress
         /// URI specifies the type of the device. The additionalConfiguration field holds further connector type specific configuration.

@@ -207,8 +207,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Cmdlets
         ReadOnly = false,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITags) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITrackedResourceTags) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ITrackedResourceTags Tag { get => _resourceBody.Tag ?? null /* object */; set => _resourceBody.Tag = value; }
 
         /// <summary>Specifies zones of standby container group pools.</summary>
         [global::System.Management.Automation.AllowEmptyCollection]

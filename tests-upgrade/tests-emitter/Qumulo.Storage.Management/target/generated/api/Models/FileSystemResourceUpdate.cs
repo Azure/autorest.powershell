@@ -40,7 +40,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
 
         /// <summary>The identities assigned to this resource by the user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Origin(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.PropertyOrigin.Inlined)]
-        public Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
+        public Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
 
         /// <summary>Marketplace Subscription Id</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Origin(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.PropertyOrigin.Inlined)]
@@ -95,11 +95,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
         internal Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateProperties Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.FileSystemResourceUpdateProperties()); set => this._property = value; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Origin(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.FileSystemResourceUpdateTags()); set => this._tag = value; }
 
         /// <summary>User Email</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Origin(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.PropertyOrigin.Inlined)]
@@ -173,8 +173,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
         Update = true,
         Description = @"The identities assigned to this resource by the user.",
         SerializedName = @"userAssignedIdentities",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IUserAssignedIdentities) })]
-        Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IManagedServiceIdentityUserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Marketplace Subscription Id</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Info(
         Required = false,
@@ -251,8 +251,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateTags Tag { get; set; }
         /// <summary>User Email</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Info(
         Required = false,
@@ -286,7 +286,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.Qumulo.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned")]
         string IdentityType { get; set; }
         /// <summary>The identities assigned to this resource by the user.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
         /// <summary>Marketplace details</summary>
         Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IMarketplaceDetails MarketplaceDetail { get; set; }
         /// <summary>Marketplace Subscription Id</summary>
@@ -305,7 +305,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
         /// <summary>The updatable properties of the FileSystemResource.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateProperties Property { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateTags Tag { get; set; }
         /// <summary>User Details</summary>
         Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IUserDetails UserDetail { get; set; }
         /// <summary>User Email</summary>

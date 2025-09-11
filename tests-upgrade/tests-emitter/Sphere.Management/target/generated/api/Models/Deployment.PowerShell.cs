@@ -122,10 +122,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IResourceInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IResourceInternal)this).Type, global::System.Convert.ToString);
             }
-            if (content.Contains("DeployedImage"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).DeployedImage = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImage>) content.GetValueForProperty("DeployedImage",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).DeployedImage, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImage>(__y, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ImageTypeConverter.ConvertFrom));
-            }
             if (content.Contains("ProvisioningState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).ProvisioningState, global::System.Convert.ToString);
@@ -133,6 +129,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             if (content.Contains("DeploymentId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).DeploymentId = (string) content.GetValueForProperty("DeploymentId",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).DeploymentId, global::System.Convert.ToString);
+            }
+            if (content.Contains("DeployedImage"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).DeployedImage = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImage>) content.GetValueForProperty("DeployedImage",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).DeployedImage, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImage>(__y, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ImageTypeConverter.ConvertFrom));
             }
             if (content.Contains("DateUtc"))
             {
@@ -203,10 +203,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IResourceInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IResourceInternal)this).Type, global::System.Convert.ToString);
             }
-            if (content.Contains("DeployedImage"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).DeployedImage = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImage>) content.GetValueForProperty("DeployedImage",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).DeployedImage, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImage>(__y, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ImageTypeConverter.ConvertFrom));
-            }
             if (content.Contains("ProvisioningState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).ProvisioningState, global::System.Convert.ToString);
@@ -214,6 +210,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             if (content.Contains("DeploymentId"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).DeploymentId = (string) content.GetValueForProperty("DeploymentId",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).DeploymentId, global::System.Convert.ToString);
+            }
+            if (content.Contains("DeployedImage"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).DeployedImage = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImage>) content.GetValueForProperty("DeployedImage",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).DeployedImage, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImage>(__y, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ImageTypeConverter.ConvertFrom));
             }
             if (content.Contains("DateUtc"))
             {

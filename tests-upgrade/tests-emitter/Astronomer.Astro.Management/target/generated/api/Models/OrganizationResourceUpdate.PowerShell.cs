@@ -117,7 +117,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.OrganizationResourceUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("IdentityPrincipalId"))
             {
@@ -133,7 +133,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ManagedServiceIdentityV4UserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("Marketplace"))
             {
@@ -278,7 +278,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
             }
             if (content.Contains("Tag"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.TagsTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.OrganizationResourceUpdateTagsTypeConverter.ConvertFrom);
             }
             if (content.Contains("IdentityPrincipalId"))
             {
@@ -294,7 +294,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
             }
             if (content.Contains("IdentityUserAssignedIdentity"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4UserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceUpdateInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ManagedServiceIdentityV4UserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("Marketplace"))
             {

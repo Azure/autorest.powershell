@@ -29,11 +29,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
         public string SkuName { get => ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchPropertiesInternal)Property).SkuName; set => ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchPropertiesInternal)Property).SkuName = value ?? null; }
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Origin(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.CodeSigningAccountPatchTags()); set => this._tag = value; }
 
         /// <summary>Creates an new <see cref="CodeSigningAccountPatch" /> instance.</summary>
         public CodeSigningAccountPatch()
@@ -66,8 +66,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchTags Tag { get; set; }
 
     }
     /// Parameters for creating or updating a trusted signing account.
@@ -82,7 +82,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.PSArgumentCompleterAttribute("Basic", "Premium")]
         string SkuName { get; set; }
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchTags Tag { get; set; }
 
     }
 }

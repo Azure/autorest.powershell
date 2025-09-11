@@ -66,7 +66,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {_identity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonObject>("identity"), out var __jsonIdentity) ? Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ManagedServiceIdentityUpdate.FromJson(__jsonIdentity) : _identity;}
             {_plan = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonObject>("plan"), out var __jsonPlan) ? Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ResourcePlanUpdate.FromJson(__jsonPlan) : _plan;}
             {_property = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonObject>("properties"), out var __jsonProperties) ? Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.FleetProperties.FromJson(__jsonProperties) : _property;}
-            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.Tags.FromJson(__jsonTags) : _tag;}
+            {_tag = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonObject>("tags"), out var __jsonTags) ? Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.FleetUpdateTags.FromJson(__jsonTags) : _tag;}
             AfterFromJson(json);
         }
 

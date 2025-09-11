@@ -12,11 +12,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
     {
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Origin(Microsoft.Azure.PowerShell.Cmdlets.Sphere.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.CatalogUpdateTags()); set => this._tag = value; }
 
         /// <summary>Creates an new <see cref="CatalogUpdate" /> instance.</summary>
         public CatalogUpdate()
@@ -37,8 +37,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateTags Tag { get; set; }
 
     }
     /// The type used for update operations of the Catalog.
@@ -46,7 +46,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
 
     {
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogUpdateTags Tag { get; set; }
 
     }
 }

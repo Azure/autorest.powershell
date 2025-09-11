@@ -12,11 +12,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
     {
 
         /// <summary>Backing field for <see cref="Tag" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITags _tag;
+        private Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceTagsUpdateTags _tag;
 
         /// <summary>Resource tags.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Origin(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.Tags()); set => this._tag = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceTagsUpdateTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.AzureLargeInstanceTagsUpdateTags()); set => this._tag = value; }
 
         /// <summary>Creates an new <see cref="AzureLargeInstanceTagsUpdate" /> instance.</summary>
         public AzureLargeInstanceTagsUpdate()
@@ -37,8 +37,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
         Update = true,
         Description = @"Resource tags.",
         SerializedName = @"tags",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITags) })]
-        Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITags Tag { get; set; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceTagsUpdateTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceTagsUpdateTags Tag { get; set; }
 
     }
     /// The type used for updating tags in AzureLargeInstance resources.
@@ -46,7 +46,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models
 
     {
         /// <summary>Resource tags.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.ITags Tag { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.AzureLargeInstance.Models.IAzureLargeInstanceTagsUpdateTags Tag { get; set; }
 
     }
 }

@@ -182,8 +182,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Cmdlet
         ReadOnly = false,
         Description = @"A dynamic label mapping to select related services. For instance, if you want to create a load balancer only for services with label ""a=b"", then please specify {""a"": ""b""} in the field.",
         SerializedName = @"serviceSelector",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IServiceSelector) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IServiceSelector ServiceSelector { get => _resourceBody.ServiceSelector ?? null /* object */; set => _resourceBody.ServiceSelector = value; }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesServiceSelector) })]
+        public Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ILoadBalancerPropertiesServiceSelector ServiceSelector { get => _resourceBody.ServiceSelector ?? null /* object */; set => _resourceBody.ServiceSelector = value; }
 
         /// <summary>
         /// <c>overrideOnDefault</c> will be called before the regular onDefault has been processed, allowing customization of what

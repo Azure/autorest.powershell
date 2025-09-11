@@ -115,18 +115,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).StorageInfo = (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IStorageInfo) content.GetValueForProperty("StorageInfo",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).StorageInfo, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.StorageInfoTypeConverter.ConvertFrom);
             }
-            if (content.Contains("Resource"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Resource = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata>) content.GetValueForProperty("Resource",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Resource, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ResourceMetadataTypeConverter.ConvertFrom));
-            }
-            if (content.Contains("Error"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Error = (System.Collections.Generic.List<string>) content.GetValueForProperty("Error",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Error, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
-            if (content.Contains("CertRecord"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).CertRecord = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ICertSyncRecord>) content.GetValueForProperty("CertRecord",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).CertRecord, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ICertSyncRecord>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.CertSyncRecordTypeConverter.ConvertFrom));
-            }
             if (content.Contains("ProvisioningState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).ProvisioningState, global::System.Convert.ToString);
@@ -143,9 +131,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).TimeZone = (string) content.GetValueForProperty("TimeZone",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).TimeZone, global::System.Convert.ToString);
             }
+            if (content.Contains("Resource"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Resource = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata>) content.GetValueForProperty("Resource",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Resource, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ResourceMetadataTypeConverter.ConvertFrom));
+            }
             if (content.Contains("Status"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Status = (string) content.GetValueForProperty("Status",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Status, global::System.Convert.ToString);
+            }
+            if (content.Contains("Error"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Error = (System.Collections.Generic.List<string>) content.GetValueForProperty("Error",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Error, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("TenantId"))
             {
@@ -166,6 +162,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             if (content.Contains("Subscription"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Subscription = (System.Collections.Generic.List<string>) content.GetValueForProperty("Subscription",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Subscription, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+            }
+            if (content.Contains("CertRecord"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).CertRecord = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ICertSyncRecord>) content.GetValueForProperty("CertRecord",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).CertRecord, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ICertSyncRecord>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.CertSyncRecordTypeConverter.ConvertFrom));
             }
             if (content.Contains("ComplianceStatusM365"))
             {
@@ -232,18 +232,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).StorageInfo = (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IStorageInfo) content.GetValueForProperty("StorageInfo",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).StorageInfo, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.StorageInfoTypeConverter.ConvertFrom);
             }
-            if (content.Contains("Resource"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Resource = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata>) content.GetValueForProperty("Resource",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Resource, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ResourceMetadataTypeConverter.ConvertFrom));
-            }
-            if (content.Contains("Error"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Error = (System.Collections.Generic.List<string>) content.GetValueForProperty("Error",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Error, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
-            if (content.Contains("CertRecord"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).CertRecord = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ICertSyncRecord>) content.GetValueForProperty("CertRecord",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).CertRecord, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ICertSyncRecord>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.CertSyncRecordTypeConverter.ConvertFrom));
-            }
             if (content.Contains("ProvisioningState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).ProvisioningState, global::System.Convert.ToString);
@@ -260,9 +248,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).TimeZone = (string) content.GetValueForProperty("TimeZone",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).TimeZone, global::System.Convert.ToString);
             }
+            if (content.Contains("Resource"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Resource = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata>) content.GetValueForProperty("Resource",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Resource, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ResourceMetadataTypeConverter.ConvertFrom));
+            }
             if (content.Contains("Status"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Status = (string) content.GetValueForProperty("Status",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Status, global::System.Convert.ToString);
+            }
+            if (content.Contains("Error"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Error = (System.Collections.Generic.List<string>) content.GetValueForProperty("Error",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Error, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("TenantId"))
             {
@@ -283,6 +279,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             if (content.Contains("Subscription"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Subscription = (System.Collections.Generic.List<string>) content.GetValueForProperty("Subscription",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).Subscription, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+            }
+            if (content.Contains("CertRecord"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).CertRecord = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ICertSyncRecord>) content.GetValueForProperty("CertRecord",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResourcePatchInternal)this).CertRecord, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ICertSyncRecord>(__y, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.CertSyncRecordTypeConverter.ConvertFrom));
             }
             if (content.Contains("ComplianceStatusM365"))
             {

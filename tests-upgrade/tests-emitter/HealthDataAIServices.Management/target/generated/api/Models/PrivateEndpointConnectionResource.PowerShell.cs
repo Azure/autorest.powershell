@@ -167,13 +167,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).PrivateEndpoint = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpoint) content.GetValueForProperty("PrivateEndpoint",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).PrivateEndpoint, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.PrivateEndpointTypeConverter.ConvertFrom);
             }
-            if (content.Contains("GroupId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).GroupId = (System.Collections.Generic.List<string>) content.GetValueForProperty("GroupId",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).GroupId, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
             if (content.Contains("PrivateLinkServiceConnectionState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).PrivateLinkServiceConnectionState = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateLinkServiceConnectionState) content.GetValueForProperty("PrivateLinkServiceConnectionState",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).PrivateLinkServiceConnectionState, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.PrivateLinkServiceConnectionStateTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("GroupId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).GroupId = (System.Collections.Generic.List<string>) content.GetValueForProperty("GroupId",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).GroupId, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("ProvisioningState"))
             {
@@ -268,13 +268,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).PrivateEndpoint = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpoint) content.GetValueForProperty("PrivateEndpoint",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).PrivateEndpoint, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.PrivateEndpointTypeConverter.ConvertFrom);
             }
-            if (content.Contains("GroupId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).GroupId = (System.Collections.Generic.List<string>) content.GetValueForProperty("GroupId",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).GroupId, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
             if (content.Contains("PrivateLinkServiceConnectionState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).PrivateLinkServiceConnectionState = (Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateLinkServiceConnectionState) content.GetValueForProperty("PrivateLinkServiceConnectionState",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).PrivateLinkServiceConnectionState, Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.PrivateLinkServiceConnectionStateTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("GroupId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).GroupId = (System.Collections.Generic.List<string>) content.GetValueForProperty("GroupId",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IPrivateEndpointConnectionResourceInternal)this).GroupId, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("ProvisioningState"))
             {

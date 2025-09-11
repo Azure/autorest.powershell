@@ -128,10 +128,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.WebhookPropertiesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("Event"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).Event = (System.Collections.Generic.List<string>) content.GetValueForProperty("Event",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).Event, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
             if (content.Contains("ContentType"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).ContentType = (string) content.GetValueForProperty("ContentType",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).ContentType, global::System.Convert.ToString);
@@ -159,6 +155,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             if (content.Contains("SendAllEvent"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).SendAllEvent = (string) content.GetValueForProperty("SendAllEvent",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).SendAllEvent, global::System.Convert.ToString);
+            }
+            if (content.Contains("Event"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).Event = (System.Collections.Generic.List<string>) content.GetValueForProperty("Event",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).Event, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("PayloadUrl"))
             {
@@ -201,10 +201,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.WebhookPropertiesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("Event"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).Event = (System.Collections.Generic.List<string>) content.GetValueForProperty("Event",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).Event, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
-            }
             if (content.Contains("ContentType"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).ContentType = (string) content.GetValueForProperty("ContentType",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).ContentType, global::System.Convert.ToString);
@@ -232,6 +228,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models
             if (content.Contains("SendAllEvent"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).SendAllEvent = (string) content.GetValueForProperty("SendAllEvent",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).SendAllEvent, global::System.Convert.ToString);
+            }
+            if (content.Contains("Event"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).Event = (System.Collections.Generic.List<string>) content.GetValueForProperty("Event",((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResourcePatchInternal)this).Event, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("PayloadUrl"))
             {
