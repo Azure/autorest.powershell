@@ -42,7 +42,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         private object _firstResponse = null;
 
         /// <summary>A class represent an AppComplianceAutomation scoping configuration resource.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResource _resourceBody = new Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ScopingConfigurationResource();
+        private Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResource _propertiesBody = new Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ScopingConfigurationResource();
 
         /// <summary>
         /// A flag to tell whether it is the first returned object in a call. Zero means no response yet. One means 1 returned object.
@@ -60,7 +60,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"List of scoping question answers.",
         SerializedName = @"answers",
         PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer[] Answer { get => _resourceBody.Answer?.ToArray() ?? null /* fixedArrayOf */; set => _resourceBody.Answer = (value != null ? new System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer>(value) : null); }
+        public Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer[] Answer { get => _propertiesBody.Answer?.ToArray() ?? null /* fixedArrayOf */; set => _propertiesBody.Answer = (value != null ? new System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer>(value) : null); }
 
         /// <summary>Wait for .NET debugger to attach</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Wait for .NET debugger to attach")]
@@ -389,7 +389,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
                 try
                 {
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
-                    await this.Client.ScopingConfigurationCreateOrUpdate(ReportName, Name, _resourceBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate);
+                    await this.Client.ScopingConfigurationCreateOrUpdate(ReportName, Name, _propertiesBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate);
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }
                 catch (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.UndeclaredResponseException urexception)

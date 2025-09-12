@@ -33,9 +33,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         /// <summary>A unique id generatd for the this cmdlet when ProcessRecord() is called.</summary>
         private string __processRecordId;
 
-        /// <summary>Request of the action to create a signed device capability image</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IGenerateCapabilityImageRequest _body = new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.GenerateCapabilityImageRequest();
-
         /// <summary>
         /// The <see cref="global::System.Threading.CancellationTokenSource" /> for this operation.
         /// </summary>
@@ -43,6 +40,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
 
         /// <summary>A dictionary to carry over additional data for pipeline.</summary>
         private global::System.Collections.Generic.Dictionary<global::System.String,global::System.Object> _extensibleParameters = new System.Collections.Generic.Dictionary<string, object>();
+
+        /// <summary>Request of the action to create a signed device capability image</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IGenerateCapabilityImageRequest _generateDeviceCapabilityRequestBody = new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.GenerateCapabilityImageRequest();
 
         /// <summary>when specified, runs this cmdlet as a PowerShell job</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Run the command as a job")]
@@ -68,7 +68,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         SerializedName = @"capabilities",
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.Sphere.PSArgumentCompleterAttribute("ApplicationDevelopment", "FieldServicing")]
-        public string[] Capability { get => _body.Capability?.ToArray() ?? null /* fixedArrayOf */; set => _body.Capability = (value != null ? new System.Collections.Generic.List<string>(value) : null); }
+        public string[] Capability { get => _generateDeviceCapabilityRequestBody.Capability?.ToArray() ?? null /* fixedArrayOf */; set => _generateDeviceCapabilityRequestBody.Capability = (value != null ? new System.Collections.Generic.List<string>(value) : null); }
 
         /// <summary>The reference to the client API class.</summary>
         public Microsoft.Azure.PowerShell.Cmdlets.Sphere.Sphere Client => Microsoft.Azure.PowerShell.Cmdlets.Sphere.Module.Instance.ClientAPI;
@@ -235,7 +235,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
             clone.ProxyUseDefaultCredentials = this.ProxyUseDefaultCredentials;
             clone.HttpPipelinePrepend = this.HttpPipelinePrepend;
             clone.HttpPipelineAppend = this.HttpPipelineAppend;
-            clone._body = this._body;
+            clone._generateDeviceCapabilityRequestBody = this._generateDeviceCapabilityRequestBody;
             clone.DeviceGroupName = this.DeviceGroupName;
             clone.DeviceName = this.DeviceName;
             return clone;
@@ -461,7 +461,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
                     if (ProductInputObject?.Id != null)
                     {
                         this.ProductInputObject.Id += $"/deviceGroups/{(global::System.Uri.EscapeDataString(this.DeviceGroupName.ToString()))}/devices/{(global::System.Uri.EscapeDataString(this.DeviceName.ToString()))}";
-                        await this.Client.DevicesGenerateCapabilityImageViaIdentity(ProductInputObject.Id, _body, onOk, onDefault, this, Pipeline);
+                        await this.Client.DevicesGenerateCapabilityImageViaIdentity(ProductInputObject.Id, _generateDeviceCapabilityRequestBody, onOk, onDefault, this, Pipeline);
                     }
                     else
                     {
@@ -482,7 +482,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
                         {
                             ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("ProductInputObject has null value for ProductInputObject.ProductName"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ProductInputObject) );
                         }
-                        await this.Client.DevicesGenerateCapabilityImage(ProductInputObject.SubscriptionId ?? null, ProductInputObject.ResourceGroupName ?? null, ProductInputObject.CatalogName ?? null, ProductInputObject.ProductName ?? null, DeviceGroupName, DeviceName, _body, onOk, onDefault, this, Pipeline);
+                        await this.Client.DevicesGenerateCapabilityImage(ProductInputObject.SubscriptionId ?? null, ProductInputObject.ResourceGroupName ?? null, ProductInputObject.CatalogName ?? null, ProductInputObject.ProductName ?? null, DeviceGroupName, DeviceName, _generateDeviceCapabilityRequestBody, onOk, onDefault, this, Pipeline);
                     }
                     await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }

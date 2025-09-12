@@ -33,9 +33,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         /// <summary>A unique id generatd for the this cmdlet when ProcessRecord() is called.</summary>
         private string __processRecordId;
 
-        /// <summary>Request of the action to create a signed device capability image</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IGenerateCapabilityImageRequest _body = new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.GenerateCapabilityImageRequest();
-
         /// <summary>
         /// The <see cref="global::System.Threading.CancellationTokenSource" /> for this operation.
         /// </summary>
@@ -43,6 +40,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
 
         /// <summary>A dictionary to carry over additional data for pipeline.</summary>
         private global::System.Collections.Generic.Dictionary<global::System.String,global::System.Object> _extensibleParameters = new System.Collections.Generic.Dictionary<string, object>();
+
+        /// <summary>Request of the action to create a signed device capability image</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IGenerateCapabilityImageRequest _generateDeviceCapabilityRequestBody = new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.GenerateCapabilityImageRequest();
 
         /// <summary>when specified, runs this cmdlet as a PowerShell job</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Run the command as a job")]
@@ -68,7 +68,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         SerializedName = @"capabilities",
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.Sphere.PSArgumentCompleterAttribute("ApplicationDevelopment", "FieldServicing")]
-        public string[] Capability { get => _body.Capability?.ToArray() ?? null /* fixedArrayOf */; set => _body.Capability = (value != null ? new System.Collections.Generic.List<string>(value) : null); }
+        public string[] Capability { get => _generateDeviceCapabilityRequestBody.Capability?.ToArray() ?? null /* fixedArrayOf */; set => _generateDeviceCapabilityRequestBody.Capability = (value != null ? new System.Collections.Generic.List<string>(value) : null); }
 
         /// <summary>Backing field for <see cref="CatalogName" /> property.</summary>
         private string _catalogName;
@@ -286,7 +286,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
             clone.ProxyUseDefaultCredentials = this.ProxyUseDefaultCredentials;
             clone.HttpPipelinePrepend = this.HttpPipelinePrepend;
             clone.HttpPipelineAppend = this.HttpPipelineAppend;
-            clone._body = this._body;
+            clone._generateDeviceCapabilityRequestBody = this._generateDeviceCapabilityRequestBody;
             clone.SubscriptionId = this.SubscriptionId;
             clone.ResourceGroupName = this.ResourceGroupName;
             clone.CatalogName = this.CatalogName;
@@ -512,7 +512,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
                 try
                 {
                     await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
-                    await this.Client.DevicesGenerateCapabilityImage(SubscriptionId, ResourceGroupName, CatalogName, ProductName, DeviceGroupName, DeviceName, _body, onOk, onDefault, this, Pipeline);
+                    await this.Client.DevicesGenerateCapabilityImage(SubscriptionId, ResourceGroupName, CatalogName, ProductName, DeviceGroupName, DeviceName, _generateDeviceCapabilityRequestBody, onOk, onDefault, this, Pipeline);
                     await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }
                 catch (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.UndeclaredResponseException urexception)

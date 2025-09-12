@@ -41,7 +41,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         private global::System.Collections.Generic.Dictionary<global::System.String,global::System.Object> _extensibleParameters = new System.Collections.Generic.Dictionary<string, object>();
 
         /// <summary>A class represent an AppComplianceAutomation report resource.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResource _resourceBody = new Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ReportResource();
+        private Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IReportResource _propertiesBody = new Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ReportResource();
 
         /// <summary>when specified, runs this cmdlet as a PowerShell job</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Run the command as a job")]
@@ -130,7 +130,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"A list of comma-separated offerGuids indicates a series of offerGuids that map to the report. For example, ""00000000-0000-0000-0000-000000000001,00000000-0000-0000-0000-000000000002"" and ""00000000-0000-0000-0000-000000000003"".",
         SerializedName = @"offerGuid",
         PossibleTypes = new [] { typeof(string) })]
-        public string OfferGuid { get => _resourceBody.OfferGuid ?? null; set => _resourceBody.OfferGuid = value; }
+        public string OfferGuid { get => _propertiesBody.OfferGuid ?? null; set => _propertiesBody.OfferGuid = value; }
 
         /// <summary>
         /// The instance of the <see cref="Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.HttpPipeline" /> that the remote call will use.
@@ -163,7 +163,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"List of resource data.",
         SerializedName = @"resources",
         PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata[] Resource { get => _resourceBody.Resource?.ToArray() ?? null /* fixedArrayOf */; set => _resourceBody.Resource = (value != null ? new System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata>(value) : null); }
+        public Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata[] Resource { get => _propertiesBody.Resource?.ToArray() ?? null /* fixedArrayOf */; set => _propertiesBody.Resource = (value != null ? new System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IResourceMetadata>(value) : null); }
 
         /// <summary>'bring your own storage' account name</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "'bring your own storage' account name")]
@@ -174,7 +174,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"'bring your own storage' account name",
         SerializedName = @"accountName",
         PossibleTypes = new [] { typeof(string) })]
-        public string StorageInfoAccountName { get => _resourceBody.StorageInfoAccountName ?? null; set => _resourceBody.StorageInfoAccountName = value; }
+        public string StorageInfoAccountName { get => _propertiesBody.StorageInfoAccountName ?? null; set => _propertiesBody.StorageInfoAccountName = value; }
 
         /// <summary>The region of 'bring your own storage' account</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The region of 'bring your own storage' account")]
@@ -185,7 +185,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"The region of 'bring your own storage' account",
         SerializedName = @"location",
         PossibleTypes = new [] { typeof(string) })]
-        public string StorageInfoLocation { get => _resourceBody.StorageInfoLocation ?? null; set => _resourceBody.StorageInfoLocation = value; }
+        public string StorageInfoLocation { get => _propertiesBody.StorageInfoLocation ?? null; set => _propertiesBody.StorageInfoLocation = value; }
 
         /// <summary>The resourceGroup which 'bring your own storage' account belongs to</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The resourceGroup which 'bring your own storage' account belongs to")]
@@ -196,7 +196,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"The resourceGroup which 'bring your own storage' account belongs to",
         SerializedName = @"resourceGroup",
         PossibleTypes = new [] { typeof(string) })]
-        public string StorageInfoResourceGroup { get => _resourceBody.StorageInfoResourceGroup ?? null; set => _resourceBody.StorageInfoResourceGroup = value; }
+        public string StorageInfoResourceGroup { get => _propertiesBody.StorageInfoResourceGroup ?? null; set => _propertiesBody.StorageInfoResourceGroup = value; }
 
         /// <summary>The subscription id which 'bring your own storage' account belongs to</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The subscription id which 'bring your own storage' account belongs to")]
@@ -207,7 +207,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"The subscription id which 'bring your own storage' account belongs to",
         SerializedName = @"subscriptionId",
         PossibleTypes = new [] { typeof(string) })]
-        public string StorageInfoSubscriptionId { get => _resourceBody.StorageInfoSubscriptionId ?? null; set => _resourceBody.StorageInfoSubscriptionId = value; }
+        public string StorageInfoSubscriptionId { get => _propertiesBody.StorageInfoSubscriptionId ?? null; set => _propertiesBody.StorageInfoSubscriptionId = value; }
 
         /// <summary>
         /// Report collection trigger time's time zone, the available list can be obtained by executing "Get-TimeZone -ListAvailable"
@@ -221,7 +221,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"Report collection trigger time's time zone, the available list can be obtained by executing ""Get-TimeZone -ListAvailable"" in PowerShell.An example of valid timezone id is ""Pacific Standard Time"".",
         SerializedName = @"timeZone",
         PossibleTypes = new [] { typeof(string) })]
-        public string TimeZone { get => _resourceBody.TimeZone ?? null; set => _resourceBody.TimeZone = value; }
+        public string TimeZone { get => _propertiesBody.TimeZone ?? null; set => _propertiesBody.TimeZone = value; }
 
         /// <summary>Report collection trigger time.</summary>
         [global::System.Management.Automation.Parameter(Mandatory = true, HelpMessage = "Report collection trigger time.")]
@@ -232,7 +232,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"Report collection trigger time.",
         SerializedName = @"triggerTime",
         PossibleTypes = new [] { typeof(global::System.DateTime) })]
-        public global::System.DateTime TriggerTime { get => _resourceBody.TriggerTime; set => _resourceBody.TriggerTime = value; }
+        public global::System.DateTime TriggerTime { get => _propertiesBody.TriggerTime; set => _propertiesBody.TriggerTime = value; }
 
         /// <summary>
         /// <c>overrideOnDefault</c> will be called before the regular onDefault has been processed, allowing customization of what
@@ -293,7 +293,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
             clone.ProxyUseDefaultCredentials = this.ProxyUseDefaultCredentials;
             clone.HttpPipelinePrepend = this.HttpPipelinePrepend;
             clone.HttpPipelineAppend = this.HttpPipelineAppend;
-            clone._resourceBody = this._resourceBody;
+            clone._propertiesBody = this._propertiesBody;
             clone.Name = this.Name;
             return clone;
         }
@@ -514,7 +514,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
                 try
                 {
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
-                    await this.Client.ReportCreateOrUpdate(Name, _resourceBody, onOk, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate);
+                    await this.Client.ReportCreateOrUpdate(Name, _propertiesBody, onOk, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate);
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }
                 catch (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.UndeclaredResponseException urexception)
