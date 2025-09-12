@@ -30,9 +30,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         /// <summary>A unique id generatd for the this cmdlet when ProcessRecord() is called.</summary>
         private string __processRecordId;
 
-        /// <summary>Request of the action to list device groups for a catalog.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IListDeviceGroupsRequest _body = new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ListDeviceGroupsRequest();
-
         /// <summary>
         /// The <see cref="global::System.Threading.CancellationTokenSource" /> for this operation.
         /// </summary>
@@ -46,6 +43,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
 
         /// <summary>A flag to tell whether it is the first onOK call.</summary>
         private bool _isFirst = true;
+
+        /// <summary>Request of the action to list device groups for a catalog.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IListDeviceGroupsRequest _listDeviceGroupsRequestBody = new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ListDeviceGroupsRequest();
 
         /// <summary>Link to retrieve next page.</summary>
         private string _nextLink;
@@ -100,7 +100,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         Description = @"Device Group name.",
         SerializedName = @"deviceGroupName",
         PossibleTypes = new [] { typeof(string) })]
-        public string DeviceGroupName { get => _body.DeviceGroupName ?? null; set => _body.DeviceGroupName = value; }
+        public string DeviceGroupName { get => _listDeviceGroupsRequestBody.DeviceGroupName ?? null; set => _listDeviceGroupsRequestBody.DeviceGroupName = value; }
 
         /// <summary>Accessor for extensibleParameters.</summary>
         public global::System.Collections.Generic.IDictionary<global::System.String,global::System.Object> ExtensibleParameters { get => _extensibleParameters ; }
@@ -457,7 +457,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
                     foreach( var SubscriptionId in this.SubscriptionId )
                     {
                         await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
-                        await this.Client.CatalogsListDeviceGroups(SubscriptionId, ResourceGroupName, CatalogName, this.InvocationInformation.BoundParameters.ContainsKey("Filter") ? Filter : null, this.InvocationInformation.BoundParameters.ContainsKey("Top") ? Top : default(int?), this.InvocationInformation.BoundParameters.ContainsKey("Skip") ? Skip : default(int?), this.InvocationInformation.BoundParameters.ContainsKey("Maxpagesize") ? Maxpagesize : default(int?), _body, onOk, onDefault, this, Pipeline);
+                        await this.Client.CatalogsListDeviceGroups(SubscriptionId, ResourceGroupName, CatalogName, this.InvocationInformation.BoundParameters.ContainsKey("Filter") ? Filter : null, this.InvocationInformation.BoundParameters.ContainsKey("Top") ? Top : default(int?), this.InvocationInformation.BoundParameters.ContainsKey("Skip") ? Skip : default(int?), this.InvocationInformation.BoundParameters.ContainsKey("Maxpagesize") ? Maxpagesize : default(int?), _listDeviceGroupsRequestBody, onOk, onDefault, this, Pipeline);
                         await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                     }
                 }

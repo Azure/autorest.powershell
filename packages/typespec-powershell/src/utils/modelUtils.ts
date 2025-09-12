@@ -47,7 +47,7 @@ import {
   getLifecycleVisibilityEnum,
   getVisibilityForClass,
 } from "@typespec/compiler";
-import { SdkContext, isReadOnly, getWireName } from "@azure-tools/typespec-client-generator-core";
+import { SdkContext, isReadOnly, getWireName, getClientNameOverride } from "@azure-tools/typespec-client-generator-core";
 
 import { reportDiagnostic } from "../lib.js";
 import { AnySchema, SealedChoiceSchema, ChoiceSchema, ChoiceValue, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema, ConstantSchema, ConstantValue, BooleanSchema } from "@autorest/codemodel";
@@ -521,6 +521,9 @@ function getSchemaForUnion(
     //Yabo: how to deal with x-nullable?
     const nullable = union.variants.size !== nonNullOptions.length;
     schema = getSchemaForType(dpgContext, nonNullOptions[0], options);
+    if (nonNullOptions[0].kind === "Model" && isRecordModelType(dpgContext.program, nonNullOptions[0]) && nonNullOptions[0].name === "Record") {
+      return { ...schema };
+    }
   } else {
     const values = [];
     const [asEnum, _] = getUnionAsEnum(union);
@@ -740,8 +743,9 @@ function getSchemaForModel(
   }
 
   const program = dpgContext.program;
-  const overridedModelName =
+  const overridedModelName = getClientNameOverride(dpgContext, model) ??
     getFriendlyName(program, model) ?? getWireName(dpgContext, model);
+
   const fullNamespaceName =
     overridedModelName ??
     getModelNamespaceName(dpgContext, model.namespace!)

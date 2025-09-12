@@ -42,7 +42,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         private object _firstResponse = null;
 
         /// <summary>A class represent an AppComplianceAutomation scoping configuration resource.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResource _resourceBody = new Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ScopingConfigurationResource();
+        private Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingConfigurationResource _propertiesBody = new Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ScopingConfigurationResource();
 
         /// <summary>
         /// A flag to tell whether it is the first returned object in a call. Zero means no response yet. One means 1 returned object.
@@ -60,7 +60,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"List of scoping question answers.",
         SerializedName = @"answers",
         PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer[] Answer { get => _resourceBody.Answer?.ToArray() ?? null /* fixedArrayOf */; set => _resourceBody.Answer = (value != null ? new System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer>(value) : null); }
+        public Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer[] Answer { get => _propertiesBody.Answer?.ToArray() ?? null /* fixedArrayOf */; set => _propertiesBody.Answer = (value != null ? new System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IScopingAnswer>(value) : null); }
 
         /// <summary>Wait for .NET debugger to attach</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Wait for .NET debugger to attach")]
@@ -361,9 +361,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                     if (InputObject?.Id != null)
                     {
-                        _resourceBody = await this.Client.ScopingConfigurationGetViaIdentityWithResult(InputObject.Id, this, Pipeline);
-                        this.Update_resourceBody();
-                        await this.Client.ScopingConfigurationCreateOrUpdateViaIdentity(InputObject.Id, _resourceBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeUpdate);
+                        _propertiesBody = await this.Client.ScopingConfigurationGetViaIdentityWithResult(InputObject.Id, this, Pipeline);
+                        this.Update_propertiesBody();
+                        await this.Client.ScopingConfigurationCreateOrUpdateViaIdentity(InputObject.Id, _propertiesBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeUpdate);
                     }
                     else
                     {
@@ -376,9 +376,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
                         {
                             ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.ScopingConfigurationName"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject) );
                         }
-                        _resourceBody = await this.Client.ScopingConfigurationGetWithResult(InputObject.ReportName ?? null, InputObject.ScopingConfigurationName ?? null, this, Pipeline);
-                        this.Update_resourceBody();
-                        await this.Client.ScopingConfigurationCreateOrUpdate(InputObject.ReportName ?? null, InputObject.ScopingConfigurationName ?? null, _resourceBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeUpdate);
+                        _propertiesBody = await this.Client.ScopingConfigurationGetWithResult(InputObject.ReportName ?? null, InputObject.ScopingConfigurationName ?? null, this, Pipeline);
+                        this.Update_propertiesBody();
+                        await this.Client.ScopingConfigurationCreateOrUpdate(InputObject.ReportName ?? null, InputObject.ScopingConfigurationName ?? null, _propertiesBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeUpdate);
                     }
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }
@@ -412,7 +412,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
 
         }
 
-        private void Update_resourceBody()
+        private void Update_propertiesBody()
         {
             if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("Answer")))
             {

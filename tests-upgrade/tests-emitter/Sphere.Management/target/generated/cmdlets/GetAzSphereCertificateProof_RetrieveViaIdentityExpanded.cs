@@ -30,9 +30,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         /// <summary>A unique id generatd for the this cmdlet when ProcessRecord() is called.</summary>
         private string __processRecordId;
 
-        /// <summary>Request for the proof of possession nonce</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IProofOfPossessionNonceRequest _body = new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ProofOfPossessionNonceRequest();
-
         /// <summary>
         /// The <see cref="global::System.Threading.CancellationTokenSource" /> for this operation.
         /// </summary>
@@ -43,6 +40,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
 
         /// <summary>A buffer to record first returned object in response.</summary>
         private object _firstResponse = null;
+
+        /// <summary>Request for the proof of possession nonce</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IProofOfPossessionNonceRequest _proofOfPossessionNonceRequestBody = new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ProofOfPossessionNonceRequest();
 
         /// <summary>
         /// A flag to tell whether it is the first returned object in a call. Zero means no response yet. One means 1 returned object.
@@ -119,7 +119,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
         Description = @"The proof of possession nonce",
         SerializedName = @"proofOfPossessionNonce",
         PossibleTypes = new [] { typeof(string) })]
-        public string ProofOfPossessionNonce { get => _body.ProofOfPossessionNonce ?? null; set => _body.ProofOfPossessionNonce = value; }
+        public string ProofOfPossessionNonce { get => _proofOfPossessionNonceRequestBody.ProofOfPossessionNonce ?? null; set => _proofOfPossessionNonceRequestBody.ProofOfPossessionNonce = value; }
 
         /// <summary>The URI for the proxy server to use</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "The URI for the proxy server to use")]
@@ -356,7 +356,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
                     await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                     if (InputObject?.Id != null)
                     {
-                        await this.Client.CertificatesRetrieveProofOfPossessionNonceViaIdentity(InputObject.Id, _body, onOk, onDefault, this, Pipeline);
+                        await this.Client.CertificatesRetrieveProofOfPossessionNonceViaIdentity(InputObject.Id, _proofOfPossessionNonceRequestBody, onOk, onDefault, this, Pipeline);
                     }
                     else
                     {
@@ -377,7 +377,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
                         {
                             ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.SerialNumber"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject) );
                         }
-                        await this.Client.CertificatesRetrieveProofOfPossessionNonce(InputObject.SubscriptionId ?? null, InputObject.ResourceGroupName ?? null, InputObject.CatalogName ?? null, InputObject.SerialNumber ?? null, _body, onOk, onDefault, this, Pipeline);
+                        await this.Client.CertificatesRetrieveProofOfPossessionNonce(InputObject.SubscriptionId ?? null, InputObject.ResourceGroupName ?? null, InputObject.CatalogName ?? null, InputObject.SerialNumber ?? null, _proofOfPossessionNonceRequestBody, onOk, onDefault, this, Pipeline);
                     }
                     await ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }

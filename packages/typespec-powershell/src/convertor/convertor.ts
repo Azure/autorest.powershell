@@ -365,7 +365,8 @@ function createBodyParameter(psContext: SdkContext, parameter: HttpOperationBody
   const paramSchema = parameter.property?.sourceProperty
     ? getSchemaForType(psContext, parameter.property?.sourceProperty?.type)
     : getSchemaForType(psContext, parameter.type)
-  const newParameter = new Parameter(parameter.property?.name || "", parameter.property ? getDoc(psContext.program, parameter.property) || "" : "", paramSchema);
+  const paramName = parameter.property ? (getClientNameOverride(psContext, parameter.property) || parameter.property.name || "") : "";
+  const newParameter = new Parameter(paramName, parameter.property ? getDoc(psContext.program, parameter.property) || "" : "", paramSchema);
   newParameter.protocol.http = newParameter.protocol.http ?? new Protocol();
   newParameter.protocol.http.in = "body";
   // ToDo, we need to support x-ms-client is specified.

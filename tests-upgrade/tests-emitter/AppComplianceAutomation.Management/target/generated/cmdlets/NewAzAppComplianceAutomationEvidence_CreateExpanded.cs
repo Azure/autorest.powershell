@@ -42,7 +42,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         private object _firstResponse = null;
 
         /// <summary>A class represent an AppComplianceAutomation evidence resource.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IEvidenceResource _resourceBody = new Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.EvidenceResource();
+        private Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IEvidenceResource _propertiesBody = new Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.EvidenceResource();
 
         /// <summary>
         /// A flag to tell whether it is the first returned object in a call. Zero means no response yet. One means 1 returned object.
@@ -70,7 +70,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"Control id.",
         SerializedName = @"controlId",
         PossibleTypes = new [] { typeof(string) })]
-        public string ControlId { get => _resourceBody.ControlId ?? null; set => _resourceBody.ControlId = value; }
+        public string ControlId { get => _propertiesBody.ControlId ?? null; set => _propertiesBody.ControlId = value; }
 
         /// <summary>
         /// The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet
@@ -92,7 +92,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         SerializedName = @"evidenceType",
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.PSArgumentCompleterAttribute("File", "AutoCollectedEvidence", "Data")]
-        public string EvidenceType { get => _resourceBody.EvidenceType ?? null; set => _resourceBody.EvidenceType = value; }
+        public string EvidenceType { get => _propertiesBody.EvidenceType ?? null; set => _propertiesBody.EvidenceType = value; }
 
         /// <summary>Accessor for extensibleParameters.</summary>
         public global::System.Collections.Generic.IDictionary<global::System.String,global::System.Object> ExtensibleParameters { get => _extensibleParameters ; }
@@ -106,7 +106,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"Extra data considered as evidence.",
         SerializedName = @"extraData",
         PossibleTypes = new [] { typeof(string) })]
-        public string ExtraData { get => _resourceBody.ExtraData ?? null; set => _resourceBody.ExtraData = value; }
+        public string ExtraData { get => _propertiesBody.ExtraData ?? null; set => _propertiesBody.ExtraData = value; }
 
         /// <summary>The path of the file in storage.</summary>
         [global::System.Management.Automation.Parameter(Mandatory = true, HelpMessage = "The path of the file in storage.")]
@@ -117,7 +117,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"The path of the file in storage.",
         SerializedName = @"filePath",
         PossibleTypes = new [] { typeof(string) })]
-        public string FilePath { get => _resourceBody.FilePath ?? null; set => _resourceBody.FilePath = value; }
+        public string FilePath { get => _propertiesBody.FilePath ?? null; set => _propertiesBody.FilePath = value; }
 
         /// <summary>SendAsync Pipeline Steps to be appended to the front of the pipeline</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline")]
@@ -229,7 +229,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"Responsibility id.",
         SerializedName = @"responsibilityId",
         PossibleTypes = new [] { typeof(string) })]
-        public string ResponsibilityId { get => _resourceBody.ResponsibilityId ?? null; set => _resourceBody.ResponsibilityId = value; }
+        public string ResponsibilityId { get => _propertiesBody.ResponsibilityId ?? null; set => _propertiesBody.ResponsibilityId = value; }
 
         /// <summary>
         /// <c>overrideOnCreated</c> will be called before the regular onCreated has been processed, allowing customization of what
@@ -460,7 +460,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
                 try
                 {
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
-                    await this.Client.EvidenceCreateOrUpdate(ReportName, Name, this.InvocationInformation.BoundParameters.ContainsKey("OfferGuid") ? OfferGuid : null, this.InvocationInformation.BoundParameters.ContainsKey("ReportCreatorTenantId") ? ReportCreatorTenantId : null, _resourceBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate);
+                    await this.Client.EvidenceCreateOrUpdate(ReportName, Name, this.InvocationInformation.BoundParameters.ContainsKey("OfferGuid") ? OfferGuid : null, this.InvocationInformation.BoundParameters.ContainsKey("ReportCreatorTenantId") ? ReportCreatorTenantId : null, _propertiesBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate);
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }
                 catch (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.UndeclaredResponseException urexception)

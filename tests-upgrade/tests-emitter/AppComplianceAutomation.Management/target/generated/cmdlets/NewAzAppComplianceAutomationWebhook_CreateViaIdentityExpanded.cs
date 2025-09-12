@@ -44,7 +44,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         private object _firstResponse = null;
 
         /// <summary>A class represent an AppComplianceAutomation webhook resource.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResource _resourceBody = new Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.WebhookResource();
+        private Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IWebhookResource _propertiesBody = new Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.WebhookResource();
 
         /// <summary>
         /// A flag to tell whether it is the first returned object in a call. Zero means no response yet. One means 1 returned object.
@@ -73,7 +73,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         SerializedName = @"contentType",
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.PSArgumentCompleterAttribute("application/json")]
-        public string ContentType { get => _resourceBody.ContentType ?? null; set => _resourceBody.ContentType = value; }
+        public string ContentType { get => _propertiesBody.ContentType ?? null; set => _propertiesBody.ContentType = value; }
 
         /// <summary>
         /// The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet
@@ -95,7 +95,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         SerializedName = @"enableSslVerification",
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.PSArgumentCompleterAttribute("true", "false")]
-        public string EnableSslVerification { get => _resourceBody.EnableSslVerification ?? null; set => _resourceBody.EnableSslVerification = value; }
+        public string EnableSslVerification { get => _propertiesBody.EnableSslVerification ?? null; set => _propertiesBody.EnableSslVerification = value; }
 
         /// <summary>under which event notification should be sent.</summary>
         [global::System.Management.Automation.AllowEmptyCollection]
@@ -108,7 +108,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         SerializedName = @"events",
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.PSArgumentCompleterAttribute("generate_snapshot_success", "generate_snapshot_failed", "assessment_failure", "report_configuration_changes", "report_deletion")]
-        public string[] Event { get => _resourceBody.Event?.ToArray() ?? null /* fixedArrayOf */; set => _resourceBody.Event = (value != null ? new System.Collections.Generic.List<string>(value) : null); }
+        public string[] Event { get => _propertiesBody.Event?.ToArray() ?? null /* fixedArrayOf */; set => _propertiesBody.Event = (value != null ? new System.Collections.Generic.List<string>(value) : null); }
 
         /// <summary>Accessor for extensibleParameters.</summary>
         public global::System.Collections.Generic.IDictionary<global::System.String,global::System.Object> ExtensibleParameters { get => _extensibleParameters ; }
@@ -153,7 +153,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"webhook payload url",
         SerializedName = @"payloadUrl",
         PossibleTypes = new [] { typeof(string) })]
-        public string PayloadUrl { get => _resourceBody.PayloadUrl ?? null; set => _resourceBody.PayloadUrl = value; }
+        public string PayloadUrl { get => _propertiesBody.PayloadUrl ?? null; set => _propertiesBody.PayloadUrl = value; }
 
         /// <summary>
         /// The instance of the <see cref="Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.HttpPipeline" /> that the remote call will use.
@@ -186,7 +186,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         SerializedName = @"sendAllEvents",
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.PSArgumentCompleterAttribute("true", "false")]
-        public string SendAllEvent { get => _resourceBody.SendAllEvent ?? null; set => _resourceBody.SendAllEvent = value; }
+        public string SendAllEvent { get => _propertiesBody.SendAllEvent ?? null; set => _propertiesBody.SendAllEvent = value; }
 
         /// <summary>Webhook status.</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Webhook status.")]
@@ -198,7 +198,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         SerializedName = @"status",
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.PSArgumentCompleterAttribute("Enabled", "Disabled")]
-        public string Status { get => _resourceBody.Status ?? null; set => _resourceBody.Status = value; }
+        public string Status { get => _propertiesBody.Status ?? null; set => _propertiesBody.Status = value; }
 
         /// <summary>whether to update webhookKey.</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "whether to update webhookKey.")]
@@ -210,7 +210,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         SerializedName = @"updateWebhookKey",
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.PSArgumentCompleterAttribute("true", "false")]
-        public string UpdateWebhookKey { get => _resourceBody.UpdateWebhookKey ?? null; set => _resourceBody.UpdateWebhookKey = value; }
+        public string UpdateWebhookKey { get => _propertiesBody.UpdateWebhookKey ?? null; set => _propertiesBody.UpdateWebhookKey = value; }
 
         /// <summary>
         /// webhook secret token. If not set, this field value is null; otherwise, please set a string value.
@@ -223,7 +223,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         Description = @"webhook secret token. If not set, this field value is null; otherwise, please set a string value.",
         SerializedName = @"webhookKey",
         PossibleTypes = new [] { typeof(string) })]
-        public string WebhookKey { get => _resourceBody.WebhookKey ?? null; set => _resourceBody.WebhookKey = value; }
+        public string WebhookKey { get => _propertiesBody.WebhookKey ?? null; set => _propertiesBody.WebhookKey = value; }
 
         /// <summary>
         /// <c>overrideOnCreated</c> will be called before the regular onCreated has been processed, allowing customization of what
@@ -457,7 +457,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                     if (InputObject?.Id != null)
                     {
-                        await this.Client.WebhookCreateOrUpdateViaIdentity(InputObject.Id, _resourceBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate);
+                        await this.Client.WebhookCreateOrUpdateViaIdentity(InputObject.Id, _propertiesBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate);
                     }
                     else
                     {
@@ -470,7 +470,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
                         {
                             ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.WebhookName"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject) );
                         }
-                        await this.Client.WebhookCreateOrUpdate(InputObject.ReportName ?? null, InputObject.WebhookName ?? null, _resourceBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate);
+                        await this.Client.WebhookCreateOrUpdate(InputObject.ReportName ?? null, InputObject.WebhookName ?? null, _propertiesBody, onOk, onCreated, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SerializationMode.IncludeCreate);
                     }
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }
