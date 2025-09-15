@@ -7,7 +7,7 @@ AutoRest PowerShell is a monorepo containing generators that create PowerShell c
 ## Working Effectively
 
 ### Initial Setup and Dependencies
-- Install Node.js LTS (14.0.0-21.0.0 supported, 20.19.5 recommended): `curl -fsSL https://nodejs.org/dist/v20.19.5/node-v20.19.5-linux-x64.tar.xz | tar -xJ -C /usr/local --strip-components=1`
+- Install Node.js LTS (20.19.5 recommended): `curl -fsSL https://nodejs.org/dist/v20.19.5/node-v20.19.5-linux-x64.tar.xz | tar -xJ -C /usr/local --strip-components=1`
 - Install Rush.js globally: `npm install -g @microsoft/rush@5.112.2`
 - Install AutoRest globally: `npm install -g autorest@latest`
 - Verify PowerShell is available (6.0+ required): `pwsh -version`
