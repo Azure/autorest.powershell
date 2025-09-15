@@ -50,7 +50,8 @@ function GenerateModuleWithEmitter {
         [TestEmitterModel]
         $TestEmitter
     )
-    $result = (tsp compile ./ --emit $script:PowerShellEmitter) | Out-String
+    $tspFile = if (Test-Path "./client.tsp") { "./client.tsp" } else { "./" }
+    $result = (tsp compile $tspFile --emit $script:PowerShellEmitter) | Out-String
     Write-Debug "$($TestEmitter.TestName) generated powershell debug information"
     Write-Debug $result
 
