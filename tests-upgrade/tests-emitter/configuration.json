@@ -71,6 +71,7 @@
     "generated\\modules",
     "Properties\\AssemblyInfo.cs",
     "generated/modules",
-    "Properties/AssemblyInfo.cs"
+    "Properties/AssemblyInfo.cs",
+    "generated\\api\\HardwareSecurityModules.cs"
   ]
 }
