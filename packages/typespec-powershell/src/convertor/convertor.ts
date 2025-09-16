@@ -196,7 +196,7 @@ function resolveOperationId(psContext: SdkContext, op: HttpOperation): string {
 }
 
 function getClientName(context: SdkContext, type: Type & { name: string }) {
-  const clientName = getClientNameOverride(context, type);
+  const clientName = getClientNameOverride(context, type, "powershell");
   return clientName ?? type.name;
 }
 

@@ -743,7 +743,7 @@ function getSchemaForModel(
   }
 
   const program = dpgContext.program;
-  const overridedModelName = getClientNameOverride(dpgContext, model) ??
+  const overridedModelName = getClientNameOverride(dpgContext, model, "powershell") ??
     getFriendlyName(program, model) ?? getWireName(dpgContext, model);
 
   const fullNamespaceName =
