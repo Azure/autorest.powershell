@@ -1,0 +1,52 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Runtime.Extensions;
+
+    /// <summary>Autonomous Database Wallet File resource model.</summary>
+    public partial class AutonomousDatabaseWalletFile :
+        Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IAutonomousDatabaseWalletFile,
+        Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IAutonomousDatabaseWalletFileInternal
+    {
+
+        /// <summary>Backing field for <see cref="WalletFile" /> property.</summary>
+        private string _walletFile;
+
+        /// <summary>The base64 encoded wallet files</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Origin(Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.PropertyOrigin.Owned)]
+        public string WalletFile { get => this._walletFile; set => this._walletFile = value; }
+
+        /// <summary>Creates an new <see cref="AutonomousDatabaseWalletFile" /> instance.</summary>
+        public AutonomousDatabaseWalletFile()
+        {
+
+        }
+    }
+    /// Autonomous Database Wallet File resource model.
+    public partial interface IAutonomousDatabaseWalletFile :
+        Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Runtime.IJsonSerializable
+    {
+        /// <summary>The base64 encoded wallet files</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The base64 encoded wallet files",
+        SerializedName = @"walletFiles",
+        PossibleTypes = new [] { typeof(string) })]
+        string WalletFile { get; set; }
+
+    }
+    /// Autonomous Database Wallet File resource model.
+    internal partial interface IAutonomousDatabaseWalletFileInternal
+
+    {
+        /// <summary>The base64 encoded wallet files</summary>
+        string WalletFile { get; set; }
+
+    }
+}

@@ -23,7 +23,13 @@
     "Qumulo.Storage.Management",
     "Sphere.Management",
     "StandbyPool.Management",
-    "Workloads.SAPVirtualInstance.Management"
+    "Workloads.SAPVirtualInstance.Management",
+    "HardwareSecurityModules.Management.brown",
+    "HybridKubernetes.Management.brown",
+    "Microsoft.AVS.Management.brown",
+    "Oracle.Database.Management.brown",
+    "ServiceFabricManagedClusters.Management.brown",
+    "StorageAction.Management.brown"
   ],
   "whiteTestListFull": [
     "AppComplianceAutomation.Management",
@@ -48,7 +54,13 @@
     "Qumulo.Storage.Management",
     "Sphere.Management",
     "StandbyPool.Management",
-    "Workloads.SAPVirtualInstance.Management"
+    "Workloads.SAPVirtualInstance.Management",
+    "HardwareSecurityModules.Management.brown",
+    "HybridKubernetes.Management.brown",
+    "Microsoft.AVS.Management.brown",
+    "Oracle.Database.Management.brown",
+    "ServiceFabricManagedClusters.Management.brown",
+    "StorageAction.Management.brown"
   ],
   "blackTestList": [],
   "ignoreFolder": [

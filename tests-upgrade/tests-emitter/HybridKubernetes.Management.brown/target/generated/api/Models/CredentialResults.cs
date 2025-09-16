@@ -1,0 +1,187 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Extensions;
+
+    /// <summary>The list of credential result response.</summary>
+    public partial class CredentialResults :
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResults,
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResultsInternal
+    {
+
+        /// <summary>Backing field for <see cref="HybridConnectionConfig" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfig _hybridConnectionConfig;
+
+        /// <summary>Contains the REP (rendezvous endpoint) and “Sender” access token.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfig HybridConnectionConfig { get => (this._hybridConnectionConfig = this._hybridConnectionConfig ?? new Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.HybridConnectionConfig()); }
+
+        /// <summary>Timestamp when this token will be expired.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public long? HybridConnectionConfigExpirationTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).ExpirationTime; }
+
+        /// <summary>Name of the connection</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string HybridConnectionConfigHybridConnectionName { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).HybridConnectionName; }
+
+        /// <summary>Name of the relay.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string HybridConnectionConfigRelay { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).Relay; }
+
+        /// <summary>TenantID of the relay</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string HybridConnectionConfigRelayTid { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).RelayTid; }
+
+        /// <summary>Type of relay</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string HybridConnectionConfigRelayType { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).RelayType; }
+
+        /// <summary>Sender access token</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string HybridConnectionConfigToken { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).Token; }
+
+        /// <summary>Backing field for <see cref="Kubeconfig" /> property.</summary>
+        private System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResult> _kubeconfig;
+
+        /// <summary>Base64-encoded Kubernetes configuration file.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResult> Kubeconfig { get => this._kubeconfig; }
+
+        /// <summary>Internal Acessors for HybridConnectionConfig</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfig Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResultsInternal.HybridConnectionConfig { get => (this._hybridConnectionConfig = this._hybridConnectionConfig ?? new Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.HybridConnectionConfig()); set { {_hybridConnectionConfig = value;} } }
+
+        /// <summary>Internal Acessors for HybridConnectionConfigExpirationTime</summary>
+        long? Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResultsInternal.HybridConnectionConfigExpirationTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).ExpirationTime; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).ExpirationTime = value ?? default(long); }
+
+        /// <summary>Internal Acessors for HybridConnectionConfigHybridConnectionName</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResultsInternal.HybridConnectionConfigHybridConnectionName { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).HybridConnectionName; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).HybridConnectionName = value ?? null; }
+
+        /// <summary>Internal Acessors for HybridConnectionConfigRelay</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResultsInternal.HybridConnectionConfigRelay { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).Relay; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).Relay = value ?? null; }
+
+        /// <summary>Internal Acessors for HybridConnectionConfigRelayTid</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResultsInternal.HybridConnectionConfigRelayTid { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).RelayTid; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).RelayTid = value ?? null; }
+
+        /// <summary>Internal Acessors for HybridConnectionConfigRelayType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResultsInternal.HybridConnectionConfigRelayType { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).RelayType; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).RelayType = value ?? null; }
+
+        /// <summary>Internal Acessors for HybridConnectionConfigToken</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResultsInternal.HybridConnectionConfigToken { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).Token; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfigInternal)HybridConnectionConfig).Token = value ?? null; }
+
+        /// <summary>Internal Acessors for Kubeconfig</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResult> Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResultsInternal.Kubeconfig { get => this._kubeconfig; set { {_kubeconfig = value;} } }
+
+        /// <summary>Creates an new <see cref="CredentialResults" /> instance.</summary>
+        public CredentialResults()
+        {
+
+        }
+    }
+    /// The list of credential result response.
+    public partial interface ICredentialResults :
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.IJsonSerializable
+    {
+        /// <summary>Timestamp when this token will be expired.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Timestamp when this token will be expired.",
+        SerializedName = @"expirationTime",
+        PossibleTypes = new [] { typeof(long) })]
+        long? HybridConnectionConfigExpirationTime { get;  }
+        /// <summary>Name of the connection</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Name of the connection",
+        SerializedName = @"hybridConnectionName",
+        PossibleTypes = new [] { typeof(string) })]
+        string HybridConnectionConfigHybridConnectionName { get;  }
+        /// <summary>Name of the relay.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Name of the relay.",
+        SerializedName = @"relay",
+        PossibleTypes = new [] { typeof(string) })]
+        string HybridConnectionConfigRelay { get;  }
+        /// <summary>TenantID of the relay</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"TenantID of the relay",
+        SerializedName = @"relayTid",
+        PossibleTypes = new [] { typeof(string) })]
+        string HybridConnectionConfigRelayTid { get;  }
+        /// <summary>Type of relay</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Type of relay",
+        SerializedName = @"relayType",
+        PossibleTypes = new [] { typeof(string) })]
+        string HybridConnectionConfigRelayType { get;  }
+        /// <summary>Sender access token</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Sender access token",
+        SerializedName = @"token",
+        PossibleTypes = new [] { typeof(string) })]
+        string HybridConnectionConfigToken { get;  }
+        /// <summary>Base64-encoded Kubernetes configuration file.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Base64-encoded Kubernetes configuration file.",
+        SerializedName = @"kubeconfigs",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResult) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResult> Kubeconfig { get;  }
+
+    }
+    /// The list of credential result response.
+    internal partial interface ICredentialResultsInternal
+
+    {
+        /// <summary>Contains the REP (rendezvous endpoint) and “Sender” access token.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IHybridConnectionConfig HybridConnectionConfig { get; set; }
+        /// <summary>Timestamp when this token will be expired.</summary>
+        long? HybridConnectionConfigExpirationTime { get; set; }
+        /// <summary>Name of the connection</summary>
+        string HybridConnectionConfigHybridConnectionName { get; set; }
+        /// <summary>Name of the relay.</summary>
+        string HybridConnectionConfigRelay { get; set; }
+        /// <summary>TenantID of the relay</summary>
+        string HybridConnectionConfigRelayTid { get; set; }
+        /// <summary>Type of relay</summary>
+        string HybridConnectionConfigRelayType { get; set; }
+        /// <summary>Sender access token</summary>
+        string HybridConnectionConfigToken { get; set; }
+        /// <summary>Base64-encoded Kubernetes configuration file.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ICredentialResult> Kubeconfig { get; set; }
+
+    }
+}
