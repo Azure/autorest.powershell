@@ -1,0 +1,54 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Runtime.Extensions;
+
+    /// <summary>AutonomousDatabaseCharacterSet resource model</summary>
+    public partial class AutonomousDatabaseCharacterSetProperties :
+        Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IAutonomousDatabaseCharacterSetProperties,
+        Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IAutonomousDatabaseCharacterSetPropertiesInternal
+    {
+
+        /// <summary>Backing field for <see cref="CharacterSet" /> property.</summary>
+        private string _characterSet;
+
+        /// <summary>The Oracle Autonomous Database supported character sets.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Origin(Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.PropertyOrigin.Owned)]
+        public string CharacterSet { get => this._characterSet; set => this._characterSet = value; }
+
+        /// <summary>
+        /// Creates an new <see cref="AutonomousDatabaseCharacterSetProperties" /> instance.
+        /// </summary>
+        public AutonomousDatabaseCharacterSetProperties()
+        {
+
+        }
+    }
+    /// AutonomousDatabaseCharacterSet resource model
+    public partial interface IAutonomousDatabaseCharacterSetProperties :
+        Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Runtime.IJsonSerializable
+    {
+        /// <summary>The Oracle Autonomous Database supported character sets.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The Oracle Autonomous Database supported character sets.",
+        SerializedName = @"characterSet",
+        PossibleTypes = new [] { typeof(string) })]
+        string CharacterSet { get; set; }
+
+    }
+    /// AutonomousDatabaseCharacterSet resource model
+    internal partial interface IAutonomousDatabaseCharacterSetPropertiesInternal
+
+    {
+        /// <summary>The Oracle Autonomous Database supported character sets.</summary>
+        string CharacterSet { get; set; }
+
+    }
+}

@@ -1,0 +1,922 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Extensions;
+
+    /// <summary>Represents a connected cluster.</summary>
+    public partial class ConnectedCluster :
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedCluster,
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal,
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.IValidates
+    {
+        /// <summary>
+        /// Backing field for Inherited model <see cref= "Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ITrackedResource"
+        /// />
+        /// </summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ITrackedResource __trackedResource = new Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.TrackedResource();
+
+        /// <summary>The list of AAD group object IDs that will have admin role of the cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<string> AadProfileAdminGroupObjectID { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AadProfileAdminGroupObjectID; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AadProfileAdminGroupObjectID = value ?? null /* arrayOf */; }
+
+        /// <summary>Whether to enable Azure RBAC for Kubernetes authorization.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public bool? AadProfileEnableAzureRbac { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AadProfileEnableAzureRbac; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AadProfileEnableAzureRbac = value ?? default(bool); }
+
+        /// <summary>
+        /// The AAD tenant ID to use for authentication. If not specified, will use the tenant of the deployment subscription.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string AadProfileTenantId { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AadProfileTenantId; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AadProfileTenantId = value ?? null; }
+
+        /// <summary>
+        /// Base64 encoded public certificate used by the agent to do the initial handshake to the backend services in Azure.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string AgentPublicKeyCertificate { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AgentPublicKeyCertificate; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AgentPublicKeyCertificate = value ; }
+
+        /// <summary>Version of the agent running on the connected cluster resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string AgentVersion { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AgentVersion; }
+
+        /// <summary>
+        /// Indicates whether the Arc agents on the be upgraded automatically to the latest version. Defaults to Enabled.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string ArcAgentProfileAgentAutoUpgrade { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfileAgentAutoUpgrade; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfileAgentAutoUpgrade = value ?? null; }
+
+        /// <summary>List of arc agentry and system components errors on the cluster resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IAgentError> ArcAgentProfileAgentError { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfileAgentError; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfileAgentError = value ?? null /* arrayOf */; }
+
+        /// <summary>Represents the current state of the Arc agentry and its dependent components.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string ArcAgentProfileAgentState { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfileAgentState; }
+
+        /// <summary>Version of the Arc agents to be installed on the cluster resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string ArcAgentProfileDesiredAgentVersion { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfileDesiredAgentVersion; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfileDesiredAgentVersion = value ?? null; }
+
+        /// <summary>List of system extensions that are installed on the cluster resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ISystemComponent> ArcAgentProfileSystemComponent { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfileSystemComponent; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfileSystemComponent = value ?? null /* arrayOf */; }
+
+        /// <summary>Configuration settings for customizing the behavior of the connected cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IArcAgentryConfigurations> ArcAgentryConfiguration { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentryConfiguration; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentryConfiguration = value ?? null /* arrayOf */; }
+
+        /// <summary>Indicates whether Azure Hybrid Benefit is opted in</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string AzureHybridBenefit { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AzureHybridBenefit; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AzureHybridBenefit = value ?? null; }
+
+        /// <summary>Represents the connectivity status of the connected cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string ConnectivityStatus { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ConnectivityStatus; }
+
+        /// <summary>The Kubernetes distribution running on this connected cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string Distribution { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).Distribution; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).Distribution = value ?? null; }
+
+        /// <summary>The Kubernetes distribution version on this connected cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string DistributionVersion { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).DistributionVersion; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).DistributionVersion = value ?? null; }
+
+        /// <summary>Indicates whether the gateway for arc router connectivity is enabled.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public bool? GatewayEnabled { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).GatewayEnabled; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).GatewayEnabled = value ?? default(bool); }
+
+        /// <summary>
+        /// Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inherited)]
+        public string Id { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).Id; }
+
+        /// <summary>Backing field for <see cref="Identity" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterIdentity _identity;
+
+        /// <summary>The identity of the connected cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterIdentity Identity { get => (this._identity = this._identity ?? new Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ConnectedClusterIdentity()); set => this._identity = value; }
+
+        /// <summary>
+        /// The principal id of connected cluster identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string IdentityPrincipalId { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterIdentityInternal)Identity).PrincipalId; }
+
+        /// <summary>
+        /// The tenant id associated with the connected cluster. This property will only be provided for a system assigned identity.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string IdentityTenantId { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterIdentityInternal)Identity).TenantId; }
+
+        /// <summary>
+        /// The type of identity used for the connected cluster. The type 'SystemAssigned, includes a system created identity. The
+        /// type 'None' means no identity is assigned to the connected cluster.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string IdentityType { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterIdentityInternal)Identity).Type; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterIdentityInternal)Identity).Type = value ; }
+
+        /// <summary>
+        /// The infrastructure on which the Kubernetes cluster represented by this connected cluster is running on.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string Infrastructure { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).Infrastructure; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).Infrastructure = value ?? null; }
+
+        /// <summary>Backing field for <see cref="Kind" /> property.</summary>
+        private string _kind;
+
+        /// <summary>The kind of connected cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Owned)]
+        public string Kind { get => this._kind; set => this._kind = value; }
+
+        /// <summary>The Kubernetes version of the connected cluster resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string KubernetesVersion { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).KubernetesVersion; }
+
+        /// <summary>
+        /// Time representing the last instance when heart beat was received from the cluster
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public global::System.DateTime? LastConnectivityTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).LastConnectivityTime; }
+
+        /// <summary>The geo-location where the resource lives</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inherited)]
+        public string Location { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ITrackedResourceInternal)__trackedResource).Location; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ITrackedResourceInternal)__trackedResource).Location = value ?? null; }
+
+        /// <summary>Expiration time of the managed identity certificate</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public global::System.DateTime? ManagedIdentityCertificateExpirationTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ManagedIdentityCertificateExpirationTime; }
+
+        /// <summary>Internal Acessors for AadProfile</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IAadProfile Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.AadProfile { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AadProfile; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AadProfile = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for AgentVersion</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.AgentVersion { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AgentVersion; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).AgentVersion = value ?? null; }
+
+        /// <summary>Internal Acessors for ArcAgentProfile</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IArcAgentProfile Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.ArcAgentProfile { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfile; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfile = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for ArcAgentProfileAgentState</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.ArcAgentProfileAgentState { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfileAgentState; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ArcAgentProfileAgentState = value ?? null; }
+
+        /// <summary>Internal Acessors for ConnectivityStatus</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.ConnectivityStatus { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ConnectivityStatus; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ConnectivityStatus = value ?? null; }
+
+        /// <summary>Internal Acessors for Gateway</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IGateway Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.Gateway { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).Gateway; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).Gateway = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for Identity</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterIdentity Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.Identity { get => (this._identity = this._identity ?? new Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ConnectedClusterIdentity()); set { {_identity = value;} } }
+
+        /// <summary>Internal Acessors for IdentityPrincipalId</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.IdentityPrincipalId { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterIdentityInternal)Identity).PrincipalId; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterIdentityInternal)Identity).PrincipalId = value ?? null; }
+
+        /// <summary>Internal Acessors for IdentityTenantId</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.IdentityTenantId { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterIdentityInternal)Identity).TenantId; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterIdentityInternal)Identity).TenantId = value ?? null; }
+
+        /// <summary>Internal Acessors for KubernetesVersion</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.KubernetesVersion { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).KubernetesVersion; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).KubernetesVersion = value ?? null; }
+
+        /// <summary>Internal Acessors for LastConnectivityTime</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.LastConnectivityTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).LastConnectivityTime; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).LastConnectivityTime = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for ManagedIdentityCertificateExpirationTime</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.ManagedIdentityCertificateExpirationTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ManagedIdentityCertificateExpirationTime; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ManagedIdentityCertificateExpirationTime = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for MiscellaneousProperty</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesMiscellaneousProperties Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.MiscellaneousProperty { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).MiscellaneousProperty; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).MiscellaneousProperty = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for Offering</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.Offering { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).Offering; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).Offering = value ?? null; }
+
+        /// <summary>Internal Acessors for OidcIssuerProfile</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IOidcIssuerProfile Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.OidcIssuerProfile { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).OidcIssuerProfile; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).OidcIssuerProfile = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for OidcIssuerProfileIssuerUrl</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.OidcIssuerProfileIssuerUrl { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).OidcIssuerProfileIssuerUrl; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).OidcIssuerProfileIssuerUrl = value ?? null; }
+
+        /// <summary>Internal Acessors for Property</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterProperties Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ConnectedClusterProperties()); set { {_property = value;} } }
+
+        /// <summary>Internal Acessors for SecurityProfile</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ISecurityProfile Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.SecurityProfile { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).SecurityProfile; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).SecurityProfile = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for SecurityProfileWorkloadIdentity</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ISecurityProfileWorkloadIdentity Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.SecurityProfileWorkloadIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).SecurityProfileWorkloadIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).SecurityProfileWorkloadIdentity = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for TotalCoreCount</summary>
+        int? Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.TotalCoreCount { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).TotalCoreCount; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).TotalCoreCount = value ?? default(int); }
+
+        /// <summary>Internal Acessors for TotalNodeCount</summary>
+        int? Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterInternal.TotalNodeCount { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).TotalNodeCount; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).TotalNodeCount = value ?? default(int); }
+
+        /// <summary>Internal Acessors for Id</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal.Id { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).Id; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).Id = value ?? null; }
+
+        /// <summary>Internal Acessors for Name</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal.Name { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).Name; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).Name = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemData</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ISystemData Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal.SystemData { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemData; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemData = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for SystemDataCreatedAt</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal.SystemDataCreatedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataCreatedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataCreatedAt = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for SystemDataCreatedBy</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal.SystemDataCreatedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataCreatedBy; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataCreatedBy = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemDataCreatedByType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal.SystemDataCreatedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataCreatedByType; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataCreatedByType = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemDataLastModifiedAt</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal.SystemDataLastModifiedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataLastModifiedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataLastModifiedAt = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for SystemDataLastModifiedBy</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal.SystemDataLastModifiedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataLastModifiedBy; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataLastModifiedBy = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemDataLastModifiedByType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal.SystemDataLastModifiedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataLastModifiedByType; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataLastModifiedByType = value ?? null; }
+
+        /// <summary>Internal Acessors for Type</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal.Type { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).Type; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).Type = value ?? null; }
+
+        /// <summary>More properties related to the Connected Cluster</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesMiscellaneousProperties MiscellaneousProperty { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).MiscellaneousProperty; }
+
+        /// <summary>The name of the resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inherited)]
+        public string Name { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).Name; }
+
+        /// <summary>Connected cluster offering</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string Offering { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).Offering; }
+
+        /// <summary>Whether to enable oidc issuer for workload identity integration.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public bool? OidcIssuerProfileEnabled { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).OidcIssuerProfileEnabled; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).OidcIssuerProfileEnabled = value ?? default(bool); }
+
+        /// <summary>
+        /// The issuer url for hybrid clusters connected to Arc used for the workload identity feature.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string OidcIssuerProfileIssuerUrl { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).OidcIssuerProfileIssuerUrl; }
+
+        /// <summary>
+        /// The issuer url for public cloud clusters - AKS, EKS, GKE - used for the workload identity feature.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string OidcIssuerProfileSelfHostedIssuerUrl { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).OidcIssuerProfileSelfHostedIssuerUrl; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).OidcIssuerProfileSelfHostedIssuerUrl = value ?? null; }
+
+        /// <summary>
+        /// This is populated only if privateLinkState is enabled. The resource id of the private link scope this connected cluster
+        /// is assigned to, if any.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string PrivateLinkScopeResourceId { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).PrivateLinkScopeResourceId; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).PrivateLinkScopeResourceId = value ?? null; }
+
+        /// <summary>
+        /// Property which describes the state of private link on a connected cluster resource.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string PrivateLinkState { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).PrivateLinkState; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).PrivateLinkState = value ?? null; }
+
+        /// <summary>Backing field for <see cref="Property" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterProperties _property;
+
+        /// <summary>Describes the connected cluster resource properties.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterProperties Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ConnectedClusterProperties()); set => this._property = value; }
+
+        /// <summary>Provisioning state of the connected cluster resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public string ProvisioningState { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ProvisioningState; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).ProvisioningState = value ?? null; }
+
+        /// <summary>Gets the resource group name</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Owned)]
+        public string ResourceGroupName { get => (new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Success ? new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Groups["resourceGroupName"].Value : null); }
+
+        /// <summary>
+        /// Azure Resource Manager metadata containing createdBy and modifiedBy information.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inherited)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ISystemData SystemData { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemData; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemData = value ?? null /* model class */; }
+
+        /// <summary>The timestamp of resource creation (UTC).</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inherited)]
+        public global::System.DateTime? SystemDataCreatedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataCreatedAt; }
+
+        /// <summary>The identity that created the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inherited)]
+        public string SystemDataCreatedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataCreatedBy; }
+
+        /// <summary>The type of identity that created the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inherited)]
+        public string SystemDataCreatedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataCreatedByType; }
+
+        /// <summary>The timestamp of resource last modification (UTC)</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inherited)]
+        public global::System.DateTime? SystemDataLastModifiedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataLastModifiedAt; }
+
+        /// <summary>The identity that last modified the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inherited)]
+        public string SystemDataLastModifiedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataLastModifiedBy; }
+
+        /// <summary>The type of identity that last modified the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inherited)]
+        public string SystemDataLastModifiedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).SystemDataLastModifiedByType; }
+
+        /// <summary>Resource tags.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inherited)]
+        public Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ITrackedResourceTags Tag { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ITrackedResourceInternal)__trackedResource).Tag; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ITrackedResourceInternal)__trackedResource).Tag = value ?? null /* model class */; }
+
+        /// <summary>Number of CPU cores present in the connected cluster resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public int? TotalCoreCount { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).TotalCoreCount; }
+
+        /// <summary>Number of nodes present in the connected cluster resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public int? TotalNodeCount { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).TotalNodeCount; }
+
+        /// <summary>
+        /// The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inherited)]
+        public string Type { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IResourceInternal)__trackedResource).Type; }
+
+        /// <summary>Whether to enable or disable the workload identity Webhook</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Origin(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PropertyOrigin.Inlined)]
+        public bool? WorkloadIdentityEnabled { get => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).WorkloadIdentityEnabled; set => ((Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesInternal)Property).WorkloadIdentityEnabled = value ?? default(bool); }
+
+        /// <summary>Creates an new <see cref="ConnectedCluster" /> instance.</summary>
+        public ConnectedCluster()
+        {
+
+        }
+
+        /// <summary>Validates that this object meets the validation criteria.</summary>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.IEventListener" /> instance that will receive validation
+        /// events.</param>
+        /// <returns>
+        /// A <see cref = "global::System.Threading.Tasks.Task" /> that will be complete when validation is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task Validate(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.IEventListener eventListener)
+        {
+            await eventListener.AssertNotNull(nameof(__trackedResource), __trackedResource);
+            await eventListener.AssertObjectIsValid(nameof(__trackedResource), __trackedResource);
+        }
+    }
+    /// Represents a connected cluster.
+    public partial interface IConnectedCluster :
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.IJsonSerializable,
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ITrackedResource
+    {
+        /// <summary>The list of AAD group object IDs that will have admin role of the cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The list of AAD group object IDs that will have admin role of the cluster.",
+        SerializedName = @"adminGroupObjectIDs",
+        PossibleTypes = new [] { typeof(string) })]
+        System.Collections.Generic.List<string> AadProfileAdminGroupObjectID { get; set; }
+        /// <summary>Whether to enable Azure RBAC for Kubernetes authorization.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Whether to enable Azure RBAC for Kubernetes authorization.",
+        SerializedName = @"enableAzureRBAC",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? AadProfileEnableAzureRbac { get; set; }
+        /// <summary>
+        /// The AAD tenant ID to use for authentication. If not specified, will use the tenant of the deployment subscription.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The AAD tenant ID to use for authentication. If not specified, will use the tenant of the deployment subscription.",
+        SerializedName = @"tenantID",
+        PossibleTypes = new [] { typeof(string) })]
+        string AadProfileTenantId { get; set; }
+        /// <summary>
+        /// Base64 encoded public certificate used by the agent to do the initial handshake to the backend services in Azure.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Base64 encoded public certificate used by the agent to do the initial handshake to the backend services in Azure.",
+        SerializedName = @"agentPublicKeyCertificate",
+        PossibleTypes = new [] { typeof(string) })]
+        string AgentPublicKeyCertificate { get; set; }
+        /// <summary>Version of the agent running on the connected cluster resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Version of the agent running on the connected cluster resource",
+        SerializedName = @"agentVersion",
+        PossibleTypes = new [] { typeof(string) })]
+        string AgentVersion { get;  }
+        /// <summary>
+        /// Indicates whether the Arc agents on the be upgraded automatically to the latest version. Defaults to Enabled.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Indicates whether the Arc agents on the be upgraded automatically to the latest version. Defaults to Enabled.",
+        SerializedName = @"agentAutoUpgrade",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("Enabled", "Disabled")]
+        string ArcAgentProfileAgentAutoUpgrade { get; set; }
+        /// <summary>List of arc agentry and system components errors on the cluster resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"List of arc agentry and system components errors on the cluster resource.",
+        SerializedName = @"agentErrors",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IAgentError) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IAgentError> ArcAgentProfileAgentError { get; set; }
+        /// <summary>Represents the current state of the Arc agentry and its dependent components.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Represents the current state of the Arc agentry and its dependent components.",
+        SerializedName = @"agentState",
+        PossibleTypes = new [] { typeof(string) })]
+        string ArcAgentProfileAgentState { get;  }
+        /// <summary>Version of the Arc agents to be installed on the cluster resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Version of the Arc agents to be installed on the cluster resource",
+        SerializedName = @"desiredAgentVersion",
+        PossibleTypes = new [] { typeof(string) })]
+        string ArcAgentProfileDesiredAgentVersion { get; set; }
+        /// <summary>List of system extensions that are installed on the cluster resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"List of system extensions that are installed on the cluster resource.",
+        SerializedName = @"systemComponents",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ISystemComponent) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ISystemComponent> ArcAgentProfileSystemComponent { get; set; }
+        /// <summary>Configuration settings for customizing the behavior of the connected cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Configuration settings for customizing the behavior of the connected cluster.",
+        SerializedName = @"arcAgentryConfigurations",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IArcAgentryConfigurations) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IArcAgentryConfigurations> ArcAgentryConfiguration { get; set; }
+        /// <summary>Indicates whether Azure Hybrid Benefit is opted in</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Indicates whether Azure Hybrid Benefit is opted in",
+        SerializedName = @"azureHybridBenefit",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("True", "False", "NotApplicable")]
+        string AzureHybridBenefit { get; set; }
+        /// <summary>Represents the connectivity status of the connected cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Represents the connectivity status of the connected cluster.",
+        SerializedName = @"connectivityStatus",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("Connecting", "Connected", "Offline", "Expired", "AgentNotInstalled")]
+        string ConnectivityStatus { get;  }
+        /// <summary>The Kubernetes distribution running on this connected cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The Kubernetes distribution running on this connected cluster.",
+        SerializedName = @"distribution",
+        PossibleTypes = new [] { typeof(string) })]
+        string Distribution { get; set; }
+        /// <summary>The Kubernetes distribution version on this connected cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The Kubernetes distribution version on this connected cluster.",
+        SerializedName = @"distributionVersion",
+        PossibleTypes = new [] { typeof(string) })]
+        string DistributionVersion { get; set; }
+        /// <summary>Indicates whether the gateway for arc router connectivity is enabled.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Indicates whether the gateway for arc router connectivity is enabled.",
+        SerializedName = @"enabled",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? GatewayEnabled { get; set; }
+        /// <summary>
+        /// The principal id of connected cluster identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The principal id of connected cluster identity. This property will only be provided for a system assigned identity.",
+        SerializedName = @"principalId",
+        PossibleTypes = new [] { typeof(string) })]
+        string IdentityPrincipalId { get;  }
+        /// <summary>
+        /// The tenant id associated with the connected cluster. This property will only be provided for a system assigned identity.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The tenant id associated with the connected cluster. This property will only be provided for a system assigned identity.",
+        SerializedName = @"tenantId",
+        PossibleTypes = new [] { typeof(string) })]
+        string IdentityTenantId { get;  }
+        /// <summary>
+        /// The type of identity used for the connected cluster. The type 'SystemAssigned, includes a system created identity. The
+        /// type 'None' means no identity is assigned to the connected cluster.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The type of identity used for the connected cluster. The type 'SystemAssigned, includes a system created identity. The type 'None' means no identity is assigned to the connected cluster.",
+        SerializedName = @"type",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("None", "SystemAssigned")]
+        string IdentityType { get; set; }
+        /// <summary>
+        /// The infrastructure on which the Kubernetes cluster represented by this connected cluster is running on.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The infrastructure on which the Kubernetes cluster represented by this connected cluster is running on.",
+        SerializedName = @"infrastructure",
+        PossibleTypes = new [] { typeof(string) })]
+        string Infrastructure { get; set; }
+        /// <summary>The kind of connected cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The kind of connected cluster.",
+        SerializedName = @"kind",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("ProvisionedCluster", "AWS")]
+        string Kind { get; set; }
+        /// <summary>The Kubernetes version of the connected cluster resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The Kubernetes version of the connected cluster resource",
+        SerializedName = @"kubernetesVersion",
+        PossibleTypes = new [] { typeof(string) })]
+        string KubernetesVersion { get;  }
+        /// <summary>
+        /// Time representing the last instance when heart beat was received from the cluster
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Time representing the last instance when heart beat was received from the cluster",
+        SerializedName = @"lastConnectivityTime",
+        PossibleTypes = new [] { typeof(global::System.DateTime) })]
+        global::System.DateTime? LastConnectivityTime { get;  }
+        /// <summary>Expiration time of the managed identity certificate</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Expiration time of the managed identity certificate",
+        SerializedName = @"managedIdentityCertificateExpirationTime",
+        PossibleTypes = new [] { typeof(global::System.DateTime) })]
+        global::System.DateTime? ManagedIdentityCertificateExpirationTime { get;  }
+        /// <summary>More properties related to the Connected Cluster</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"More properties related to the Connected Cluster",
+        SerializedName = @"miscellaneousProperties",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesMiscellaneousProperties) })]
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesMiscellaneousProperties MiscellaneousProperty { get;  }
+        /// <summary>Connected cluster offering</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Connected cluster offering",
+        SerializedName = @"offering",
+        PossibleTypes = new [] { typeof(string) })]
+        string Offering { get;  }
+        /// <summary>Whether to enable oidc issuer for workload identity integration.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Whether to enable oidc issuer for workload identity integration.",
+        SerializedName = @"enabled",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? OidcIssuerProfileEnabled { get; set; }
+        /// <summary>
+        /// The issuer url for hybrid clusters connected to Arc used for the workload identity feature.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The issuer url for hybrid clusters connected to Arc used for the workload identity feature.",
+        SerializedName = @"issuerUrl",
+        PossibleTypes = new [] { typeof(string) })]
+        string OidcIssuerProfileIssuerUrl { get;  }
+        /// <summary>
+        /// The issuer url for public cloud clusters - AKS, EKS, GKE - used for the workload identity feature.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The issuer url for public cloud clusters - AKS, EKS, GKE - used for the workload identity feature.",
+        SerializedName = @"selfHostedIssuerUrl",
+        PossibleTypes = new [] { typeof(string) })]
+        string OidcIssuerProfileSelfHostedIssuerUrl { get; set; }
+        /// <summary>
+        /// This is populated only if privateLinkState is enabled. The resource id of the private link scope this connected cluster
+        /// is assigned to, if any.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"This is populated only if privateLinkState is enabled. The resource id of the private link scope this connected cluster is assigned to, if any.",
+        SerializedName = @"privateLinkScopeResourceId",
+        PossibleTypes = new [] { typeof(string) })]
+        string PrivateLinkScopeResourceId { get; set; }
+        /// <summary>
+        /// Property which describes the state of private link on a connected cluster resource.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Property which describes the state of private link on a connected cluster resource.",
+        SerializedName = @"privateLinkState",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("Enabled", "Disabled")]
+        string PrivateLinkState { get; set; }
+        /// <summary>Provisioning state of the connected cluster resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Provisioning state of the connected cluster resource.",
+        SerializedName = @"provisioningState",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("Succeeded", "Failed", "Canceled", "Provisioning", "Updating", "Deleting", "Accepted")]
+        string ProvisioningState { get; set; }
+        /// <summary>Number of CPU cores present in the connected cluster resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Number of CPU cores present in the connected cluster resource",
+        SerializedName = @"totalCoreCount",
+        PossibleTypes = new [] { typeof(int) })]
+        int? TotalCoreCount { get;  }
+        /// <summary>Number of nodes present in the connected cluster resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Number of nodes present in the connected cluster resource",
+        SerializedName = @"totalNodeCount",
+        PossibleTypes = new [] { typeof(int) })]
+        int? TotalNodeCount { get;  }
+        /// <summary>Whether to enable or disable the workload identity Webhook</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Whether to enable or disable the workload identity Webhook",
+        SerializedName = @"enabled",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? WorkloadIdentityEnabled { get; set; }
+
+    }
+    /// Represents a connected cluster.
+    internal partial interface IConnectedClusterInternal :
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ITrackedResourceInternal
+    {
+        /// <summary>AAD profile for the connected cluster.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IAadProfile AadProfile { get; set; }
+        /// <summary>The list of AAD group object IDs that will have admin role of the cluster.</summary>
+        System.Collections.Generic.List<string> AadProfileAdminGroupObjectID { get; set; }
+        /// <summary>Whether to enable Azure RBAC for Kubernetes authorization.</summary>
+        bool? AadProfileEnableAzureRbac { get; set; }
+        /// <summary>
+        /// The AAD tenant ID to use for authentication. If not specified, will use the tenant of the deployment subscription.
+        /// </summary>
+        string AadProfileTenantId { get; set; }
+        /// <summary>
+        /// Base64 encoded public certificate used by the agent to do the initial handshake to the backend services in Azure.
+        /// </summary>
+        string AgentPublicKeyCertificate { get; set; }
+        /// <summary>Version of the agent running on the connected cluster resource</summary>
+        string AgentVersion { get; set; }
+        /// <summary>Arc agentry configuration for the provisioned cluster.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IArcAgentProfile ArcAgentProfile { get; set; }
+        /// <summary>
+        /// Indicates whether the Arc agents on the be upgraded automatically to the latest version. Defaults to Enabled.
+        /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("Enabled", "Disabled")]
+        string ArcAgentProfileAgentAutoUpgrade { get; set; }
+        /// <summary>List of arc agentry and system components errors on the cluster resource.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IAgentError> ArcAgentProfileAgentError { get; set; }
+        /// <summary>Represents the current state of the Arc agentry and its dependent components.</summary>
+        string ArcAgentProfileAgentState { get; set; }
+        /// <summary>Version of the Arc agents to be installed on the cluster resource</summary>
+        string ArcAgentProfileDesiredAgentVersion { get; set; }
+        /// <summary>List of system extensions that are installed on the cluster resource.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ISystemComponent> ArcAgentProfileSystemComponent { get; set; }
+        /// <summary>Configuration settings for customizing the behavior of the connected cluster.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IArcAgentryConfigurations> ArcAgentryConfiguration { get; set; }
+        /// <summary>Indicates whether Azure Hybrid Benefit is opted in</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("True", "False", "NotApplicable")]
+        string AzureHybridBenefit { get; set; }
+        /// <summary>Represents the connectivity status of the connected cluster.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("Connecting", "Connected", "Offline", "Expired", "AgentNotInstalled")]
+        string ConnectivityStatus { get; set; }
+        /// <summary>The Kubernetes distribution running on this connected cluster.</summary>
+        string Distribution { get; set; }
+        /// <summary>The Kubernetes distribution version on this connected cluster.</summary>
+        string DistributionVersion { get; set; }
+        /// <summary>Details of the gateway used by the Arc router for connectivity.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IGateway Gateway { get; set; }
+        /// <summary>Indicates whether the gateway for arc router connectivity is enabled.</summary>
+        bool? GatewayEnabled { get; set; }
+        /// <summary>The identity of the connected cluster.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterIdentity Identity { get; set; }
+        /// <summary>
+        /// The principal id of connected cluster identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        string IdentityPrincipalId { get; set; }
+        /// <summary>
+        /// The tenant id associated with the connected cluster. This property will only be provided for a system assigned identity.
+        /// </summary>
+        string IdentityTenantId { get; set; }
+        /// <summary>
+        /// The type of identity used for the connected cluster. The type 'SystemAssigned, includes a system created identity. The
+        /// type 'None' means no identity is assigned to the connected cluster.
+        /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("None", "SystemAssigned")]
+        string IdentityType { get; set; }
+        /// <summary>
+        /// The infrastructure on which the Kubernetes cluster represented by this connected cluster is running on.
+        /// </summary>
+        string Infrastructure { get; set; }
+        /// <summary>The kind of connected cluster.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("ProvisionedCluster", "AWS")]
+        string Kind { get; set; }
+        /// <summary>The Kubernetes version of the connected cluster resource</summary>
+        string KubernetesVersion { get; set; }
+        /// <summary>
+        /// Time representing the last instance when heart beat was received from the cluster
+        /// </summary>
+        global::System.DateTime? LastConnectivityTime { get; set; }
+        /// <summary>Expiration time of the managed identity certificate</summary>
+        global::System.DateTime? ManagedIdentityCertificateExpirationTime { get; set; }
+        /// <summary>More properties related to the Connected Cluster</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterPropertiesMiscellaneousProperties MiscellaneousProperty { get; set; }
+        /// <summary>Connected cluster offering</summary>
+        string Offering { get; set; }
+        /// <summary>Open ID Connect (OIDC) Issuer Profile for the connected cluster.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IOidcIssuerProfile OidcIssuerProfile { get; set; }
+        /// <summary>Whether to enable oidc issuer for workload identity integration.</summary>
+        bool? OidcIssuerProfileEnabled { get; set; }
+        /// <summary>
+        /// The issuer url for hybrid clusters connected to Arc used for the workload identity feature.
+        /// </summary>
+        string OidcIssuerProfileIssuerUrl { get; set; }
+        /// <summary>
+        /// The issuer url for public cloud clusters - AKS, EKS, GKE - used for the workload identity feature.
+        /// </summary>
+        string OidcIssuerProfileSelfHostedIssuerUrl { get; set; }
+        /// <summary>
+        /// This is populated only if privateLinkState is enabled. The resource id of the private link scope this connected cluster
+        /// is assigned to, if any.
+        /// </summary>
+        string PrivateLinkScopeResourceId { get; set; }
+        /// <summary>
+        /// Property which describes the state of private link on a connected cluster resource.
+        /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("Enabled", "Disabled")]
+        string PrivateLinkState { get; set; }
+        /// <summary>Describes the connected cluster resource properties.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.IConnectedClusterProperties Property { get; set; }
+        /// <summary>Provisioning state of the connected cluster resource.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.PSArgumentCompleterAttribute("Succeeded", "Failed", "Canceled", "Provisioning", "Updating", "Deleting", "Accepted")]
+        string ProvisioningState { get; set; }
+        /// <summary>Security profile for the connected cluster.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ISecurityProfile SecurityProfile { get; set; }
+        /// <summary>The workload identity feature webhook.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.HybridKubernetes.Models.ISecurityProfileWorkloadIdentity SecurityProfileWorkloadIdentity { get; set; }
+        /// <summary>Number of CPU cores present in the connected cluster resource</summary>
+        int? TotalCoreCount { get; set; }
+        /// <summary>Number of nodes present in the connected cluster resource</summary>
+        int? TotalNodeCount { get; set; }
+        /// <summary>Whether to enable or disable the workload identity Webhook</summary>
+        bool? WorkloadIdentityEnabled { get; set; }
+
+    }
+}

@@ -1,0 +1,344 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models
+{
+    using Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Runtime.PowerShell;
+
+    [System.ComponentModel.TypeConverter(typeof(OracleDatabaseIdentityTypeConverter))]
+    public partial class OracleDatabaseIdentity
+    {
+
+        /// <summary>
+        /// <c>AfterDeserializeDictionary</c> will be called after the deserialization has finished, allowing customization of the
+        /// object before it is returned. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+
+        partial void AfterDeserializeDictionary(global::System.Collections.IDictionary content);
+
+        /// <summary>
+        /// <c>AfterDeserializePSObject</c> will be called after the deserialization has finished, allowing customization of the object
+        /// before it is returned. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+
+        partial void AfterDeserializePSObject(global::System.Management.Automation.PSObject content);
+
+        /// <summary>
+        /// <c>BeforeDeserializeDictionary</c> will be called before the deserialization has commenced, allowing complete customization
+        /// of the object before it is deserialized.
+        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output
+        /// parameter.
+        /// Implement this method in a partial class to enable this behavior.
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+        /// <param name="returnNow">Determines if the rest of the serialization should be processed, or if the method should return
+        /// instantly.</param>
+
+        partial void BeforeDeserializeDictionary(global::System.Collections.IDictionary content, ref bool returnNow);
+
+        /// <summary>
+        /// <c>BeforeDeserializePSObject</c> will be called before the deserialization has commenced, allowing complete customization
+        /// of the object before it is deserialized.
+        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output
+        /// parameter.
+        /// Implement this method in a partial class to enable this behavior.
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+        /// <param name="returnNow">Determines if the rest of the serialization should be processed, or if the method should return
+        /// instantly.</param>
+
+        partial void BeforeDeserializePSObject(global::System.Management.Automation.PSObject content, ref bool returnNow);
+
+        /// <summary>
+        /// <c>OverrideToString</c> will be called if it is implemented. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="stringResult">/// instance serialized to a string, normally it is a Json</param>
+        /// <param name="returnNow">/// set returnNow to true if you provide a customized OverrideToString function</param>
+
+        partial void OverrideToString(ref string stringResult, ref bool returnNow);
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.OracleDatabaseIdentity"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+        /// <returns>
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentity" />.
+        /// </returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentity DeserializeFromDictionary(global::System.Collections.IDictionary content)
+        {
+            return new OracleDatabaseIdentity(content);
+        }
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.OracleDatabaseIdentity"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+        /// <returns>
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentity" />.
+        /// </returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentity DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
+        {
+            return new OracleDatabaseIdentity(content);
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="OracleDatabaseIdentity" />, deserializing the content from a json string.
+        /// </summary>
+        /// <param name="jsonText">a string containing a JSON serialized instance of this model.</param>
+        /// <returns>an instance of the <see cref="OracleDatabaseIdentity" /> model class.</returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentity FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Runtime.Json.JsonNode.Parse(jsonText));
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.OracleDatabaseIdentity"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+        internal OracleDatabaseIdentity(global::System.Collections.IDictionary content)
+        {
+            bool returnNow = false;
+            BeforeDeserializeDictionary(content, ref returnNow);
+            if (returnNow)
+            {
+                return;
+            }
+            // actually deserialize
+            if (content.Contains("SubscriptionId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).SubscriptionId = (string) content.GetValueForProperty("SubscriptionId",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).SubscriptionId, global::System.Convert.ToString);
+            }
+            if (content.Contains("ResourceGroupName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ResourceGroupName = (string) content.GetValueForProperty("ResourceGroupName",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ResourceGroupName, global::System.Convert.ToString);
+            }
+            if (content.Contains("Cloudexadatainfrastructurename"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Cloudexadatainfrastructurename = (string) content.GetValueForProperty("Cloudexadatainfrastructurename",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Cloudexadatainfrastructurename, global::System.Convert.ToString);
+            }
+            if (content.Contains("Dbserverocid"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dbserverocid = (string) content.GetValueForProperty("Dbserverocid",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dbserverocid, global::System.Convert.ToString);
+            }
+            if (content.Contains("Cloudvmclustername"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Cloudvmclustername = (string) content.GetValueForProperty("Cloudvmclustername",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Cloudvmclustername, global::System.Convert.ToString);
+            }
+            if (content.Contains("Virtualnetworkaddressname"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Virtualnetworkaddressname = (string) content.GetValueForProperty("Virtualnetworkaddressname",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Virtualnetworkaddressname, global::System.Convert.ToString);
+            }
+            if (content.Contains("Location"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Location = (string) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Location, global::System.Convert.ToString);
+            }
+            if (content.Contains("Systemversionname"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Systemversionname = (string) content.GetValueForProperty("Systemversionname",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Systemversionname, global::System.Convert.ToString);
+            }
+            if (content.Contains("Dbnodeocid"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dbnodeocid = (string) content.GetValueForProperty("Dbnodeocid",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dbnodeocid, global::System.Convert.ToString);
+            }
+            if (content.Contains("Giversionname"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Giversionname = (string) content.GetValueForProperty("Giversionname",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Giversionname, global::System.Convert.ToString);
+            }
+            if (content.Contains("GiMinorVersionName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).GiMinorVersionName = (string) content.GetValueForProperty("GiMinorVersionName",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).GiMinorVersionName, global::System.Convert.ToString);
+            }
+            if (content.Contains("Dbsystemshapename"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dbsystemshapename = (string) content.GetValueForProperty("Dbsystemshapename",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dbsystemshapename, global::System.Convert.ToString);
+            }
+            if (content.Contains("Dnsprivateviewocid"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dnsprivateviewocid = (string) content.GetValueForProperty("Dnsprivateviewocid",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dnsprivateviewocid, global::System.Convert.ToString);
+            }
+            if (content.Contains("Dnsprivatezonename"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dnsprivatezonename = (string) content.GetValueForProperty("Dnsprivatezonename",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dnsprivatezonename, global::System.Convert.ToString);
+            }
+            if (content.Contains("FlexComponentName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).FlexComponentName = (string) content.GetValueForProperty("FlexComponentName",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).FlexComponentName, global::System.Convert.ToString);
+            }
+            if (content.Contains("Autonomousdatabasename"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Autonomousdatabasename = (string) content.GetValueForProperty("Autonomousdatabasename",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Autonomousdatabasename, global::System.Convert.ToString);
+            }
+            if (content.Contains("Adbbackupid"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Adbbackupid = (string) content.GetValueForProperty("Adbbackupid",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Adbbackupid, global::System.Convert.ToString);
+            }
+            if (content.Contains("Adbscharsetname"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Adbscharsetname = (string) content.GetValueForProperty("Adbscharsetname",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Adbscharsetname, global::System.Convert.ToString);
+            }
+            if (content.Contains("Adbsncharsetname"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Adbsncharsetname = (string) content.GetValueForProperty("Adbsncharsetname",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Adbsncharsetname, global::System.Convert.ToString);
+            }
+            if (content.Contains("Autonomousdbversionsname"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Autonomousdbversionsname = (string) content.GetValueForProperty("Autonomousdbversionsname",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Autonomousdbversionsname, global::System.Convert.ToString);
+            }
+            if (content.Contains("ExadbVMClusterName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ExadbVMClusterName = (string) content.GetValueForProperty("ExadbVMClusterName",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ExadbVMClusterName, global::System.Convert.ToString);
+            }
+            if (content.Contains("ExascaleDbNodeName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ExascaleDbNodeName = (string) content.GetValueForProperty("ExascaleDbNodeName",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ExascaleDbNodeName, global::System.Convert.ToString);
+            }
+            if (content.Contains("ExascaleDbStorageVaultName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ExascaleDbStorageVaultName = (string) content.GetValueForProperty("ExascaleDbStorageVaultName",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ExascaleDbStorageVaultName, global::System.Convert.ToString);
+            }
+            if (content.Contains("Id"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Id = (string) content.GetValueForProperty("Id",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Id, global::System.Convert.ToString);
+            }
+            AfterDeserializeDictionary(content);
+        }
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.OracleDatabaseIdentity"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+        internal OracleDatabaseIdentity(global::System.Management.Automation.PSObject content)
+        {
+            bool returnNow = false;
+            BeforeDeserializePSObject(content, ref returnNow);
+            if (returnNow)
+            {
+                return;
+            }
+            // actually deserialize
+            if (content.Contains("SubscriptionId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).SubscriptionId = (string) content.GetValueForProperty("SubscriptionId",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).SubscriptionId, global::System.Convert.ToString);
+            }
+            if (content.Contains("ResourceGroupName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ResourceGroupName = (string) content.GetValueForProperty("ResourceGroupName",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ResourceGroupName, global::System.Convert.ToString);
+            }
+            if (content.Contains("Cloudexadatainfrastructurename"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Cloudexadatainfrastructurename = (string) content.GetValueForProperty("Cloudexadatainfrastructurename",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Cloudexadatainfrastructurename, global::System.Convert.ToString);
+            }
+            if (content.Contains("Dbserverocid"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dbserverocid = (string) content.GetValueForProperty("Dbserverocid",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dbserverocid, global::System.Convert.ToString);
+            }
+            if (content.Contains("Cloudvmclustername"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Cloudvmclustername = (string) content.GetValueForProperty("Cloudvmclustername",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Cloudvmclustername, global::System.Convert.ToString);
+            }
+            if (content.Contains("Virtualnetworkaddressname"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Virtualnetworkaddressname = (string) content.GetValueForProperty("Virtualnetworkaddressname",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Virtualnetworkaddressname, global::System.Convert.ToString);
+            }
+            if (content.Contains("Location"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Location = (string) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Location, global::System.Convert.ToString);
+            }
+            if (content.Contains("Systemversionname"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Systemversionname = (string) content.GetValueForProperty("Systemversionname",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Systemversionname, global::System.Convert.ToString);
+            }
+            if (content.Contains("Dbnodeocid"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dbnodeocid = (string) content.GetValueForProperty("Dbnodeocid",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dbnodeocid, global::System.Convert.ToString);
+            }
+            if (content.Contains("Giversionname"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Giversionname = (string) content.GetValueForProperty("Giversionname",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Giversionname, global::System.Convert.ToString);
+            }
+            if (content.Contains("GiMinorVersionName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).GiMinorVersionName = (string) content.GetValueForProperty("GiMinorVersionName",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).GiMinorVersionName, global::System.Convert.ToString);
+            }
+            if (content.Contains("Dbsystemshapename"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dbsystemshapename = (string) content.GetValueForProperty("Dbsystemshapename",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dbsystemshapename, global::System.Convert.ToString);
+            }
+            if (content.Contains("Dnsprivateviewocid"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dnsprivateviewocid = (string) content.GetValueForProperty("Dnsprivateviewocid",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dnsprivateviewocid, global::System.Convert.ToString);
+            }
+            if (content.Contains("Dnsprivatezonename"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dnsprivatezonename = (string) content.GetValueForProperty("Dnsprivatezonename",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Dnsprivatezonename, global::System.Convert.ToString);
+            }
+            if (content.Contains("FlexComponentName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).FlexComponentName = (string) content.GetValueForProperty("FlexComponentName",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).FlexComponentName, global::System.Convert.ToString);
+            }
+            if (content.Contains("Autonomousdatabasename"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Autonomousdatabasename = (string) content.GetValueForProperty("Autonomousdatabasename",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Autonomousdatabasename, global::System.Convert.ToString);
+            }
+            if (content.Contains("Adbbackupid"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Adbbackupid = (string) content.GetValueForProperty("Adbbackupid",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Adbbackupid, global::System.Convert.ToString);
+            }
+            if (content.Contains("Adbscharsetname"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Adbscharsetname = (string) content.GetValueForProperty("Adbscharsetname",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Adbscharsetname, global::System.Convert.ToString);
+            }
+            if (content.Contains("Adbsncharsetname"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Adbsncharsetname = (string) content.GetValueForProperty("Adbsncharsetname",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Adbsncharsetname, global::System.Convert.ToString);
+            }
+            if (content.Contains("Autonomousdbversionsname"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Autonomousdbversionsname = (string) content.GetValueForProperty("Autonomousdbversionsname",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Autonomousdbversionsname, global::System.Convert.ToString);
+            }
+            if (content.Contains("ExadbVMClusterName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ExadbVMClusterName = (string) content.GetValueForProperty("ExadbVMClusterName",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ExadbVMClusterName, global::System.Convert.ToString);
+            }
+            if (content.Contains("ExascaleDbNodeName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ExascaleDbNodeName = (string) content.GetValueForProperty("ExascaleDbNodeName",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ExascaleDbNodeName, global::System.Convert.ToString);
+            }
+            if (content.Contains("ExascaleDbStorageVaultName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ExascaleDbStorageVaultName = (string) content.GetValueForProperty("ExascaleDbStorageVaultName",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).ExascaleDbStorageVaultName, global::System.Convert.ToString);
+            }
+            if (content.Contains("Id"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Id = (string) content.GetValueForProperty("Id",((Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Models.IOracleDatabaseIdentityInternal)this).Id, global::System.Convert.ToString);
+            }
+            AfterDeserializePSObject(content);
+        }
+
+        /// <summary>Serializes this instance to a json string.</summary>
+
+        /// <returns>a <see cref="System.String" /> containing this model serialized to JSON text.</returns>
+        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.OracleDatabase.Runtime.SerializationMode.IncludeAll)?.ToString();
+
+        public override string ToString()
+        {
+            var returnNow = false;
+            var result = global::System.String.Empty;
+            OverrideToString(ref result, ref returnNow);
+            if (returnNow)
+            {
+                return result;
+            }
+            return ToJsonString();
+        }
+    }
+    [System.ComponentModel.TypeConverter(typeof(OracleDatabaseIdentityTypeConverter))]
+    public partial interface IOracleDatabaseIdentity
+
+    {
+
+    }
+}
