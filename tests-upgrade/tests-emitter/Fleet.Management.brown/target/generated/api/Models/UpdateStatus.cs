@@ -1,0 +1,215 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Extensions;
+
+    /// <summary>The status for an operation or group of operations.</summary>
+    public partial class UpdateStatus :
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatus,
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatusInternal
+    {
+
+        /// <summary>The error additional info.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorAdditionalInfo> AdditionalInfo { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).AdditionalInfo; }
+
+        /// <summary>The error code.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string Code { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).Code; }
+
+        /// <summary>Backing field for <see cref="CompletedTime" /> property.</summary>
+        private global::System.DateTime? _completedTime;
+
+        /// <summary>The time the operation or group was completed.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Owned)]
+        public global::System.DateTime? CompletedTime { get => this._completedTime; }
+
+        /// <summary>The error details.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail> Detail { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).Detail; }
+
+        /// <summary>Backing field for <see cref="Error" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail _error;
+
+        /// <summary>The error details when a failure is encountered.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail Error { get => (this._error = this._error ?? new Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.ErrorDetail()); }
+
+        /// <summary>The error message.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string Message { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).Message; }
+
+        /// <summary>Internal Acessors for AdditionalInfo</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorAdditionalInfo> Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatusInternal.AdditionalInfo { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).AdditionalInfo; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).AdditionalInfo = value ?? null /* arrayOf */; }
+
+        /// <summary>Internal Acessors for Code</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatusInternal.Code { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).Code; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).Code = value ?? null; }
+
+        /// <summary>Internal Acessors for CompletedTime</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatusInternal.CompletedTime { get => this._completedTime; set { {_completedTime = value;} } }
+
+        /// <summary>Internal Acessors for Detail</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail> Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatusInternal.Detail { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).Detail; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).Detail = value ?? null /* arrayOf */; }
+
+        /// <summary>Internal Acessors for Error</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatusInternal.Error { get => (this._error = this._error ?? new Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.ErrorDetail()); set { {_error = value;} } }
+
+        /// <summary>Internal Acessors for Message</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatusInternal.Message { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).Message; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).Message = value ?? null; }
+
+        /// <summary>Internal Acessors for StartTime</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatusInternal.StartTime { get => this._startTime; set { {_startTime = value;} } }
+
+        /// <summary>Internal Acessors for State</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatusInternal.State { get => this._state; set { {_state = value;} } }
+
+        /// <summary>Internal Acessors for Target</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatusInternal.Target { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).Target; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).Target = value ?? null; }
+
+        /// <summary>Backing field for <see cref="StartTime" /> property.</summary>
+        private global::System.DateTime? _startTime;
+
+        /// <summary>The time the operation or group was started.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Owned)]
+        public global::System.DateTime? StartTime { get => this._startTime; }
+
+        /// <summary>Backing field for <see cref="State" /> property.</summary>
+        private string _state;
+
+        /// <summary>The State of the operation or group.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Owned)]
+        public string State { get => this._state; }
+
+        /// <summary>The error target.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string Target { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetailInternal)Error).Target; }
+
+        /// <summary>Creates an new <see cref="UpdateStatus" /> instance.</summary>
+        public UpdateStatus()
+        {
+
+        }
+    }
+    /// The status for an operation or group of operations.
+    public partial interface IUpdateStatus :
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.IJsonSerializable
+    {
+        /// <summary>The error additional info.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The error additional info.",
+        SerializedName = @"additionalInfo",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorAdditionalInfo) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorAdditionalInfo> AdditionalInfo { get;  }
+        /// <summary>The error code.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The error code.",
+        SerializedName = @"code",
+        PossibleTypes = new [] { typeof(string) })]
+        string Code { get;  }
+        /// <summary>The time the operation or group was completed.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The time the operation or group was completed.",
+        SerializedName = @"completedTime",
+        PossibleTypes = new [] { typeof(global::System.DateTime) })]
+        global::System.DateTime? CompletedTime { get;  }
+        /// <summary>The error details.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The error details.",
+        SerializedName = @"details",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail> Detail { get;  }
+        /// <summary>The error message.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The error message.",
+        SerializedName = @"message",
+        PossibleTypes = new [] { typeof(string) })]
+        string Message { get;  }
+        /// <summary>The time the operation or group was started.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The time the operation or group was started.",
+        SerializedName = @"startTime",
+        PossibleTypes = new [] { typeof(global::System.DateTime) })]
+        global::System.DateTime? StartTime { get;  }
+        /// <summary>The State of the operation or group.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The State of the operation or group.",
+        SerializedName = @"state",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PSArgumentCompleterAttribute("NotStarted", "Running", "Stopping", "Stopped", "Skipped", "Failed", "Pending", "Completed")]
+        string State { get;  }
+        /// <summary>The error target.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The error target.",
+        SerializedName = @"target",
+        PossibleTypes = new [] { typeof(string) })]
+        string Target { get;  }
+
+    }
+    /// The status for an operation or group of operations.
+    internal partial interface IUpdateStatusInternal
+
+    {
+        /// <summary>The error additional info.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorAdditionalInfo> AdditionalInfo { get; set; }
+        /// <summary>The error code.</summary>
+        string Code { get; set; }
+        /// <summary>The time the operation or group was completed.</summary>
+        global::System.DateTime? CompletedTime { get; set; }
+        /// <summary>The error details.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail> Detail { get; set; }
+        /// <summary>The error details when a failure is encountered.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail Error { get; set; }
+        /// <summary>The error message.</summary>
+        string Message { get; set; }
+        /// <summary>The time the operation or group was started.</summary>
+        global::System.DateTime? StartTime { get; set; }
+        /// <summary>The State of the operation or group.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PSArgumentCompleterAttribute("NotStarted", "Running", "Stopping", "Stopped", "Skipped", "Failed", "Pending", "Completed")]
+        string State { get; set; }
+        /// <summary>The error target.</summary>
+        string Target { get; set; }
+
+    }
+}

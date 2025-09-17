@@ -1,0 +1,198 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.Chaos.Runtime.Extensions;
+
+    /// <summary>The status of operation.</summary>
+    public partial class OperationStatus :
+        Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IOperationStatus,
+        Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IOperationStatusInternal,
+        Microsoft.Azure.PowerShell.Cmdlets.Chaos.Runtime.IValidates
+    {
+        /// <summary>
+        /// Backing field for Inherited model <see cref= "Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponse" />
+        /// </summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponse __errorResponse = new Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.ErrorResponse();
+
+        /// <summary>The error additional info.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Origin(Microsoft.Azure.PowerShell.Cmdlets.Chaos.PropertyOrigin.Inherited)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorAdditionalInfo> AdditionalInfo { get => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).AdditionalInfo; }
+
+        /// <summary>The error code.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Origin(Microsoft.Azure.PowerShell.Cmdlets.Chaos.PropertyOrigin.Inherited)]
+        public string Code { get => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Code; }
+
+        /// <summary>The error details.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Origin(Microsoft.Azure.PowerShell.Cmdlets.Chaos.PropertyOrigin.Inherited)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorDetail> Detail { get => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Detail; }
+
+        /// <summary>Backing field for <see cref="EndTime" /> property.</summary>
+        private global::System.DateTime? _endTime;
+
+        /// <summary>The end time of the operation.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Origin(Microsoft.Azure.PowerShell.Cmdlets.Chaos.PropertyOrigin.Owned)]
+        public global::System.DateTime? EndTime { get => this._endTime; }
+
+        /// <summary>The error object.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Origin(Microsoft.Azure.PowerShell.Cmdlets.Chaos.PropertyOrigin.Inherited)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorDetail Error { get => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Error; set => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Error = value ?? null /* model class */; }
+
+        /// <summary>Backing field for <see cref="Id" /> property.</summary>
+        private string _id;
+
+        /// <summary>The operation Id.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Origin(Microsoft.Azure.PowerShell.Cmdlets.Chaos.PropertyOrigin.Owned)]
+        public string Id { get => this._id; set => this._id = value; }
+
+        /// <summary>The error message.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Origin(Microsoft.Azure.PowerShell.Cmdlets.Chaos.PropertyOrigin.Inherited)]
+        public string Message { get => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Message; }
+
+        /// <summary>Internal Acessors for AdditionalInfo</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorAdditionalInfo> Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal.AdditionalInfo { get => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).AdditionalInfo; set => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).AdditionalInfo = value ?? null /* arrayOf */; }
+
+        /// <summary>Internal Acessors for Code</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal.Code { get => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Code; set => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Code = value ?? null; }
+
+        /// <summary>Internal Acessors for Detail</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorDetail> Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal.Detail { get => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Detail; set => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Detail = value ?? null /* arrayOf */; }
+
+        /// <summary>Internal Acessors for Error</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorDetail Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal.Error { get => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Error; set => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Error = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for Message</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal.Message { get => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Message; set => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Message = value ?? null; }
+
+        /// <summary>Internal Acessors for Target</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal.Target { get => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Target; set => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Target = value ?? null; }
+
+        /// <summary>Internal Acessors for EndTime</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IOperationStatusInternal.EndTime { get => this._endTime; set { {_endTime = value;} } }
+
+        /// <summary>Internal Acessors for StartTime</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IOperationStatusInternal.StartTime { get => this._startTime; set { {_startTime = value;} } }
+
+        /// <summary>Backing field for <see cref="Name" /> property.</summary>
+        private string _name;
+
+        /// <summary>The operation name.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Origin(Microsoft.Azure.PowerShell.Cmdlets.Chaos.PropertyOrigin.Owned)]
+        public string Name { get => this._name; set => this._name = value; }
+
+        /// <summary>Backing field for <see cref="StartTime" /> property.</summary>
+        private global::System.DateTime? _startTime;
+
+        /// <summary>The start time of the operation.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Origin(Microsoft.Azure.PowerShell.Cmdlets.Chaos.PropertyOrigin.Owned)]
+        public global::System.DateTime? StartTime { get => this._startTime; }
+
+        /// <summary>Backing field for <see cref="Status" /> property.</summary>
+        private string _status;
+
+        /// <summary>The status of the operation.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Origin(Microsoft.Azure.PowerShell.Cmdlets.Chaos.PropertyOrigin.Owned)]
+        public string Status { get => this._status; set => this._status = value; }
+
+        /// <summary>The error target.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Origin(Microsoft.Azure.PowerShell.Cmdlets.Chaos.PropertyOrigin.Inherited)]
+        public string Target { get => ((Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal)__errorResponse).Target; }
+
+        /// <summary>Creates an new <see cref="OperationStatus" /> instance.</summary>
+        public OperationStatus()
+        {
+
+        }
+
+        /// <summary>Validates that this object meets the validation criteria.</summary>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.Chaos.Runtime.IEventListener" /> instance that will receive validation
+        /// events.</param>
+        /// <returns>
+        /// A <see cref = "global::System.Threading.Tasks.Task" /> that will be complete when validation is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task Validate(Microsoft.Azure.PowerShell.Cmdlets.Chaos.Runtime.IEventListener eventListener)
+        {
+            await eventListener.AssertNotNull(nameof(__errorResponse), __errorResponse);
+            await eventListener.AssertObjectIsValid(nameof(__errorResponse), __errorResponse);
+        }
+    }
+    /// The status of operation.
+    public partial interface IOperationStatus :
+        Microsoft.Azure.PowerShell.Cmdlets.Chaos.Runtime.IJsonSerializable,
+        Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponse
+    {
+        /// <summary>The end time of the operation.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The end time of the operation.",
+        SerializedName = @"endTime",
+        PossibleTypes = new [] { typeof(global::System.DateTime) })]
+        global::System.DateTime? EndTime { get;  }
+        /// <summary>The operation Id.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The operation Id.",
+        SerializedName = @"id",
+        PossibleTypes = new [] { typeof(string) })]
+        string Id { get; set; }
+        /// <summary>The operation name.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The operation name.",
+        SerializedName = @"name",
+        PossibleTypes = new [] { typeof(string) })]
+        string Name { get; set; }
+        /// <summary>The start time of the operation.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The start time of the operation.",
+        SerializedName = @"startTime",
+        PossibleTypes = new [] { typeof(global::System.DateTime) })]
+        global::System.DateTime? StartTime { get;  }
+        /// <summary>The status of the operation.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Chaos.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The status of the operation.",
+        SerializedName = @"status",
+        PossibleTypes = new [] { typeof(string) })]
+        string Status { get; set; }
+
+    }
+    /// The status of operation.
+    internal partial interface IOperationStatusInternal :
+        Microsoft.Azure.PowerShell.Cmdlets.Chaos.Models.IErrorResponseInternal
+    {
+        /// <summary>The end time of the operation.</summary>
+        global::System.DateTime? EndTime { get; set; }
+        /// <summary>The operation Id.</summary>
+        string Id { get; set; }
+        /// <summary>The operation name.</summary>
+        string Name { get; set; }
+        /// <summary>The start time of the operation.</summary>
+        global::System.DateTime? StartTime { get; set; }
+        /// <summary>The status of the operation.</summary>
+        string Status { get; set; }
+
+    }
+}
