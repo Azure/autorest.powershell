@@ -1,0 +1,72 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesDataReplication.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesDataReplication.Runtime.Extensions;
+
+    /// <summary>Storage container properties.</summary>
+    public partial class StorageContainerProperties :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesDataReplication.Models.IStorageContainerProperties,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesDataReplication.Models.IStorageContainerPropertiesInternal
+    {
+
+        /// <summary>Backing field for <see cref="ClusterSharedVolumePath" /> property.</summary>
+        private string _clusterSharedVolumePath;
+
+        /// <summary>Gets or sets the ClusterSharedVolumePath.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesDataReplication.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesDataReplication.PropertyOrigin.Owned)]
+        public string ClusterSharedVolumePath { get => this._clusterSharedVolumePath; set => this._clusterSharedVolumePath = value; }
+
+        /// <summary>Backing field for <see cref="Name" /> property.</summary>
+        private string _name;
+
+        /// <summary>Gets or sets the Name.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesDataReplication.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesDataReplication.PropertyOrigin.Owned)]
+        public string Name { get => this._name; set => this._name = value; }
+
+        /// <summary>Creates an new <see cref="StorageContainerProperties" /> instance.</summary>
+        public StorageContainerProperties()
+        {
+
+        }
+    }
+    /// Storage container properties.
+    public partial interface IStorageContainerProperties :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesDataReplication.Runtime.IJsonSerializable
+    {
+        /// <summary>Gets or sets the ClusterSharedVolumePath.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesDataReplication.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Gets or sets the ClusterSharedVolumePath.",
+        SerializedName = @"clusterSharedVolumePath",
+        PossibleTypes = new [] { typeof(string) })]
+        string ClusterSharedVolumePath { get; set; }
+        /// <summary>Gets or sets the Name.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesDataReplication.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Gets or sets the Name.",
+        SerializedName = @"name",
+        PossibleTypes = new [] { typeof(string) })]
+        string Name { get; set; }
+
+    }
+    /// Storage container properties.
+    internal partial interface IStorageContainerPropertiesInternal
+
+    {
+        /// <summary>Gets or sets the ClusterSharedVolumePath.</summary>
+        string ClusterSharedVolumePath { get; set; }
+        /// <summary>Gets or sets the Name.</summary>
+        string Name { get; set; }
+
+    }
+}

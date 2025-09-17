@@ -1,0 +1,645 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Extensions;
+
+    /// <summary>A multi-stage process to perform update operations across members of a Fleet.</summary>
+    public partial class UpdateRun :
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRun,
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal,
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.IValidates
+    {
+        /// <summary>
+        /// Backing field for Inherited model <see cref= "Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IProxyResource"
+        /// />
+        /// </summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IProxyResource __proxyResource = new Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.ProxyResource();
+
+        /// <summary>The error additional info.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorAdditionalInfo> AdditionalInfo { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).AdditionalInfo; }
+
+        /// <summary>AutoUpgradeProfileId is the id of an auto upgrade profile resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string AutoUpgradeProfileId { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).AutoUpgradeProfileId; }
+
+        /// <summary>The error code.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string Code { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Code; }
+
+        /// <summary>The error details.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail> Detail { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Detail; }
+
+        /// <summary>Backing field for <see cref="ETag" /> property.</summary>
+        private string _eTag;
+
+        /// <summary>
+        /// If eTag is provided in the response body, it may also be provided as a header per the normal etag convention. Entity tags
+        /// are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section
+        /// 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Owned)]
+        public string ETag { get => this._eTag; }
+
+        /// <summary>
+        /// Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inherited)]
+        public string Id { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).Id; }
+
+        /// <summary>The error message.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string Message { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Message; }
+
+        /// <summary>Internal Acessors for Id</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal.Id { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).Id; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).Id = value ?? null; }
+
+        /// <summary>Internal Acessors for Name</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal.Name { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).Name; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).Name = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemData</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.ISystemData Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal.SystemData { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemData; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemData = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for SystemDataCreatedAt</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal.SystemDataCreatedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataCreatedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataCreatedAt = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for SystemDataCreatedBy</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal.SystemDataCreatedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataCreatedBy; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataCreatedBy = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemDataCreatedByType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal.SystemDataCreatedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataCreatedByType; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataCreatedByType = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemDataLastModifiedAt</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal.SystemDataLastModifiedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedAt = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for SystemDataLastModifiedBy</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal.SystemDataLastModifiedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedBy; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedBy = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemDataLastModifiedByType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal.SystemDataLastModifiedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedByType; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedByType = value ?? null; }
+
+        /// <summary>Internal Acessors for Type</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal.Type { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).Type; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).Type = value ?? null; }
+
+        /// <summary>Internal Acessors for AdditionalInfo</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorAdditionalInfo> Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.AdditionalInfo { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).AdditionalInfo; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).AdditionalInfo = value ?? null /* arrayOf */; }
+
+        /// <summary>Internal Acessors for AutoUpgradeProfileId</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.AutoUpgradeProfileId { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).AutoUpgradeProfileId; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).AutoUpgradeProfileId = value ?? null; }
+
+        /// <summary>Internal Acessors for Code</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.Code { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Code; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Code = value ?? null; }
+
+        /// <summary>Internal Acessors for Detail</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail> Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.Detail { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Detail; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Detail = value ?? null /* arrayOf */; }
+
+        /// <summary>Internal Acessors for ETag</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.ETag { get => this._eTag; set { {_eTag = value;} } }
+
+        /// <summary>Internal Acessors for ManagedClusterUpdate</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IManagedClusterUpdate Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.ManagedClusterUpdate { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).ManagedClusterUpdate; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).ManagedClusterUpdate = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for ManagedClusterUpdateNodeImageSelection</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageSelection Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.ManagedClusterUpdateNodeImageSelection { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).ManagedClusterUpdateNodeImageSelection; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).ManagedClusterUpdateNodeImageSelection = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for ManagedClusterUpdateUpgrade</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IManagedClusterUpgradeSpec Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.ManagedClusterUpdateUpgrade { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).ManagedClusterUpdateUpgrade; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).ManagedClusterUpdateUpgrade = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for Message</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.Message { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Message; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Message = value ?? null; }
+
+        /// <summary>Internal Acessors for NodeImageSelectionSelectedNodeImageVersion</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageVersion> Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.NodeImageSelectionSelectedNodeImageVersion { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).NodeImageSelectionSelectedNodeImageVersion; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).NodeImageSelectionSelectedNodeImageVersion = value ?? null /* arrayOf */; }
+
+        /// <summary>Internal Acessors for Property</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunProperties Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.UpdateRunProperties()); set { {_property = value;} } }
+
+        /// <summary>Internal Acessors for ProvisioningState</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.ProvisioningState { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).ProvisioningState; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).ProvisioningState = value ?? null; }
+
+        /// <summary>Internal Acessors for Status</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunStatus Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.Status { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Status; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Status = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for StatusCompletedTime</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.StatusCompletedTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusCompletedTime; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusCompletedTime = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for StatusError</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.StatusError { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusError; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusError = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for StatusNodeImageSelection</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageSelectionStatus Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.StatusNodeImageSelection { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusNodeImageSelection; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusNodeImageSelection = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for StatusStage</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStageStatus> Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.StatusStage { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusStage; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusStage = value ?? null /* arrayOf */; }
+
+        /// <summary>Internal Acessors for StatusStartTime</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.StatusStartTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusStartTime; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusStartTime = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for StatusState</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.StatusState { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusState; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusState = value ?? null; }
+
+        /// <summary>Internal Acessors for Strategy</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunStrategy Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.Strategy { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Strategy; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Strategy = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for Target</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.Target { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Target; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Target = value ?? null; }
+
+        /// <summary>Internal Acessors for UpdateStatus</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatus Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunInternal.UpdateStatus { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).UpdateStatus; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).UpdateStatus = value ?? null /* model class */; }
+
+        /// <summary>The name of the resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inherited)]
+        public string Name { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).Name; }
+
+        /// <summary>
+        /// Custom node image versions to upgrade the nodes to. This field is required if node image selection type is Custom. Otherwise,
+        /// it must be empty. For each node image family (e.g., 'AKSUbuntu-1804gen2containerd'), this field can contain at most one
+        /// version (e.g., only one of 'AKSUbuntu-1804gen2containerd-2023.01.12' or 'AKSUbuntu-1804gen2containerd-2023.02.12', not
+        /// both). If the nodes belong to a family without a matching image version in this field, they are not upgraded.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageVersion> NodeImageSelectionCustomNodeImageVersion { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).NodeImageSelectionCustomNodeImageVersion; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).NodeImageSelectionCustomNodeImageVersion = value ?? null /* arrayOf */; }
+
+        /// <summary>The image versions to upgrade the nodes to.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageVersion> NodeImageSelectionSelectedNodeImageVersion { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).NodeImageSelectionSelectedNodeImageVersion; }
+
+        /// <summary>The node image upgrade type.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string NodeImageSelectionType { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).NodeImageSelectionType; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).NodeImageSelectionType = value ?? null; }
+
+        /// <summary>Backing field for <see cref="Property" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunProperties _property;
+
+        /// <summary>The resource-specific properties for this resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunProperties Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.UpdateRunProperties()); set => this._property = value; }
+
+        /// <summary>The provisioning state of the UpdateRun resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string ProvisioningState { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).ProvisioningState; }
+
+        /// <summary>Gets the resource group name</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Owned)]
+        public string ResourceGroupName { get => (new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Success ? new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Groups["resourceGroupName"].Value : null); }
+
+        /// <summary>The time the operation or group was completed.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public global::System.DateTime? StatusCompletedTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusCompletedTime; }
+
+        /// <summary>
+        /// The stages composing an update run. Stages are run sequentially withing an UpdateRun.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStageStatus> StatusStage { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusStage; }
+
+        /// <summary>The time the operation or group was started.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public global::System.DateTime? StatusStartTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusStartTime; }
+
+        /// <summary>The State of the operation or group.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string StatusState { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StatusState; }
+
+        /// <summary>The list of stages that compose this update run. Min size: 1.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStage> StrategyStage { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StrategyStage; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).StrategyStage = value ?? null /* arrayOf */; }
+
+        /// <summary>
+        /// Azure Resource Manager metadata containing createdBy and modifiedBy information.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inherited)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.ISystemData SystemData { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemData; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemData = value ?? null /* model class */; }
+
+        /// <summary>The timestamp of resource creation (UTC).</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inherited)]
+        public global::System.DateTime? SystemDataCreatedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataCreatedAt; }
+
+        /// <summary>The identity that created the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inherited)]
+        public string SystemDataCreatedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataCreatedBy; }
+
+        /// <summary>The type of identity that created the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inherited)]
+        public string SystemDataCreatedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataCreatedByType; }
+
+        /// <summary>The timestamp of resource last modification (UTC)</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inherited)]
+        public global::System.DateTime? SystemDataLastModifiedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedAt; }
+
+        /// <summary>The identity that last modified the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inherited)]
+        public string SystemDataLastModifiedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedBy; }
+
+        /// <summary>The type of identity that last modified the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inherited)]
+        public string SystemDataLastModifiedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedByType; }
+
+        /// <summary>The error target.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string Target { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).Target; }
+
+        /// <summary>
+        /// The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inherited)]
+        public string Type { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IResourceInternal)__proxyResource).Type; }
+
+        /// <summary>
+        /// The resource id of the FleetUpdateStrategy resource to reference.
+        /// When creating a new run, there are three ways to define a strategy for the run:
+        /// 1. Define a new strategy in place: Set the "strategy" field.
+        /// 2. Use an existing strategy: Set the "updateStrategyId" field. (since 2023-08-15-preview)
+        /// 3. Use the default strategy to update all the members one by one: Leave both "updateStrategyId" and "strategy" unset.
+        /// (since 2023-08-15-preview)
+        /// Setting both "updateStrategyId" and "strategy" is invalid.
+        /// UpdateRuns created by "updateStrategyId" snapshot the referenced UpdateStrategy at the time of creation and store it in
+        /// the "strategy" field.
+        /// Subsequent changes to the referenced FleetUpdateStrategy resource do not propagate.
+        /// UpdateRunStrategy changes can be made directly on the "strategy" field before launching the UpdateRun.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string UpdateStrategyId { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).UpdateStrategyId; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).UpdateStrategyId = value ?? null; }
+
+        /// <summary>The Kubernetes version to upgrade the member clusters to.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string UpgradeKubernetesVersion { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).UpgradeKubernetesVersion; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).UpgradeKubernetesVersion = value ?? null; }
+
+        /// <summary>ManagedClusterUpgradeType is the type of upgrade to be applied.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PropertyOrigin.Inlined)]
+        public string UpgradeType { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).UpgradeType; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunPropertiesInternal)Property).UpgradeType = value ?? null; }
+
+        /// <summary>Creates an new <see cref="UpdateRun" /> instance.</summary>
+        public UpdateRun()
+        {
+
+        }
+
+        /// <summary>Validates that this object meets the validation criteria.</summary>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.IEventListener" /> instance that will receive validation
+        /// events.</param>
+        /// <returns>
+        /// A <see cref = "global::System.Threading.Tasks.Task" /> that will be complete when validation is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task Validate(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.IEventListener eventListener)
+        {
+            await eventListener.AssertNotNull(nameof(__proxyResource), __proxyResource);
+            await eventListener.AssertObjectIsValid(nameof(__proxyResource), __proxyResource);
+        }
+    }
+    /// A multi-stage process to perform update operations across members of a Fleet.
+    public partial interface IUpdateRun :
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.IJsonSerializable,
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IProxyResource
+    {
+        /// <summary>The error additional info.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The error additional info.",
+        SerializedName = @"additionalInfo",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorAdditionalInfo) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorAdditionalInfo> AdditionalInfo { get;  }
+        /// <summary>AutoUpgradeProfileId is the id of an auto upgrade profile resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"AutoUpgradeProfileId is the id of an auto upgrade profile resource.",
+        SerializedName = @"autoUpgradeProfileId",
+        PossibleTypes = new [] { typeof(string) })]
+        string AutoUpgradeProfileId { get;  }
+        /// <summary>The error code.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The error code.",
+        SerializedName = @"code",
+        PossibleTypes = new [] { typeof(string) })]
+        string Code { get;  }
+        /// <summary>The error details.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The error details.",
+        SerializedName = @"details",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail> Detail { get;  }
+        /// <summary>
+        /// If eTag is provided in the response body, it may also be provided as a header per the normal etag convention. Entity tags
+        /// are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section
+        /// 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+        SerializedName = @"eTag",
+        PossibleTypes = new [] { typeof(string) })]
+        string ETag { get;  }
+        /// <summary>The error message.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The error message.",
+        SerializedName = @"message",
+        PossibleTypes = new [] { typeof(string) })]
+        string Message { get;  }
+        /// <summary>
+        /// Custom node image versions to upgrade the nodes to. This field is required if node image selection type is Custom. Otherwise,
+        /// it must be empty. For each node image family (e.g., 'AKSUbuntu-1804gen2containerd'), this field can contain at most one
+        /// version (e.g., only one of 'AKSUbuntu-1804gen2containerd-2023.01.12' or 'AKSUbuntu-1804gen2containerd-2023.02.12', not
+        /// both). If the nodes belong to a family without a matching image version in this field, they are not upgraded.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = false,
+        Description = @"Custom node image versions to upgrade the nodes to. This field is required if node image selection type is Custom. Otherwise, it must be empty. For each node image family (e.g., 'AKSUbuntu-1804gen2containerd'), this field can contain at most one version (e.g., only one of 'AKSUbuntu-1804gen2containerd-2023.01.12' or 'AKSUbuntu-1804gen2containerd-2023.02.12', not both). If the nodes belong to a family without a matching image version in this field, they are not upgraded.",
+        SerializedName = @"customNodeImageVersions",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageVersion) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageVersion> NodeImageSelectionCustomNodeImageVersion { get; set; }
+        /// <summary>The image versions to upgrade the nodes to.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The image versions to upgrade the nodes to.",
+        SerializedName = @"selectedNodeImageVersions",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageVersion) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageVersion> NodeImageSelectionSelectedNodeImageVersion { get;  }
+        /// <summary>The node image upgrade type.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = false,
+        Description = @"The node image upgrade type.",
+        SerializedName = @"type",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PSArgumentCompleterAttribute("Latest", "Consistent", "Custom")]
+        string NodeImageSelectionType { get; set; }
+        /// <summary>The provisioning state of the UpdateRun resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The provisioning state of the UpdateRun resource.",
+        SerializedName = @"provisioningState",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PSArgumentCompleterAttribute("Succeeded", "Failed", "Canceled")]
+        string ProvisioningState { get;  }
+        /// <summary>The time the operation or group was completed.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The time the operation or group was completed.",
+        SerializedName = @"completedTime",
+        PossibleTypes = new [] { typeof(global::System.DateTime) })]
+        global::System.DateTime? StatusCompletedTime { get;  }
+        /// <summary>
+        /// The stages composing an update run. Stages are run sequentially withing an UpdateRun.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The stages composing an update run. Stages are run sequentially withing an UpdateRun.",
+        SerializedName = @"stages",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStageStatus) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStageStatus> StatusStage { get;  }
+        /// <summary>The time the operation or group was started.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The time the operation or group was started.",
+        SerializedName = @"startTime",
+        PossibleTypes = new [] { typeof(global::System.DateTime) })]
+        global::System.DateTime? StatusStartTime { get;  }
+        /// <summary>The State of the operation or group.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The State of the operation or group.",
+        SerializedName = @"state",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PSArgumentCompleterAttribute("NotStarted", "Running", "Stopping", "Stopped", "Skipped", "Failed", "Pending", "Completed")]
+        string StatusState { get;  }
+        /// <summary>The list of stages that compose this update run. Min size: 1.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The list of stages that compose this update run. Min size: 1.",
+        SerializedName = @"stages",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStage) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStage> StrategyStage { get; set; }
+        /// <summary>The error target.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The error target.",
+        SerializedName = @"target",
+        PossibleTypes = new [] { typeof(string) })]
+        string Target { get;  }
+        /// <summary>
+        /// The resource id of the FleetUpdateStrategy resource to reference.
+        /// When creating a new run, there are three ways to define a strategy for the run:
+        /// 1. Define a new strategy in place: Set the "strategy" field.
+        /// 2. Use an existing strategy: Set the "updateStrategyId" field. (since 2023-08-15-preview)
+        /// 3. Use the default strategy to update all the members one by one: Leave both "updateStrategyId" and "strategy" unset.
+        /// (since 2023-08-15-preview)
+        /// Setting both "updateStrategyId" and "strategy" is invalid.
+        /// UpdateRuns created by "updateStrategyId" snapshot the referenced UpdateStrategy at the time of creation and store it in
+        /// the "strategy" field.
+        /// Subsequent changes to the referenced FleetUpdateStrategy resource do not propagate.
+        /// UpdateRunStrategy changes can be made directly on the "strategy" field before launching the UpdateRun.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The resource id of the FleetUpdateStrategy resource to reference.
+
+        When creating a new run, there are three ways to define a strategy for the run:
+        1. Define a new strategy in place: Set the ""strategy"" field.
+        2. Use an existing strategy: Set the ""updateStrategyId"" field. (since 2023-08-15-preview)
+        3. Use the default strategy to update all the members one by one: Leave both ""updateStrategyId"" and ""strategy"" unset. (since 2023-08-15-preview)
+
+        Setting both ""updateStrategyId"" and ""strategy"" is invalid.
+
+        UpdateRuns created by ""updateStrategyId"" snapshot the referenced UpdateStrategy at the time of creation and store it in the ""strategy"" field.
+        Subsequent changes to the referenced FleetUpdateStrategy resource do not propagate.
+        UpdateRunStrategy changes can be made directly on the ""strategy"" field before launching the UpdateRun.",
+        SerializedName = @"updateStrategyId",
+        PossibleTypes = new [] { typeof(string) })]
+        string UpdateStrategyId { get; set; }
+        /// <summary>The Kubernetes version to upgrade the member clusters to.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The Kubernetes version to upgrade the member clusters to.",
+        SerializedName = @"kubernetesVersion",
+        PossibleTypes = new [] { typeof(string) })]
+        string UpgradeKubernetesVersion { get; set; }
+        /// <summary>ManagedClusterUpgradeType is the type of upgrade to be applied.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"ManagedClusterUpgradeType is the type of upgrade to be applied.",
+        SerializedName = @"type",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PSArgumentCompleterAttribute("Full", "NodeImageOnly", "ControlPlaneOnly")]
+        string UpgradeType { get; set; }
+
+    }
+    /// A multi-stage process to perform update operations across members of a Fleet.
+    internal partial interface IUpdateRunInternal :
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IProxyResourceInternal
+    {
+        /// <summary>The error additional info.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorAdditionalInfo> AdditionalInfo { get; set; }
+        /// <summary>AutoUpgradeProfileId is the id of an auto upgrade profile resource.</summary>
+        string AutoUpgradeProfileId { get; set; }
+        /// <summary>The error code.</summary>
+        string Code { get; set; }
+        /// <summary>The error details.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail> Detail { get; set; }
+        /// <summary>
+        /// If eTag is provided in the response body, it may also be provided as a header per the normal etag convention. Entity tags
+        /// are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section
+        /// 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.
+        /// </summary>
+        string ETag { get; set; }
+        /// <summary>
+        /// The update to be applied to all clusters in the UpdateRun. The managedClusterUpdate can be modified until the run is started.
+        /// </summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IManagedClusterUpdate ManagedClusterUpdate { get; set; }
+        /// <summary>The node image upgrade to be applied to the target nodes in update run.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageSelection ManagedClusterUpdateNodeImageSelection { get; set; }
+        /// <summary>The upgrade to apply to the ManagedClusters.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IManagedClusterUpgradeSpec ManagedClusterUpdateUpgrade { get; set; }
+        /// <summary>The error message.</summary>
+        string Message { get; set; }
+        /// <summary>
+        /// Custom node image versions to upgrade the nodes to. This field is required if node image selection type is Custom. Otherwise,
+        /// it must be empty. For each node image family (e.g., 'AKSUbuntu-1804gen2containerd'), this field can contain at most one
+        /// version (e.g., only one of 'AKSUbuntu-1804gen2containerd-2023.01.12' or 'AKSUbuntu-1804gen2containerd-2023.02.12', not
+        /// both). If the nodes belong to a family without a matching image version in this field, they are not upgraded.
+        /// </summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageVersion> NodeImageSelectionCustomNodeImageVersion { get; set; }
+        /// <summary>The image versions to upgrade the nodes to.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageVersion> NodeImageSelectionSelectedNodeImageVersion { get; set; }
+        /// <summary>The node image upgrade type.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PSArgumentCompleterAttribute("Latest", "Consistent", "Custom")]
+        string NodeImageSelectionType { get; set; }
+        /// <summary>The resource-specific properties for this resource.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunProperties Property { get; set; }
+        /// <summary>The provisioning state of the UpdateRun resource.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PSArgumentCompleterAttribute("Succeeded", "Failed", "Canceled")]
+        string ProvisioningState { get; set; }
+        /// <summary>The status of the UpdateRun.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunStatus Status { get; set; }
+        /// <summary>The time the operation or group was completed.</summary>
+        global::System.DateTime? StatusCompletedTime { get; set; }
+        /// <summary>The error details when a failure is encountered.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IErrorDetail StatusError { get; set; }
+        /// <summary>
+        /// The node image upgrade specs for the update run. It is only set in update run when `NodeImageSelection.type` is `Consistent`.
+        /// </summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.INodeImageSelectionStatus StatusNodeImageSelection { get; set; }
+        /// <summary>
+        /// The stages composing an update run. Stages are run sequentially withing an UpdateRun.
+        /// </summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStageStatus> StatusStage { get; set; }
+        /// <summary>The time the operation or group was started.</summary>
+        global::System.DateTime? StatusStartTime { get; set; }
+        /// <summary>The State of the operation or group.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PSArgumentCompleterAttribute("NotStarted", "Running", "Stopping", "Stopped", "Skipped", "Failed", "Pending", "Completed")]
+        string StatusState { get; set; }
+        /// <summary>
+        /// The strategy defines the order in which the clusters will be updated.
+        /// If not set, all members will be updated sequentially. The UpdateRun status will show a single UpdateStage and a single
+        /// UpdateGroup targeting all members.
+        /// The strategy of the UpdateRun can be modified until the run is started.
+        /// </summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateRunStrategy Strategy { get; set; }
+        /// <summary>The list of stages that compose this update run. Min size: 1.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStage> StrategyStage { get; set; }
+        /// <summary>The error target.</summary>
+        string Target { get; set; }
+        /// <summary>The status of the UpdateRun.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.Models.IUpdateStatus UpdateStatus { get; set; }
+        /// <summary>
+        /// The resource id of the FleetUpdateStrategy resource to reference.
+        /// When creating a new run, there are three ways to define a strategy for the run:
+        /// 1. Define a new strategy in place: Set the "strategy" field.
+        /// 2. Use an existing strategy: Set the "updateStrategyId" field. (since 2023-08-15-preview)
+        /// 3. Use the default strategy to update all the members one by one: Leave both "updateStrategyId" and "strategy" unset.
+        /// (since 2023-08-15-preview)
+        /// Setting both "updateStrategyId" and "strategy" is invalid.
+        /// UpdateRuns created by "updateStrategyId" snapshot the referenced UpdateStrategy at the time of creation and store it in
+        /// the "strategy" field.
+        /// Subsequent changes to the referenced FleetUpdateStrategy resource do not propagate.
+        /// UpdateRunStrategy changes can be made directly on the "strategy" field before launching the UpdateRun.
+        /// </summary>
+        string UpdateStrategyId { get; set; }
+        /// <summary>The Kubernetes version to upgrade the member clusters to.</summary>
+        string UpgradeKubernetesVersion { get; set; }
+        /// <summary>ManagedClusterUpgradeType is the type of upgrade to be applied.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ContainerServiceFleet.PSArgumentCompleterAttribute("Full", "NodeImageOnly", "ControlPlaneOnly")]
+        string UpgradeType { get; set; }
+
+    }
+}
