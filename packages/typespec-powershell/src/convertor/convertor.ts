@@ -137,11 +137,11 @@ function getOperationGroups(program: Program, client: SdkClient, psContext: SdkC
       continue;
     }
     const operationId = resolveOperationId(psContext, op);
-    let group = operationGroupsMap.get(operationId.split("_")[0] || "");
+    let group = operationGroupsMap.get(operationId.includes('_') ? operationId.split("_")[0] : "");
     if (!group) {
       group = new OperationGroup("");
-      group.language.default.name = group.$key = operationId.split("_")[0] || "";
-      operationGroupsMap.set(operationId.split("_")[0] || "", group);
+      group.language.default.name = group.$key = operationId.includes('_') ? operationId.split("_")[0] : "";
+      operationGroupsMap.set(operationId.includes('_') ? operationId.split("_")[0] : "", group);
     }
     addOperation(psContext, op, group, model, emitterOptions);
   }

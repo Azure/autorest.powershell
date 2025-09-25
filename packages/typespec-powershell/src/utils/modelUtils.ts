@@ -197,6 +197,7 @@ export function getSchemaForType(
   const program = dpgContext.program;
   const { usage } = options ?? {};
   const type = getEffectiveModelFromType(program, typeInput);
+
   if (schemaCache.has(type)) {
     return schemaCache.get(type);
   }
@@ -213,7 +214,20 @@ export function getSchemaForType(
 
   if (type.kind === "ModelProperty") {
     const typeSchema: Schema = getSchemaForType(dpgContext, type.type, options);
-    if (isStringType(program, type.type) || isNumericType(program, type.type)) {
+    const encodeData = getEncode(program, type);
+    if (encodeData && typeSchema.type === SchemaType.DateTime) {
+      const propertySchema = { ...typeSchema };
+      switch (encodeData.encoding) {
+        case "rfc1123":
+        case "rfc7231":
+          (<any>propertySchema).format = "date-time-rfc1123";
+          break;
+        default:
+          break;
+      }
+      schemaCache.set(type, <Schema>propertySchema);
+      return propertySchema;
+    } else if (isStringType(program, type.type) || isNumericType(program, type.type)) {
       // applyIntrinsicDecorators for string and numeric types
       // unlike m4, min/max length and pattern, secrets, etc. are not part of the schema
       let propertySchema = { ...typeSchema };
@@ -395,7 +409,16 @@ function mergeFormatAndEncoding(
     case undefined:
       return encodeAsFormat ?? encoding;
     case "date-time":
-      return encoding;
+      switch (encoding) {
+        case "rfc3339":
+          return "date-time";
+        case "unixTimestamp":
+          return "unixtime";
+        case "rfc7231":
+          return "date-time-rfc7231";
+        default:
+          return encoding;
+      }
     case "duration":
     default:
       return encodeAsFormat ?? encoding;
