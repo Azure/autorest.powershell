@@ -936,6 +936,7 @@ function getSchemaForModel(
     };
   }
   for (const [propName, prop] of model.properties) {
+    const clientName = getClientNameOverride(dpgContext, prop, "powershell");
     const encodedName = resolveEncodedName(program, prop, "application/json");
     const restApiName = getWireName(dpgContext, prop);
     const name = encodedName ?? restApiName ?? propName;
@@ -968,6 +969,10 @@ function getSchemaForModel(
     }
     // ToDo: need to confirm there is no duplicated properties.
     const property = new Property(name, getDoc(program, prop) || propSchema.language.default.description || "", propSchema || new ObjectSchema(name, ""));
+    if (clientName) {
+      // Use the client name as the property name if it is specified
+      property.language.default.name = clientName;
+    }
     if (!prop.optional) {
       property.required = true;
     }
