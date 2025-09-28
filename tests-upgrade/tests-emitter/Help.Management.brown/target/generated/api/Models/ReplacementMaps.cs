@@ -1,0 +1,158 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.Help.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.Extensions;
+
+    /// <summary>Solution replacement maps.</summary>
+    public partial class ReplacementMaps :
+        Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IReplacementMaps,
+        Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IReplacementMapsInternal
+    {
+
+        /// <summary>Backing field for <see cref="Diagnostic" /> property.</summary>
+        private System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.ISolutionsDiagnostic> _diagnostic;
+
+        /// <summary>Solution diagnostics results.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Origin(Microsoft.Azure.PowerShell.Cmdlets.Help.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.ISolutionsDiagnostic> Diagnostic { get => this._diagnostic; set => this._diagnostic = value; }
+
+        /// <summary>Backing field for <see cref="MetricsBasedChart" /> property.</summary>
+        private System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IMetricsBasedChart> _metricsBasedChart;
+
+        /// <summary>Solution metrics based charts</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Origin(Microsoft.Azure.PowerShell.Cmdlets.Help.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IMetricsBasedChart> MetricsBasedChart { get => this._metricsBasedChart; set => this._metricsBasedChart = value; }
+
+        /// <summary>Backing field for <see cref="Troubleshooter" /> property.</summary>
+        private System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.ISolutionsTroubleshooters> _troubleshooter;
+
+        /// <summary>Solutions Troubleshooters</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Origin(Microsoft.Azure.PowerShell.Cmdlets.Help.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.ISolutionsTroubleshooters> Troubleshooter { get => this._troubleshooter; set => this._troubleshooter = value; }
+
+        /// <summary>Backing field for <see cref="Video" /> property.</summary>
+        private System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IVideo> _video;
+
+        /// <summary>
+        /// Video solutions, which have the power to engage the customer by stimulating their senses
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Origin(Microsoft.Azure.PowerShell.Cmdlets.Help.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IVideo> Video { get => this._video; set => this._video = value; }
+
+        /// <summary>Backing field for <see cref="VideoGroup" /> property.</summary>
+        private System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IVideoGroup> _videoGroup;
+
+        /// <summary>Group of Videos</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Origin(Microsoft.Azure.PowerShell.Cmdlets.Help.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IVideoGroup> VideoGroup { get => this._videoGroup; set => this._videoGroup = value; }
+
+        /// <summary>Backing field for <see cref="WebResult" /> property.</summary>
+        private System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IWebResult> _webResult;
+
+        /// <summary>Solution AzureKB results</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Origin(Microsoft.Azure.PowerShell.Cmdlets.Help.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IWebResult> WebResult { get => this._webResult; set => this._webResult = value; }
+
+        /// <summary>Creates an new <see cref="ReplacementMaps" /> instance.</summary>
+        public ReplacementMaps()
+        {
+
+        }
+    }
+    /// Solution replacement maps.
+    public partial interface IReplacementMaps :
+        Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.IJsonSerializable
+    {
+        /// <summary>Solution diagnostics results.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Solution diagnostics results.",
+        SerializedName = @"diagnostics",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Help.Models.ISolutionsDiagnostic) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.ISolutionsDiagnostic> Diagnostic { get; set; }
+        /// <summary>Solution metrics based charts</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Solution metrics based charts",
+        SerializedName = @"metricsBasedCharts",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IMetricsBasedChart) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IMetricsBasedChart> MetricsBasedChart { get; set; }
+        /// <summary>Solutions Troubleshooters</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Solutions Troubleshooters",
+        SerializedName = @"troubleshooters",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Help.Models.ISolutionsTroubleshooters) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.ISolutionsTroubleshooters> Troubleshooter { get; set; }
+        /// <summary>
+        /// Video solutions, which have the power to engage the customer by stimulating their senses
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Video solutions, which have the power to engage the customer by stimulating their senses",
+        SerializedName = @"videos",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IVideo) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IVideo> Video { get; set; }
+        /// <summary>Group of Videos</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Group of Videos",
+        SerializedName = @"videoGroups",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IVideoGroup) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IVideoGroup> VideoGroup { get; set; }
+        /// <summary>Solution AzureKB results</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Solution AzureKB results",
+        SerializedName = @"webResults",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IWebResult) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IWebResult> WebResult { get; set; }
+
+    }
+    /// Solution replacement maps.
+    internal partial interface IReplacementMapsInternal
+
+    {
+        /// <summary>Solution diagnostics results.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.ISolutionsDiagnostic> Diagnostic { get; set; }
+        /// <summary>Solution metrics based charts</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IMetricsBasedChart> MetricsBasedChart { get; set; }
+        /// <summary>Solutions Troubleshooters</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.ISolutionsTroubleshooters> Troubleshooter { get; set; }
+        /// <summary>
+        /// Video solutions, which have the power to engage the customer by stimulating their senses
+        /// </summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IVideo> Video { get; set; }
+        /// <summary>Group of Videos</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IVideoGroup> VideoGroup { get; set; }
+        /// <summary>Solution AzureKB results</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IWebResult> WebResult { get; set; }
+
+    }
+}

@@ -27,11 +27,14 @@
     "Chaos.Management.brown",
     "Dashboard.Management.brown",
     "DataReplication.Management.brown",
+    "ElasticSan.brown",
     "Fleet.Management.brown",
     "HardwareSecurityModules.Management.brown",
+    "Help.Management.brown",
     "HybridKubernetes.Management.brown",
     "Microsoft.AVS.Management.brown",
     "Oracle.Database.Management.brown",
+    "RecoveryServices.brown",
     "ServiceFabricManagedClusters.Management.brown",
     "StorageAction.Management.brown"
   ],
@@ -62,24 +65,27 @@
     "Chaos.Management.brown",
     "Dashboard.Management.brown",
     "DataReplication.Management.brown",
+    "DeviceProvisioningServices.brown",
+    "ElasticSan.brown",
     "Fleet.Management.brown",
     "HardwareSecurityModules.Management.brown",
+    "Help.Management.brown",
     "HybridKubernetes.Management.brown",
     "Microsoft.AVS.Management.brown",
     "Oracle.Database.Management.brown",
+    "RecoveryServices.brown",
     "ServiceFabricManagedClusters.Management.brown",
-    "StorageAction.Management.brown"
+    "StorageAction.Management.brown",
+    "StorageMover.Management.brown"
   ],
   "blackTestList": [],
-  "ignoreFolder": [
-    "examples",
-    "CompareResult"
-  ],
+  "ignoreFolder": ["examples", "CompareResult"],
   "ignoreCompareFile": [
     "generated\\modules",
     "Properties\\AssemblyInfo.cs",
     "generated/modules",
     "Properties/AssemblyInfo.cs",
-    "generated\\api\\HardwareSecurityModules.cs"
+    "generated\\api\\HardwareSecurityModules.cs",
+    "generated\\api\\HelpRp.cs"
   ]
 }

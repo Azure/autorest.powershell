@@ -303,11 +303,12 @@ function addResponses(psContext: SdkContext, op: HttpOperation, newOperation: Op
       // This is aligned with the behavior of typescript emitter and typespec-autorest emitter.
       newResponse.protocol.http = newResponse.protocol.http ?? new Protocol();
       const lroHeaders = ["location", "retry-after", "azure-asyncoperation"];
+      const pollingResponseStatus = ["202", "201"];
       const addedKeys: string[] = [];
       for (const innerResponse of response.responses) {
         if (innerResponse.headers) {
           for (const key in innerResponse.headers) {
-            if (addedKeys.includes(key) || (emitterOptions["remove-lro-headers"] && lroHeaders.includes(key.toLowerCase()))) {
+            if (addedKeys.includes(key) || (emitterOptions["remove-lro-headers"] && pollingResponseStatus.includes(statusCode) && lroHeaders.includes(key.toLowerCase()))) {
               continue;
             } else {
               addedKeys.push(key);

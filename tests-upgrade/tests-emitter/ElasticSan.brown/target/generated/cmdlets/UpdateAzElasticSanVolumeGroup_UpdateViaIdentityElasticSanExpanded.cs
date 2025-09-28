@@ -1,0 +1,758 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Cmdlets
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Extensions;
+    using Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.PowerShell;
+    using Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Cmdlets;
+    using System;
+
+    /// <summary>update a Volume Group.</summary>
+    /// <remarks>
+    /// [OpenAPI] Get=>GET:"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}"
+    /// [OpenAPI] Create=>PUT:"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}"
+    /// </remarks>
+    [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsData.Update, @"AzElasticSanVolumeGroup_UpdateViaIdentityElasticSanExpanded", SupportsShouldProcess = true)]
+    [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IVolumeGroup))]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Description(@"update a Volume Group.")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Generated]
+    public partial class UpdateAzElasticSanVolumeGroup_UpdateViaIdentityElasticSanExpanded : global::System.Management.Automation.PSCmdlet,
+        Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener,
+        Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IContext
+    {
+        /// <summary>A unique id generatd for the this cmdlet when it is instantiated.</summary>
+        private string __correlationId = System.Guid.NewGuid().ToString();
+
+        /// <summary>A copy of the Invocation Info (necessary to allow asJob to clone this cmdlet)</summary>
+        private global::System.Management.Automation.InvocationInfo __invocationInfo;
+
+        /// <summary>A unique id generatd for the this cmdlet when ProcessRecord() is called.</summary>
+        private string __processRecordId;
+
+        /// <summary>
+        /// The <see cref="global::System.Threading.CancellationTokenSource" /> for this operation.
+        /// </summary>
+        private global::System.Threading.CancellationTokenSource _cancellationTokenSource = new global::System.Threading.CancellationTokenSource();
+
+        /// <summary>A dictionary to carry over additional data for pipeline.</summary>
+        private global::System.Collections.Generic.Dictionary<global::System.String,global::System.Object> _extensibleParameters = new System.Collections.Generic.Dictionary<string, object>();
+
+        /// <summary>Response for Volume Group request.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IVolumeGroup _parametersBody = new Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.VolumeGroup();
+
+        /// <summary>when specified, runs this cmdlet as a PowerShell job</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Run the command as a job")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Runtime)]
+        public global::System.Management.Automation.SwitchParameter AsJob { get; set; }
+
+        /// <summary>Wait for .NET debugger to attach</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Wait for .NET debugger to attach")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Runtime)]
+        public global::System.Management.Automation.SwitchParameter Break { get; set; }
+
+        /// <summary>Accessor for cancellationTokenSource.</summary>
+        public global::System.Threading.CancellationTokenSource CancellationTokenSource { get => _cancellationTokenSource ; set { _cancellationTokenSource = value; } }
+
+        /// <summary>The reference to the client API class.</summary>
+        public Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ElasticSanManagement Client => Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Module.Instance.ClientAPI;
+
+        /// <summary>
+        /// The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet
+        /// against a different subscription
+        /// </summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet against a different subscription.")]
+        [global::System.Management.Automation.ValidateNotNull]
+        [global::System.Management.Automation.Alias("AzureRMContext", "AzureCredential")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Azure)]
+        public global::System.Management.Automation.PSObject DefaultProfile { get; set; }
+
+        /// <summary>The number of days to retain the resources after deletion.</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The number of days to retain the resources after deletion.")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"The number of days to retain the resources after deletion.",
+        SerializedName = @"retentionPeriodDays",
+        PossibleTypes = new [] { typeof(int) })]
+        public int DeleteRetentionPolicyRetentionPeriodDay { get => _parametersBody.DeleteRetentionPolicyRetentionPeriodDay ?? default(int); set => _parametersBody.DeleteRetentionPolicyRetentionPeriodDay = value; }
+
+        /// <summary>.</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = ".")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @".",
+        SerializedName = @"policyState",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.PSArgumentCompleterAttribute("Enabled", "Disabled")]
+        public string DeleteRetentionPolicyState { get => _parametersBody.DeleteRetentionPolicyState ?? null; set => _parametersBody.DeleteRetentionPolicyState = value; }
+
+        /// <summary>Backing field for <see cref="ElasticSanInputObject" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IElasticSanIdentity _elasticSanInputObject;
+
+        /// <summary>Identity Parameter</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = true, HelpMessage = "Identity Parameter", ValueFromPipeline = true)]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Path)]
+        public Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IElasticSanIdentity ElasticSanInputObject { get => this._elasticSanInputObject; set => this._elasticSanInputObject = value; }
+
+        /// <summary>Determines whether to enable a system-assigned identity for the resource.</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Determines whether to enable a system-assigned identity for the resource.")]
+        public System.Boolean? EnableSystemAssignedIdentity { get; set; }
+
+        /// <summary>Type of encryption</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Type of encryption")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"Type of encryption",
+        SerializedName = @"encryption",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.PSArgumentCompleterAttribute("EncryptionAtRestWithPlatformKey", "EncryptionAtRestWithCustomerManagedKey")]
+        public string Encryption { get => _parametersBody.Encryption ?? null; set => _parametersBody.Encryption = value; }
+
+        /// <summary>
+        /// Resource identifier of the UserAssigned identity to be associated with server-side encryption on the volume group.
+        /// </summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Resource identifier of the UserAssigned identity to be associated with server-side encryption on the volume group.")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"Resource identifier of the UserAssigned identity to be associated with server-side encryption on the volume group.",
+        SerializedName = @"userAssignedIdentity",
+        PossibleTypes = new [] { typeof(string) })]
+        public string EncryptionIdentityEncryptionUserAssignedIdentity { get => _parametersBody.EncryptionIdentityEncryptionUserAssignedIdentity ?? null; set => _parametersBody.EncryptionIdentityEncryptionUserAssignedIdentity = value; }
+
+        /// <summary>A boolean indicating whether or not Data Integrity Check is enabled</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "A boolean indicating whether or not Data Integrity Check is enabled")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"A boolean indicating whether or not Data Integrity Check is enabled",
+        SerializedName = @"enforceDataIntegrityCheckForIscsi",
+        PossibleTypes = new [] { typeof(global::System.Management.Automation.SwitchParameter) })]
+        public global::System.Management.Automation.SwitchParameter EnforceDataIntegrityCheckForIscsi { get => _parametersBody.EnforceDataIntegrityCheckForIscsi ?? default(global::System.Management.Automation.SwitchParameter); set => _parametersBody.EnforceDataIntegrityCheckForIscsi = value; }
+
+        /// <summary>Accessor for extensibleParameters.</summary>
+        public global::System.Collections.Generic.IDictionary<global::System.String,global::System.Object> ExtensibleParameters { get => _extensibleParameters ; }
+
+        /// <summary>SendAsync Pipeline Steps to be appended to the front of the pipeline</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline")]
+        [global::System.Management.Automation.ValidateNotNull]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Runtime)]
+        public Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.SendAsyncStep[] HttpPipelineAppend { get; set; }
+
+        /// <summary>SendAsync Pipeline Steps to be prepended to the front of the pipeline</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "SendAsync Pipeline Steps to be prepended to the front of the pipeline")]
+        [global::System.Management.Automation.ValidateNotNull]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Runtime)]
+        public Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.SendAsyncStep[] HttpPipelinePrepend { get; set; }
+
+        /// <summary>Accessor for our copy of the InvocationInfo.</summary>
+        public global::System.Management.Automation.InvocationInfo InvocationInformation { get => __invocationInfo = __invocationInfo ?? this.MyInvocation ; set { __invocationInfo = value; } }
+
+        /// <summary>The name of KeyVault key.</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The name of KeyVault key.")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"The name of KeyVault key.",
+        SerializedName = @"keyName",
+        PossibleTypes = new [] { typeof(string) })]
+        public string KeyVaultPropertyKeyName { get => _parametersBody.KeyVaultPropertyKeyName ?? null; set => _parametersBody.KeyVaultPropertyKeyName = value; }
+
+        /// <summary>The Uri of KeyVault.</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The Uri of KeyVault.")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"The Uri of KeyVault.",
+        SerializedName = @"keyVaultUri",
+        PossibleTypes = new [] { typeof(string) })]
+        public string KeyVaultPropertyKeyVaultUri { get => _parametersBody.KeyVaultPropertyKeyVaultUri ?? null; set => _parametersBody.KeyVaultPropertyKeyVaultUri = value; }
+
+        /// <summary>The version of KeyVault key.</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The version of KeyVault key.")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"The version of KeyVault key.",
+        SerializedName = @"keyVersion",
+        PossibleTypes = new [] { typeof(string) })]
+        public string KeyVaultPropertyKeyVersion { get => _parametersBody.KeyVaultPropertyKeyVersion ?? null; set => _parametersBody.KeyVaultPropertyKeyVersion = value; }
+
+        /// <summary>
+        /// <see cref="Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener" /> cancellation delegate. Stops the cmdlet when called.
+        /// </summary>
+        global::System.Action Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener.Cancel => _cancellationTokenSource.Cancel;
+
+        /// <summary><see cref="Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener" /> cancellation token.</summary>
+        global::System.Threading.CancellationToken Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener.Token => _cancellationTokenSource.Token;
+
+        /// <summary>Backing field for <see cref="Name" /> property.</summary>
+        private string _name;
+
+        /// <summary>The name of the VolumeGroup.</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = true, HelpMessage = "The name of the VolumeGroup.")]
+        [Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Description = @"The name of the VolumeGroup.",
+        SerializedName = @"volumeGroupName",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::System.Management.Automation.Alias("VolumeGroupName")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Path)]
+        public string Name { get => this._name; set => this._name = value; }
+
+        /// <summary>
+        /// when specified, will make the remote call, and return an AsyncOperationResponse, letting the remote operation continue
+        /// asynchronously.
+        /// </summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Run the command asynchronously")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Runtime)]
+        public global::System.Management.Automation.SwitchParameter NoWait { get; set; }
+
+        /// <summary>
+        /// The instance of the <see cref="Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.HttpPipeline" /> that the remote call will use.
+        /// </summary>
+        public Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.HttpPipeline Pipeline { get; set; }
+
+        /// <summary>Type of storage target</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Type of storage target")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"Type of storage target",
+        SerializedName = @"protocolType",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.PSArgumentCompleterAttribute("Iscsi", "None")]
+        public string ProtocolType { get => _parametersBody.ProtocolType ?? null; set => _parametersBody.ProtocolType = value; }
+
+        /// <summary>The URI for the proxy server to use</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "The URI for the proxy server to use")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Runtime)]
+        public global::System.Uri Proxy { get; set; }
+
+        /// <summary>Credentials for a proxy server to use for the remote call</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Credentials for a proxy server to use for the remote call")]
+        [global::System.Management.Automation.ValidateNotNull]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Runtime)]
+        public global::System.Management.Automation.PSCredential ProxyCredential { get; set; }
+
+        /// <summary>Use the default credentials for the proxy</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Use the default credentials for the proxy")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Category(global::Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.ParameterCategory.Runtime)]
+        public global::System.Management.Automation.SwitchParameter ProxyUseDefaultCredentials { get; set; }
+
+        /// <summary>
+        /// The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in
+        /// the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.'
+        /// </summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.'")]
+        [global::System.Management.Automation.AllowEmptyCollection]
+        public string[] UserAssignedIdentity { get; set; }
+
+        /// <summary>
+        /// <c>overrideOnDefault</c> will be called before the regular onDefault has been processed, allowing customization of what
+        /// happens on that response. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="responseMessage">the raw response message as an global::System.Net.Http.HttpResponseMessage.</param>
+        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IErrorResponse">Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IErrorResponse</see>
+        /// from the remote call</param>
+        /// <param name="returnNow">/// Determines if the rest of the onDefault method should be processed, or if the method should
+        /// return immediately (set to true to skip further processing )</param>
+
+        partial void overrideOnDefault(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IErrorResponse> response, ref global::System.Threading.Tasks.Task<bool> returnNow);
+
+        /// <summary>
+        /// <c>overrideOnOk</c> will be called before the regular onOk has been processed, allowing customization of what happens
+        /// on that response. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="responseMessage">the raw response message as an global::System.Net.Http.HttpResponseMessage.</param>
+        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IVolumeGroup">Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IVolumeGroup</see>
+        /// from the remote call</param>
+        /// <param name="returnNow">/// Determines if the rest of the onOk method should be processed, or if the method should return
+        /// immediately (set to true to skip further processing )</param>
+
+        partial void overrideOnOk(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IVolumeGroup> response, ref global::System.Threading.Tasks.Task<bool> returnNow);
+
+        /// <summary>
+        /// (overrides the default BeginProcessing method in global::System.Management.Automation.PSCmdlet)
+        /// </summary>
+        protected override void BeginProcessing()
+        {
+            var telemetryId = Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Module.Instance.GetTelemetryId.Invoke();
+            if (telemetryId != "" && telemetryId != "internal")
+            {
+                __correlationId = telemetryId;
+            }
+            Module.Instance.SetProxyConfiguration(Proxy, ProxyCredential, ProxyUseDefaultCredentials);
+            if (Break)
+            {
+                Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.AttachDebugger.Break();
+            }
+            ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.CmdletBeginProcessing).Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+        }
+
+        /// <summary>Creates a duplicate instance of this cmdlet (via JSON serialization).</summary>
+        /// <returns>
+        /// a duplicate instance of UpdateAzElasticSanVolumeGroup_UpdateViaIdentityElasticSanExpanded
+        /// </returns>
+        public Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Cmdlets.UpdateAzElasticSanVolumeGroup_UpdateViaIdentityElasticSanExpanded Clone()
+        {
+            var clone = new UpdateAzElasticSanVolumeGroup_UpdateViaIdentityElasticSanExpanded();
+            clone.__correlationId = this.__correlationId;
+            clone.__processRecordId = this.__processRecordId;
+            clone.DefaultProfile = this.DefaultProfile;
+            clone.InvocationInformation = this.InvocationInformation;
+            clone.Proxy = this.Proxy;
+            clone.Pipeline = this.Pipeline;
+            clone.AsJob = this.AsJob;
+            clone.Break = this.Break;
+            clone.ProxyCredential = this.ProxyCredential;
+            clone.ProxyUseDefaultCredentials = this.ProxyUseDefaultCredentials;
+            clone.HttpPipelinePrepend = this.HttpPipelinePrepend;
+            clone.HttpPipelineAppend = this.HttpPipelineAppend;
+            clone._parametersBody = this._parametersBody;
+            clone.Name = this.Name;
+            return clone;
+        }
+
+        /// <summary>Performs clean-up after the command execution</summary>
+        protected override void EndProcessing()
+        {
+            var telemetryInfo = Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Module.Instance.GetTelemetryInfo?.Invoke(__correlationId);
+            if (telemetryInfo != null)
+            {
+                telemetryInfo.TryGetValue("ShowSecretsWarning", out var showSecretsWarning);
+                telemetryInfo.TryGetValue("SanitizedProperties", out var sanitizedProperties);
+                telemetryInfo.TryGetValue("InvocationName", out var invocationName);
+                if (showSecretsWarning == "true")
+                {
+                    if (string.IsNullOrEmpty(sanitizedProperties))
+                    {
+                        WriteWarning($"The output of cmdlet {invocationName} may compromise security by showing secrets. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");
+                    }
+                    else
+                    {
+                        WriteWarning($"The output of cmdlet {invocationName} may compromise security by showing the following secrets: {sanitizedProperties}. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");
+                    }
+                }
+            }
+        }
+
+        /// <summary>Handles/Dispatches events during the call to the REST service.</summary>
+        /// <param name="id">The message id</param>
+        /// <param name="token">The message cancellation token. When this call is cancelled, this should be <c>true</c></param>
+        /// <param name="messageData">Detailed message data for the message event.</param>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the message is completed.
+        /// </returns>
+         async global::System.Threading.Tasks.Task Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener.Signal(string id, global::System.Threading.CancellationToken token, global::System.Func<Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.EventData> messageData)
+        {
+            using( NoSynchronizationContext )
+            {
+                if (token.IsCancellationRequested)
+                {
+                    return ;
+                }
+
+                switch ( id )
+                {
+                    case Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.Verbose:
+                    {
+                        WriteVerbose($"{(messageData().Message ?? global::System.String.Empty)}");
+                        return ;
+                    }
+                    case Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.Warning:
+                    {
+                        WriteWarning($"{(messageData().Message ?? global::System.String.Empty)}");
+                        return ;
+                    }
+                    case Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.Information:
+                    {
+                        // When an operation supports asjob, Information messages must go thru verbose.
+                        WriteVerbose($"INFORMATION: {(messageData().Message ?? global::System.String.Empty)}");
+                        return ;
+                    }
+                    case Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.Debug:
+                    {
+                        WriteDebug($"{(messageData().Message ?? global::System.String.Empty)}");
+                        return ;
+                    }
+                    case Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.Error:
+                    {
+                        WriteError(new global::System.Management.Automation.ErrorRecord( new global::System.Exception(messageData().Message), string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null ) );
+                        return ;
+                    }
+                    case Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.Progress:
+                    {
+                        var data = messageData();
+                        int progress = (int)data.Value;
+                        string activityMessage, statusDescription;
+                        global::System.Management.Automation.ProgressRecordType recordType;
+                        if (progress < 100)
+                        {
+                            activityMessage = "In progress";
+                            statusDescription = "Checking operation status";
+                            recordType = System.Management.Automation.ProgressRecordType.Processing;
+                        }
+                        else
+                        {
+                            activityMessage = "Completed";
+                            statusDescription = "Completed";
+                            recordType = System.Management.Automation.ProgressRecordType.Completed;
+                        }
+                        WriteProgress(new global::System.Management.Automation.ProgressRecord(1, activityMessage, statusDescription)
+                        {
+                            PercentComplete = progress,
+                        RecordType = recordType
+                        });
+                        return ;
+                    }
+                    case Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.DelayBeforePolling:
+                    {
+                        var data = messageData();
+                        if (true == MyInvocation?.BoundParameters?.ContainsKey("NoWait"))
+                        {
+                            if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)
+                            {
+                                var asyncOperation = response.GetFirstHeader(@"Azure-AsyncOperation");
+                                var location = response.GetFirstHeader(@"Location");
+                                var uri = global::System.String.IsNullOrEmpty(asyncOperation) ? global::System.String.IsNullOrEmpty(location) ? response.RequestMessage.RequestUri.AbsoluteUri : location : asyncOperation;
+                                WriteObject(new Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.PowerShell.AsyncOperationResponse { Target = uri });
+                                // do nothing more.
+                                data.Cancel();
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)
+                            {
+                                int delay = (int)(response.Headers.RetryAfter?.Delta?.TotalSeconds ?? 30);
+                                WriteDebug($"Delaying {delay} seconds before polling.");
+                                for (var now = 0; now < delay; ++now)
+                                {
+                                    WriteProgress(new global::System.Management.Automation.ProgressRecord(1, "In progress", "Checking operation status")
+                                    {
+                                        PercentComplete = now * 100 / delay
+                                    });
+                                    await global::System.Threading.Tasks.Task.Delay(1000, token);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+                await Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Module.Instance.Signal(id, token, messageData, (i, t, m) => ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Signal(i, t, () => Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.EventDataConverter.ConvertFrom(m()) as Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.EventData), InvocationInformation, this.ParameterSetName, __correlationId, __processRecordId, null );
+                if (token.IsCancellationRequested)
+                {
+                    return ;
+                }
+                WriteDebug($"{id}: {(messageData().Message ?? global::System.String.Empty)}");
+            }
+        }
+
+        private void PreProcessManagedIdentityParametersWithGetResult()
+        {
+            bool supportsSystemAssignedIdentity = (true == this.EnableSystemAssignedIdentity || null == this.EnableSystemAssignedIdentity && true == _parametersBody?.IdentityType?.Contains("SystemAssigned"));
+            bool supportsUserAssignedIdentity = false;
+            if (this.UserAssignedIdentity?.Length > 0)
+            {
+                // calculate UserAssignedIdentity
+                _parametersBody.IdentityUserAssignedIdentity.Clear();
+                foreach( var id in this.UserAssignedIdentity )
+                {
+                    _parametersBody.IdentityUserAssignedIdentity.Add(id, new Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.UserAssignedIdentity());
+                }
+            }
+            supportsUserAssignedIdentity = true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && this.UserAssignedIdentity?.Length > 0 ||
+                    true != this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && true == _parametersBody.IdentityType?.Contains("UserAssigned");
+            if (!supportsUserAssignedIdentity)
+            {
+                _parametersBody.IdentityUserAssignedIdentity = null;
+            }
+            // calculate IdentityType
+            if ((supportsUserAssignedIdentity && supportsSystemAssignedIdentity))
+            {
+                _parametersBody.IdentityType = "SystemAssigned,UserAssigned";
+            }
+            else if ((supportsUserAssignedIdentity && !supportsSystemAssignedIdentity))
+            {
+                _parametersBody.IdentityType = "UserAssigned";
+            }
+            else if ((!supportsUserAssignedIdentity && supportsSystemAssignedIdentity))
+            {
+                _parametersBody.IdentityType = "SystemAssigned";
+            }
+            else
+            {
+                _parametersBody.IdentityType = "None";
+            }
+        }
+
+        /// <summary>Performs execution of the command.</summary>
+        protected override void ProcessRecord()
+        {
+            ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.CmdletProcessRecordStart).Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+            __processRecordId = System.Guid.NewGuid().ToString();
+            try
+            {
+                // work
+                if (ShouldProcess($"Call remote 'VolumeGroupsCreate' operation"))
+                {
+                    if (true == MyInvocation?.BoundParameters?.ContainsKey("AsJob"))
+                    {
+                        var instance = this.Clone();
+                        var job = new Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.PowerShell.AsyncJob(instance, this.MyInvocation.Line, this.MyInvocation.MyCommand.Name, this._cancellationTokenSource.Token, this._cancellationTokenSource.Cancel);
+                        JobRepository.Add(job);
+                        var task = instance.ProcessRecordAsync();
+                        job.Monitor(task);
+                        WriteObject(job);
+                    }
+                    else
+                    {
+                        using( var asyncCommandRuntime = new Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.PowerShell.AsyncCommandRuntime(this, ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Token) )
+                        {
+                            asyncCommandRuntime.Wait( ProcessRecordAsync(),((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Token);
+                        }
+                    }
+                }
+            }
+            catch (global::System.AggregateException aggregateException)
+            {
+                // unroll the inner exceptions to get the root cause
+                foreach( var innerException in aggregateException.Flatten().InnerExceptions )
+                {
+                    ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.CmdletException, $"{innerException.GetType().Name} - {innerException.Message} : {innerException.StackTrace}").Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+                    // Write exception out to error channel.
+                    WriteError( new global::System.Management.Automation.ErrorRecord(innerException,string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null) );
+                }
+            }
+            catch (global::System.Exception exception) when ((exception as System.Management.Automation.PipelineStoppedException)== null || (exception as System.Management.Automation.PipelineStoppedException).InnerException != null)
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.CmdletException, $"{exception.GetType().Name} - {exception.Message} : {exception.StackTrace}").Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+                // Write exception out to error channel.
+                WriteError( new global::System.Management.Automation.ErrorRecord(exception,string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null) );
+            }
+            finally
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.CmdletProcessRecordEnd).Wait();
+            }
+        }
+
+        /// <summary>Performs execution of the command, working asynchronously if required.</summary>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the method is completed.
+        /// </returns>
+        protected async global::System.Threading.Tasks.Task ProcessRecordAsync()
+        {
+            using( NoSynchronizationContext )
+            {
+                await ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.CmdletGetPipeline); if( ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+                Pipeline = Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Module.Instance.CreatePipeline(InvocationInformation, __correlationId, __processRecordId, this.ParameterSetName, this.ExtensibleParameters);
+                if (null != HttpPipelinePrepend)
+                {
+                    Pipeline.Prepend((this.CommandRuntime as Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(HttpPipelinePrepend) ?? HttpPipelinePrepend);
+                }
+                if (null != HttpPipelineAppend)
+                {
+                    Pipeline.Append((this.CommandRuntime as Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(HttpPipelineAppend) ?? HttpPipelineAppend);
+                }
+                // get the client instance
+                try
+                {
+                    await ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+                    if (ElasticSanInputObject?.Id != null)
+                    {
+                        this.ElasticSanInputObject.Id += $"/volumegroups/{(global::System.Uri.EscapeDataString(this.Name.ToString()))}";
+                        _parametersBody = await this.Client.VolumeGroupsGetViaIdentityWithResult(ElasticSanInputObject.Id, this, Pipeline);
+                        this.PreProcessManagedIdentityParametersWithGetResult();
+                        this.Update_parametersBody();
+                        await this.Client.VolumeGroupsCreateViaIdentity(ElasticSanInputObject.Id, _parametersBody, onOk, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.SerializationMode.IncludeUpdate);
+                    }
+                    else
+                    {
+                        // try to call with PATH parameters from Input Object
+                        if (null == ElasticSanInputObject.SubscriptionId)
+                        {
+                            ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("ElasticSanInputObject has null value for ElasticSanInputObject.SubscriptionId"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ElasticSanInputObject) );
+                        }
+                        if (null == ElasticSanInputObject.ResourceGroupName)
+                        {
+                            ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("ElasticSanInputObject has null value for ElasticSanInputObject.ResourceGroupName"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ElasticSanInputObject) );
+                        }
+                        if (null == ElasticSanInputObject.ElasticSanName)
+                        {
+                            ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("ElasticSanInputObject has null value for ElasticSanInputObject.ElasticSanName"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ElasticSanInputObject) );
+                        }
+                        _parametersBody = await this.Client.VolumeGroupsGetWithResult(ElasticSanInputObject.SubscriptionId ?? null, ElasticSanInputObject.ResourceGroupName ?? null, ElasticSanInputObject.ElasticSanName ?? null, Name, this, Pipeline);
+                        this.PreProcessManagedIdentityParametersWithGetResult();
+                        this.Update_parametersBody();
+                        await this.Client.VolumeGroupsCreate(ElasticSanInputObject.SubscriptionId ?? null, ElasticSanInputObject.ResourceGroupName ?? null, ElasticSanInputObject.ElasticSanName ?? null, Name, _parametersBody, onOk, onDefault, this, Pipeline, Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.SerializationMode.IncludeUpdate);
+                    }
+                    await ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+                }
+                catch (Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.UndeclaredResponseException urexception)
+                {
+                    WriteError(new global::System.Management.Automation.ErrorRecord(urexception, urexception.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { Name=Name})
+                    {
+                      ErrorDetails = new global::System.Management.Automation.ErrorDetails(urexception.Message) { RecommendedAction = urexception.Action }
+                    });
+                }
+                finally
+                {
+                    await ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.Events.CmdletProcessRecordAsyncEnd);
+                }
+            }
+        }
+
+        /// <summary>Interrupts currently running code within the command.</summary>
+        protected override void StopProcessing()
+        {
+            ((Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.IEventListener)this).Cancel();
+            base.StopProcessing();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateAzElasticSanVolumeGroup_UpdateViaIdentityElasticSanExpanded" /> cmdlet
+        /// class.
+        /// </summary>
+        public UpdateAzElasticSanVolumeGroup_UpdateViaIdentityElasticSanExpanded()
+        {
+
+        }
+
+        private void Update_parametersBody()
+        {
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("ProtocolType")))
+            {
+                this.ProtocolType = (string)(this.MyInvocation?.BoundParameters["ProtocolType"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("Encryption")))
+            {
+                this.Encryption = (string)(this.MyInvocation?.BoundParameters["Encryption"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("EnforceDataIntegrityCheckForIscsi")))
+            {
+                this.EnforceDataIntegrityCheckForIscsi = (global::System.Management.Automation.SwitchParameter)(this.MyInvocation?.BoundParameters["EnforceDataIntegrityCheckForIscsi"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("DeleteRetentionPolicyState")))
+            {
+                this.DeleteRetentionPolicyState = (string)(this.MyInvocation?.BoundParameters["DeleteRetentionPolicyState"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("DeleteRetentionPolicyRetentionPeriodDay")))
+            {
+                this.DeleteRetentionPolicyRetentionPeriodDay = (int)(this.MyInvocation?.BoundParameters["DeleteRetentionPolicyRetentionPeriodDay"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("KeyVaultPropertyKeyName")))
+            {
+                this.KeyVaultPropertyKeyName = (string)(this.MyInvocation?.BoundParameters["KeyVaultPropertyKeyName"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("KeyVaultPropertyKeyVersion")))
+            {
+                this.KeyVaultPropertyKeyVersion = (string)(this.MyInvocation?.BoundParameters["KeyVaultPropertyKeyVersion"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("KeyVaultPropertyKeyVaultUri")))
+            {
+                this.KeyVaultPropertyKeyVaultUri = (string)(this.MyInvocation?.BoundParameters["KeyVaultPropertyKeyVaultUri"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("EncryptionIdentityEncryptionUserAssignedIdentity")))
+            {
+                this.EncryptionIdentityEncryptionUserAssignedIdentity = (string)(this.MyInvocation?.BoundParameters["EncryptionIdentityEncryptionUserAssignedIdentity"]);
+            }
+        }
+
+        /// <param name="sendToPipeline"></param>
+        new protected void WriteObject(object sendToPipeline)
+        {
+            Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Module.Instance.SanitizeOutput?.Invoke(sendToPipeline, __correlationId);
+            base.WriteObject(sendToPipeline);
+        }
+
+        /// <param name="sendToPipeline"></param>
+        /// <param name="enumerateCollection"></param>
+        new protected void WriteObject(object sendToPipeline, bool enumerateCollection)
+        {
+            Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Module.Instance.SanitizeOutput?.Invoke(sendToPipeline, __correlationId);
+            base.WriteObject(sendToPipeline, enumerateCollection);
+        }
+
+        /// <summary>
+        /// a delegate that is called when the remote service returns default (any response code not handled elsewhere).
+        /// </summary>
+        /// <param name="responseMessage">the raw response message as an global::System.Net.Http.HttpResponseMessage.</param>
+        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IErrorResponse">Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IErrorResponse</see>
+        /// from the remote call</param>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the method is completed.
+        /// </returns>
+        private async global::System.Threading.Tasks.Task onDefault(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IErrorResponse> response)
+        {
+            using( NoSynchronizationContext )
+            {
+                var _returnNow = global::System.Threading.Tasks.Task<bool>.FromResult(false);
+                overrideOnDefault(responseMessage, response, ref _returnNow);
+                // if overrideOnDefault has returned true, then return right away.
+                if ((null != _returnNow && await _returnNow))
+                {
+                    return ;
+                }
+                // Error Response : default
+                var code = (await response)?.Code;
+                var message = (await response)?.Message;
+                if ((null == code || null == message))
+                {
+                    // Unrecognized Response. Create an error record based on what we have.
+                    var ex = new Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Runtime.RestException<Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IErrorResponse>(responseMessage, await response);
+                    WriteError( new global::System.Management.Automation.ErrorRecord(ex, ex.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new {  })
+                    {
+                      ErrorDetails = new global::System.Management.Automation.ErrorDetails(ex.Message) { RecommendedAction = ex.Action }
+                    });
+                }
+                else
+                {
+                    WriteError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{code}] : {message}"), code?.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new {  })
+                    {
+                      ErrorDetails = new global::System.Management.Automation.ErrorDetails(message) { RecommendedAction = global::System.String.Empty }
+                    });
+                }
+            }
+        }
+
+        /// <summary>a delegate that is called when the remote service returns 200 (OK).</summary>
+        /// <param name="responseMessage">the raw response message as an global::System.Net.Http.HttpResponseMessage.</param>
+        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IVolumeGroup">Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IVolumeGroup</see>
+        /// from the remote call</param>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the method is completed.
+        /// </returns>
+        private async global::System.Threading.Tasks.Task onOk(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IVolumeGroup> response)
+        {
+            using( NoSynchronizationContext )
+            {
+                var _returnNow = global::System.Threading.Tasks.Task<bool>.FromResult(false);
+                overrideOnOk(responseMessage, response, ref _returnNow);
+                // if overrideOnOk has returned true, then return right away.
+                if ((null != _returnNow && await _returnNow))
+                {
+                    return ;
+                }
+                // onOk - response for 200 / application/json
+                // (await response) // should be Microsoft.Azure.PowerShell.Cmdlets.ElasticSan.Models.IVolumeGroup
+                var result = (await response);
+                WriteObject(result, false);
+            }
+        }
+    }
+}

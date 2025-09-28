@@ -1,0 +1,230 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Runtime.Extensions;
+
+    /// <summary>Certificate details representing the Vault credentials for AAD.</summary>
+    public partial class ResourceCertificateAndAadDetails :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateAndAadDetails,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateAndAadDetailsInternal,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Runtime.IValidates
+    {
+        /// <summary>
+        /// Backing field for Inherited model <see cref= "Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetails"
+        /// />
+        /// </summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetails __resourceCertificateDetails = new Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.ResourceCertificateDetails();
+
+        /// <summary>Backing field for <see cref="AadAudience" /> property.</summary>
+        private string _aadAudience;
+
+        /// <summary>AAD audience for the resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Owned)]
+        public string AadAudience { get => this._aadAudience; set => this._aadAudience = value; }
+
+        /// <summary>Backing field for <see cref="AadAuthority" /> property.</summary>
+        private string _aadAuthority;
+
+        /// <summary>AAD tenant authority.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Owned)]
+        public string AadAuthority { get => this._aadAuthority; set => this._aadAuthority = value; }
+
+        /// <summary>Backing field for <see cref="AadTenantId" /> property.</summary>
+        private string _aadTenantId;
+
+        /// <summary>AAD tenant Id.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Owned)]
+        public string AadTenantId { get => this._aadTenantId; set => this._aadTenantId = value; }
+
+        /// <summary>
+        /// This property will be used as the discriminator for deciding the specific types in the polymorphic chain of types.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Constant]
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Inherited)]
+        public string AuthType { get => "AzureActiveDirectory"; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).AuthType = "AzureActiveDirectory"; }
+
+        /// <summary>Backing field for <see cref="AzureManagementEndpointAudience" /> property.</summary>
+        private string _azureManagementEndpointAudience;
+
+        /// <summary>Azure Management Endpoint Audience.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Owned)]
+        public string AzureManagementEndpointAudience { get => this._azureManagementEndpointAudience; set => this._azureManagementEndpointAudience = value; }
+
+        /// <summary>The base64 encoded certificate raw data string.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Inherited)]
+        public byte[] Certificate { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).Certificate; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).Certificate = value ?? null /* byte array */; }
+
+        /// <summary>Certificate friendly name.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Inherited)]
+        public string FriendlyName { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).FriendlyName; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).FriendlyName = value ?? null; }
+
+        /// <summary>Certificate issuer.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Inherited)]
+        public string Issuer { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).Issuer; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).Issuer = value ?? null; }
+
+        /// <summary>Resource ID of the vault.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Inherited)]
+        public long? ResourceId { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).ResourceId; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).ResourceId = value ?? default(long); }
+
+        /// <summary>Backing field for <see cref="ServicePrincipalClientId" /> property.</summary>
+        private string _servicePrincipalClientId;
+
+        /// <summary>AAD service principal clientId.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Owned)]
+        public string ServicePrincipalClientId { get => this._servicePrincipalClientId; set => this._servicePrincipalClientId = value; }
+
+        /// <summary>Backing field for <see cref="ServicePrincipalObjectId" /> property.</summary>
+        private string _servicePrincipalObjectId;
+
+        /// <summary>AAD service principal ObjectId.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Owned)]
+        public string ServicePrincipalObjectId { get => this._servicePrincipalObjectId; set => this._servicePrincipalObjectId = value; }
+
+        /// <summary>Backing field for <see cref="ServiceResourceId" /> property.</summary>
+        private string _serviceResourceId;
+
+        /// <summary>Service Resource Id.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Owned)]
+        public string ServiceResourceId { get => this._serviceResourceId; set => this._serviceResourceId = value; }
+
+        /// <summary>Certificate Subject Name.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Inherited)]
+        public string Subject { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).Subject; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).Subject = value ?? null; }
+
+        /// <summary>Certificate thumbprint.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Inherited)]
+        public string Thumbprint { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).Thumbprint; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).Thumbprint = value ?? null; }
+
+        /// <summary>Certificate Validity start Date time.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Inherited)]
+        public global::System.DateTime? ValidFrom { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).ValidFrom; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).ValidFrom = value ?? default(global::System.DateTime); }
+
+        /// <summary>Certificate Validity End Date time.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.PropertyOrigin.Inherited)]
+        public global::System.DateTime? ValidTo { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).ValidTo; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal)__resourceCertificateDetails).ValidTo = value ?? default(global::System.DateTime); }
+
+        /// <summary>Creates an new <see cref="ResourceCertificateAndAadDetails" /> instance.</summary>
+        public ResourceCertificateAndAadDetails()
+        {
+            this.__resourceCertificateDetails.AuthType = "AzureActiveDirectory";
+        }
+
+        /// <summary>Validates that this object meets the validation criteria.</summary>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Runtime.IEventListener" /> instance that will receive validation
+        /// events.</param>
+        /// <returns>
+        /// A <see cref = "global::System.Threading.Tasks.Task" /> that will be complete when validation is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task Validate(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Runtime.IEventListener eventListener)
+        {
+            await eventListener.AssertNotNull(nameof(__resourceCertificateDetails), __resourceCertificateDetails);
+            await eventListener.AssertObjectIsValid(nameof(__resourceCertificateDetails), __resourceCertificateDetails);
+        }
+    }
+    /// Certificate details representing the Vault credentials for AAD.
+    public partial interface IResourceCertificateAndAadDetails :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Runtime.IJsonSerializable,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetails
+    {
+        /// <summary>AAD audience for the resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"AAD audience for the resource",
+        SerializedName = @"aadAudience",
+        PossibleTypes = new [] { typeof(string) })]
+        string AadAudience { get; set; }
+        /// <summary>AAD tenant authority.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"AAD tenant authority.",
+        SerializedName = @"aadAuthority",
+        PossibleTypes = new [] { typeof(string) })]
+        string AadAuthority { get; set; }
+        /// <summary>AAD tenant Id.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"AAD tenant Id.",
+        SerializedName = @"aadTenantId",
+        PossibleTypes = new [] { typeof(string) })]
+        string AadTenantId { get; set; }
+        /// <summary>Azure Management Endpoint Audience.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Azure Management Endpoint Audience.",
+        SerializedName = @"azureManagementEndpointAudience",
+        PossibleTypes = new [] { typeof(string) })]
+        string AzureManagementEndpointAudience { get; set; }
+        /// <summary>AAD service principal clientId.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"AAD service principal clientId.",
+        SerializedName = @"servicePrincipalClientId",
+        PossibleTypes = new [] { typeof(string) })]
+        string ServicePrincipalClientId { get; set; }
+        /// <summary>AAD service principal ObjectId.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"AAD service principal ObjectId.",
+        SerializedName = @"servicePrincipalObjectId",
+        PossibleTypes = new [] { typeof(string) })]
+        string ServicePrincipalObjectId { get; set; }
+        /// <summary>Service Resource Id.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Service Resource Id.",
+        SerializedName = @"serviceResourceId",
+        PossibleTypes = new [] { typeof(string) })]
+        string ServiceResourceId { get; set; }
+
+    }
+    /// Certificate details representing the Vault credentials for AAD.
+    internal partial interface IResourceCertificateAndAadDetailsInternal :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServices.Models.IResourceCertificateDetailsInternal
+    {
+        /// <summary>AAD audience for the resource</summary>
+        string AadAudience { get; set; }
+        /// <summary>AAD tenant authority.</summary>
+        string AadAuthority { get; set; }
+        /// <summary>AAD tenant Id.</summary>
+        string AadTenantId { get; set; }
+        /// <summary>Azure Management Endpoint Audience.</summary>
+        string AzureManagementEndpointAudience { get; set; }
+        /// <summary>AAD service principal clientId.</summary>
+        string ServicePrincipalClientId { get; set; }
+        /// <summary>AAD service principal ObjectId.</summary>
+        string ServicePrincipalObjectId { get; set; }
+        /// <summary>Service Resource Id.</summary>
+        string ServiceResourceId { get; set; }
+
+    }
+}
