@@ -1,0 +1,98 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.Help.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.Extensions;
+
+    /// <summary>Service Classification result object.</summary>
+    public partial class ClassificationService :
+        Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IClassificationService,
+        Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IClassificationServiceInternal
+    {
+
+        /// <summary>Backing field for <see cref="DisplayName" /> property.</summary>
+        private string _displayName;
+
+        /// <summary>Localized name of the azure service.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Origin(Microsoft.Azure.PowerShell.Cmdlets.Help.PropertyOrigin.Owned)]
+        public string DisplayName { get => this._displayName; }
+
+        /// <summary>Internal Acessors for DisplayName</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IClassificationServiceInternal.DisplayName { get => this._displayName; set { {_displayName = value;} } }
+
+        /// <summary>Internal Acessors for ServiceId</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.Help.Models.IClassificationServiceInternal.ServiceId { get => this._serviceId; set { {_serviceId = value;} } }
+
+        /// <summary>Backing field for <see cref="ResourceType" /> property.</summary>
+        private System.Collections.Generic.List<string> _resourceType;
+
+        /// <summary>List of applicable ARM resource types for this service.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Origin(Microsoft.Azure.PowerShell.Cmdlets.Help.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<string> ResourceType { get => this._resourceType; set => this._resourceType = value; }
+
+        /// <summary>Backing field for <see cref="ServiceId" /> property.</summary>
+        private string _serviceId;
+
+        /// <summary>Azure resource Id of the service.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Origin(Microsoft.Azure.PowerShell.Cmdlets.Help.PropertyOrigin.Owned)]
+        public string ServiceId { get => this._serviceId; }
+
+        /// <summary>Creates an new <see cref="ClassificationService" /> instance.</summary>
+        public ClassificationService()
+        {
+
+        }
+    }
+    /// Service Classification result object.
+    public partial interface IClassificationService :
+        Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.IJsonSerializable
+    {
+        /// <summary>Localized name of the azure service.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Localized name of the azure service.",
+        SerializedName = @"displayName",
+        PossibleTypes = new [] { typeof(string) })]
+        string DisplayName { get;  }
+        /// <summary>List of applicable ARM resource types for this service.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"List of applicable ARM resource types for this service.",
+        SerializedName = @"resourceTypes",
+        PossibleTypes = new [] { typeof(string) })]
+        System.Collections.Generic.List<string> ResourceType { get; set; }
+        /// <summary>Azure resource Id of the service.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Azure resource Id of the service.",
+        SerializedName = @"serviceId",
+        PossibleTypes = new [] { typeof(string) })]
+        string ServiceId { get;  }
+
+    }
+    /// Service Classification result object.
+    internal partial interface IClassificationServiceInternal
+
+    {
+        /// <summary>Localized name of the azure service.</summary>
+        string DisplayName { get; set; }
+        /// <summary>List of applicable ARM resource types for this service.</summary>
+        System.Collections.Generic.List<string> ResourceType { get; set; }
+        /// <summary>Azure resource Id of the service.</summary>
+        string ServiceId { get; set; }
+
+    }
+}
