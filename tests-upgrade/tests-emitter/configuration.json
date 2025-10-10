@@ -27,6 +27,7 @@
     "Chaos.Management.brown",
     "Dashboard.Management.brown",
     "DataReplication.Management.brown",
+    "DeviceProvisioningServices.brown",
     "ElasticSan.brown",
     "Fleet.Management.brown",
     "HardwareSecurityModules.Management.brown",
@@ -86,6 +87,7 @@
     "generated/modules",
     "Properties/AssemblyInfo.cs",
     "generated\\api\\HardwareSecurityModules.cs",
-    "generated\\api\\HelpRp.cs"
+    "generated\\api\\HelpRp.cs",
+    "generated\\api\\IotDpsClient.cs"
   ]
 }
