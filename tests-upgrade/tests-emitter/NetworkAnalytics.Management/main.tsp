@@ -22,8 +22,6 @@ interface Operations extends Azure.ResourceManager.Operations {}
 @doc("The available API versions for the Microsoft.NetworkAnalytics RP.")
 enum Versions {
   @doc("The 2023-11-15 stable version.")
-  @useDependency(Azure.ResourceManager.Versions.v1_0_Preview_1)
-  @useDependency(Azure.Core.Versions.v1_0_Preview_2)
   v2023_11_15: "2023-11-15",
 }
 

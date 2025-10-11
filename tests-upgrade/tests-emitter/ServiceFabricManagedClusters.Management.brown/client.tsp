@@ -21,14 +21,14 @@ using Microsoft.ServiceFabric;
 );
 
 #suppress "deprecated" "@flattenProperty decorator for backwards compatibility with existing spec"
-@@flattenProperty(VMSSExtension.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(VMSSExtension.properties);
 
 @@clientName(ApplicationTypes.createOrUpdate::parameters.resource,
   "parameters"
 );
 @@clientName(ApplicationTypes.update::parameters.properties, "parameters");
 #suppress "deprecated" "@flattenProperty decorator for backwards compatibility with existing spec"
-@@flattenProperty(ApplicationTypeResource.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(ApplicationTypeResource.properties);
 
 @@clientName(ApplicationTypeVersions.createOrUpdate::parameters.resource,
   "parameters"
@@ -37,13 +37,13 @@ using Microsoft.ServiceFabric;
   "parameters"
 );
 #suppress "deprecated" "@flattenProperty decorator for backwards compatibility with existing spec"
-@@flattenProperty(ApplicationTypeVersionResource.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(ApplicationTypeVersionResource.properties);
 
 @@clientName(Applications.createOrUpdate::parameters.resource, "parameters");
 @@clientName(Applications.update::parameters.properties, "parameters");
 @@clientName(Applications.resumeUpgrade::parameters.body, "parameters");
 #suppress "deprecated" "@flattenProperty decorator for backwards compatibility with existing spec"
-@@flattenProperty(ApplicationResource.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(ApplicationResource.properties);
 
 @@clientName(Services.createOrUpdate::parameters.resource, "parameters");
 @@clientName(Services.update::parameters.properties, "parameters");
@@ -58,10 +58,10 @@ using Microsoft.ServiceFabric;
   "parameters"
 );
 #suppress "deprecated" "@flattenProperty decorator for backwards compatibility with existing spec"
-@@flattenProperty(ManagedCluster.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(ManagedCluster.properties);
 
 #suppress "deprecated" "@flattenProperty decorator for backwards compatibility with existing spec"
-@@flattenProperty(ManagedClusterCodeVersionResult.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(ManagedClusterCodeVersionResult.properties);
 
 @@clientName(NodeTypes.createOrUpdate::parameters.resource, "parameters");
 @@clientName(NodeTypes.update::parameters.properties, "parameters");
@@ -75,7 +75,7 @@ using Microsoft.ServiceFabric;
 @@clientName(NodeTypes.startFaultSimulation::parameters.body, "parameters");
 @@clientName(NodeTypes.stopFaultSimulation::parameters.body, "parameters");
 #suppress "deprecated" "@flattenProperty decorator for backwards compatibility with existing spec"
-@@flattenProperty(NodeType.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(NodeType.properties);
 
 @@Azure.ResourceManager.identifiers(FaultSimulationListResult.value,
   #["simulationId"]

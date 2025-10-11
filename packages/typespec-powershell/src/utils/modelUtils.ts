@@ -60,8 +60,7 @@ import {
   createMetadataInfo,
   Visibility
 } from "@typespec/http";
-import { getPagedResult, getUnionAsEnum } from "@azure-tools/typespec-azure-core";
-import { extractPagedMetadataNested } from "./operationUtil.js";
+import { getUnionAsEnum } from "@azure-tools/typespec-azure-core";
 import { pascalCase, deconstruct } from "@azure-tools/codegen";
 import {
   getDefaultApiVersion,
@@ -780,31 +779,7 @@ function getSchemaForModel(
   // let name = dpgContext.rlcOptions?.enableModelNamespace
   // ? fullNamespaceName
   // : model.name;
-  let name = model.name;
-  if (
-    !overridedModelName &&
-    model.templateMapper &&
-    model.templateMapper.args &&
-    model.templateMapper.args.length > 0 &&
-    getPagedResult(program, model)
-  ) {
-    const templateTypes = model.templateMapper.args.filter((it) =>
-      isType(it)
-    ) as Type[];
-    name =
-      templateTypes
-        .map((it) => {
-          switch (it.kind) {
-            case "Model":
-              return it.name;
-            case "String":
-              return it.value;
-            default:
-              return "";
-          }
-        })
-        .join("") + "List";
-  }
+  const name = model.name;
 
   const modelSchema = new ObjectSchema(overridedModelName ?? name, getDoc(program, model) || "");
   // normalized the output name
@@ -844,37 +819,6 @@ function getSchemaForModel(
   //   modelSchema.fromCore = true;
   // }
 
-  if (getPagedResult(program, model)) {
-    const paged = extractPagedMetadataNested(program, model);
-    if (paged && paged.itemsProperty) {
-      const items = paged.itemsProperty as unknown as Model;
-      if (items && items.templateMapper && items.templateMapper.args) {
-        const templateTypes = items.templateMapper.args.filter((it) =>
-          isType(it)
-        ) as Type[];
-        const templateName = templateTypes
-          ?.map((it) => {
-            switch (it.kind) {
-              case "Model":
-                return it.name;
-              case "String":
-                return it.value;
-              default:
-                return "";
-            }
-          })
-          .join("");
-        // ToDo by xiaogang
-        // if (
-        //   paged.itemsProperty.name === "value" &&
-        //   paged.nextLinkProperty?.name === "nextLink"
-        // ) {
-        //   modelSchema.alias = `Paged<${templateName}>`;
-        //   modelSchema.outputAlias = `Paged<${templateName}Output>`;
-        // }
-      }
-    }
-  }
   modelSchema.properties = [];
 
   // getSchemaOrRef on all children to push them into components.schemas

@@ -6,19 +6,19 @@ using Azure.ClientGenerator.Core;
 using Microsoft.Help;
 
 #suppress "deprecated" "FIXME: Update justification, follow aka.ms/tsp/conversion-fix for details"
-@@flattenProperty(SolutionMetadataResource.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(SolutionMetadataResource.properties);
 
 #suppress "deprecated" "FIXME: Update justification, follow aka.ms/tsp/conversion-fix for details"
-@@flattenProperty(SolutionPatchRequestBody.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(SolutionPatchRequestBody.properties);
 
 #suppress "deprecated" "FIXME: Update justification, follow aka.ms/tsp/conversion-fix for details"
-@@flattenProperty(SolutionNlpMetadataResource.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(SolutionNlpMetadataResource.properties);
 
 @@clientName(DiagnosticResources.create::parameters.resource,
   "diagnosticResourceRequest"
 );
 #suppress "deprecated" "FIXME: Update justification, follow aka.ms/tsp/conversion-fix for details"
-@@flattenProperty(DiagnosticResource.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(DiagnosticResource.properties);
 
 @@clientName(SolutionResources.create::parameters.resource,
   "solutionRequestBody"
@@ -27,19 +27,19 @@ using Microsoft.Help;
   "solutionPatchRequestBody"
 );
 #suppress "deprecated" "FIXME: Update justification, follow aka.ms/tsp/conversion-fix for details"
-@@flattenProperty(SolutionResource.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(SolutionResource.properties);
 
 @@clientName(SimplifiedSolutionsResources.create::parameters.resource,
   "simplifiedSolutionsRequestBody"
 );
 #suppress "deprecated" "FIXME: Update justification, follow aka.ms/tsp/conversion-fix for details"
-@@flattenProperty(SimplifiedSolutionsResource.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(SimplifiedSolutionsResource.properties);
 
 #suppress "deprecated" "FIXME: Update justification, follow aka.ms/tsp/conversion-fix for details"
-@@flattenProperty(TroubleshooterResource.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(TroubleshooterResource.properties);
 
 #suppress "deprecated" "FIXME: Update justification, follow aka.ms/tsp/conversion-fix for details"
-@@flattenProperty(SolutionResourceSelfHelp.properties);
+@@Azure.ClientGenerator.Core.Legacy.flattenProperty(SolutionResourceSelfHelp.properties);
 
 @@clientName(DiagnosticResources.create::parameters.resource,
   "diagnosticResourceRequest"
