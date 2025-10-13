@@ -2313,8 +2313,8 @@ export class CmdletClass extends Class {
         parameters.push('""');
         parameters.push(`"${breakingChange.cmdlet.deprecateByAzVersion}"`);
         parameters.push(`"${breakingChange.cmdlet.deprecateByVersion}"`);
-        parameters.push(`ChangeDescription = "${breakingChange.cmdlet.changeDescription}"`);
         if (breakingChange.cmdlet.changeInEfectByDate) parameters.push(`"${breakingChange.cmdlet.changeInEfectByDate}"`);
+        parameters.push(`ChangeDescription = "${breakingChange.cmdlet.changeDescription}"`);
         return new Attribute(ClientRuntime.GenericBreakingChangeAttribute, { parameters: parameters });
       } else {
         // use CmdletBreakingChangeAttribute
