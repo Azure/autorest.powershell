@@ -27,9 +27,7 @@ import {
   getHttpOperation
 } from "@typespec/http";
 import {
-  getLroMetadata,
-  getPagedResult,
-  PagedResultMetadata
+  getLroMetadata
 } from "@azure-tools/typespec-azure-core";
 import {
   getWireName,
@@ -408,36 +406,6 @@ export function hasPagingOperations(
   return false;
 }
 
-export function extractPagedMetadataNested(
-  program: Program,
-  type: Model
-): PagedResultMetadata | undefined {
-  // This only works for `is Page<T>` not `extends Page<T>`.
-  let paged = getPagedResult(program, type);
-  if (paged) {
-    return paged;
-  }
-  if (type.baseModel) {
-    paged = getPagedResult(program, type.baseModel);
-  }
-  if (paged) {
-    return paged;
-  }
-  const templateArguments = type.templateMapper?.args;
-  if (templateArguments) {
-    for (const argument of templateArguments) {
-      const modelArgument = argument as Model;
-      if (modelArgument) {
-        paged = extractPagedMetadataNested(program, modelArgument);
-        if (paged) {
-          return paged;
-        }
-      }
-    }
-  }
-  return paged;
-}
-
 export function getSpecialSerializeInfo(
   paramType: string,
   paramFormat: string
@@ -554,17 +522,6 @@ export function isIgnoredHeaderParam(param: HttpOperationParameter) {
   );
 }
 
-export function parseNextLinkName(
-  paged: PagedResultMetadata
-): string | undefined {
-  return paged.nextLinkProperty?.name;
-}
-
-export function parseItemName(paged: PagedResultMetadata): string | undefined {
-  // TODO: support the nested item names
-  return (paged.itemsSegments ?? [])[0];
-}
-
 export interface PageDetails {
   nextLinkNames: string[];
   itemNames: string[];
@@ -605,19 +562,6 @@ export function extractPageDetails(
       nextLinkNames: [nextLinkNames],
       itemNames: [itemNames]
     };
-  } else {
-    // TODO: remember to remove this once Azure Paging is removed.
-    for (const response of operation.responses) {
-      const paged = extractPagedMetadataNested(program, response.type as Model);
-      if (paged) {
-        const nextLinkName = parseNextLinkName(paged) ?? "nextLink";
-        const itemName = parseItemName(paged) ?? "value";
-        return {
-          nextLinkNames: [nextLinkName],
-          itemNames: [itemName]
-        };
-      }
-    }
   }
   return undefined;
 }

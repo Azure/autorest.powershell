@@ -13,7 +13,6 @@ namespace LiftrBase.Data;
 @doc("Supported versions for LiftrBase.Data resource model")
 enum Versions {
   @doc("Dependent on Azure.ResourceManager.Versions.v1_0_Preview_1 and LiftrBase.Versions.v1_preview")
-  @useDependency(Azure.ResourceManager.Versions.v1_0_Preview_1)
   @useDependency(LiftrBase.Versions.v1_preview)
   v1_preview: "2024-08-01-preview",
 }
