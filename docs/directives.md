@@ -90,6 +90,7 @@ The following directives cover the most common tweaking scenarios for cmdlet gen
 - [Cmdlet Rename](#Cmdlet-Rename)
 - [Cmdlet Aliasing](#Cmdlet-Aliasing)
 - [Cmdlet Suppression (Removal and Hiding)](#Cmdlet-Suppression)
+- [Suppress ShouldProcess (-WhatIf / -Confirm)](#Suppress-ShouldProcess)
 - [Parameter Rename](#Parameter-Rename)
 - [Parameter Aliasing](#Parameter-Aliasing)
 - [Parameter Hiding](#Parameter-Hiding)
@@ -208,6 +209,43 @@ directive:
       subject: Config.*
     remove: true
 ```
+
+### Suppress ShouldProcess
+Some generated cmdlets include PowerShell `SupportsShouldProcess` semantics, exposing `-WhatIf` and `-Confirm`. This is appropriate for operations that can change state. However, certain service operations use non-GET HTTP methods (e.g., `POST /.../listKeys`) while remaining logically read-only. For these, displaying `-WhatIf` and `-Confirm` is misleading.
+
+Use `suppress-should-process` to explicitly disable `SupportsShouldProcess` for selected cmdlets so that `-WhatIf` and `-Confirm` are not generated.
+
+This directive was introduced to address scenarios like issue [#704](https://github.com/Azure/autorest.powershell/issues/704), where `listKeys` style operations were generated with unnecessary confirmation switches.
+
+Usage:
+- Target the cmdlet with the usual command filters (`verb`, `subject`, `subject-prefix`, and/or `variant`).
+- Set `suppress-should-process: true` under `set`.
+
+```yaml $false
+# Disable -WhatIf / -Confirm for a logically read-only list keys operation
+directive:
+  - where:
+      verb: Get
+      subject: RedisEnterpriseDatabaseKey
+    set:
+      suppress-should-process: true
+```
+
+Regex example:
+```yaml $false
+# Disable ShouldProcess for all Get-*Keys cmdlets whose subject ends with Keys
+directive:
+  - where:
+      verb: Get
+      subject: (.*)Keys$
+    set:
+      suppress-should-process: true
+```
+
+Notes:
+- Only applies to `command` targets.
+- Has no effect if the cmdlet does not already support ShouldProcess.
+- Use sparingly; only when you are certain the underlying operation is non-mutating.
 
 ### Parameter Rename
 To select a parameter you need to provide the `parameter-name`. Furthermore, if you want to target specific cmdlets you can provide the `subject-prefix`, `subject`, `verb`, and/or `variant` (i.e. parameter-set). For example:
