@@ -215,7 +215,7 @@ Some generated cmdlets include PowerShell `SupportsShouldProcess` semantics, exp
 
 Use `suppress-should-process` to explicitly disable `SupportsShouldProcess` for selected cmdlets so that `-WhatIf` and `-Confirm` are not generated.
 
-This directive was introduced to address scenarios like issue #704, where `listKeys` style operations were generated with unnecessary confirmation switches.
+This directive was introduced to address scenarios like issue [#704](https://github.com/Azure/autorest.powershell/issues/704), where `listKeys` style operations were generated with unnecessary confirmation switches.
 
 Usage:
 - Target the cmdlet with the usual command filters (`verb`, `subject`, `subject-prefix`, and/or `variant`).
@@ -248,7 +248,7 @@ Notes:
 - Use sparingly; only when you are certain the underlying operation is non-mutating.
 
 ### Parameter Rename
-To select a parameter you need to provide the `parameter-name`. Furthermore, if you want to target specific cmdlets you can provide the `subject-prefix`, `subject`, `verb`, and/or `variant` (i.e. parameter-set name). For example:
+To select a parameter you need to provide the `parameter-name`. Furthermore, if you want to target specific cmdlets you can provide the `subject-prefix`, `subject`, `verb`, and/or `variant` (i.e. parameter-set). For example:
 ```yaml false
 # This will rename the parameter 'XYZName' from the cmdlet 'Get-Operation' to 'Name'.
 directive:
@@ -349,7 +349,7 @@ directive:
 ```
 
 ### Model Cmdlet
-To generate a cmdlet for a model facilitating users in constructing complex objects, you can choose the model using `model-name`. The default cmdlet name generated will be New-Az[subject-prefix][model-name]Object (or equivalent based on module naming). For example:
+To generate a cmdlet for a model facilitating users in constructing complex objects, you can choose the model using `model-name`. The default cmdlet name generated will be New-Az[subject-prefix][model-name]Object, and you can customize it using `cmdlet-name`. For example:
 ```yaml $false
 - model-cmdlet:
   - model-name: Workspace
@@ -383,7 +383,7 @@ directive:
 ```
 
 ### Alias Removal
-If the option `--sanitize-names` or `--azure` is provided, AutoRest will make renames to cmdlets and parameters to remove redundancies. For example in the command `Get-VirtualMachine`, the parameter `VirtualMachineName` may become just `Name`. To remove an automatically generated alias:
+If the option `--sanitize-names` or `--azure` is provided, AutoRest will make renames to cmdlets and parameters to remove redundancies. For example in the command `Get-VirtualMachine`, the parameter `VirtualMachineName` will be renamed to `Name`, and aliased to VirtualMachineName. It is possible to eliminate that alias by providing the action `clear-alias: true`:
 ```yaml $false
 directive:
   - where:
@@ -393,7 +393,7 @@ directive:
 The same can be done with cmdlets.
 
 ### Table Formatting
-This allows you to set the *table format* for a model. This updates the `.format.ps1xml` to have the format described below as opposed to the automatic table format that is created at build-time. For example:
+This allows you to set the *table format* for a model. This updates the `.format.ps1xml` to have the format described below as opposed to the automatic table format that is created at build-time. For example, we are updating the format for a VirtualMachine model to only show the Name and ResourceGroup properties. It updates the column label for ResourceGroup to Resource Group and sets the columns widths for Name and ResourceGroup:
 ```yaml $false
 directive:
   - where:
@@ -432,7 +432,7 @@ directive:
 ```
 
 ### Argument Completers
-For parameters, you can declare argument completers that will allow you to tab through the values when entering that parameter interactively. This allows you to declare a PowerShell script that will run to produce the possible values for that parameter.
+For parameters, you can declare argument completers that will allow you to tab through the values when entering that parameter interactively. This allows you to declare a PowerShell script that will run to get the values for the completer. For example:
 ```yaml $false
 # The script should return a list of values.
 directive:
@@ -447,7 +447,7 @@ directive:
 The name and description are optional. They are currently unused properties that may be used in documentation generation in the future.
 
 ### Default Values
-For parameters, you can declare a default value script that will run to set the value for the parameter if it is not provided. Once this is declared for a parameter, that parameter will be made optional (unless there are other constraints).
+For parameters, you can declare a default value script that will run to set the value for the parameter if it is not provided. Once this is declared for a parameter, that parameter will be made optional at build-time. For example:
 ```yaml $false
 # The script should return a value for the parameter.
 directive:
@@ -463,7 +463,7 @@ The name and description are optional. They are currently unused properties that
 
 ### Polymorphism
 
-In swagger, polymorphism is recognized as the `discriminator` keyword. The model with this keyword will be the **base class**, and the models that use `allOf` to referece the base class are the **child classes**.
+In swagger, polymorphism is recognized as the `discriminator` keyword. The model with this keyword will be the **base class**, and the models that use `allOf` to referece the base class are the **child class**.
 
 We will use two directives to support polymorphism:
 
