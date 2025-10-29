@@ -50,7 +50,7 @@ import {
 import { SdkContext, isReadOnly, getWireName, getClientNameOverride } from "@azure-tools/typespec-client-generator-core";
 
 import { reportDiagnostic } from "../lib.js";
-import { AnySchema, SealedChoiceSchema, ChoiceSchema, ChoiceValue, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema, ConstantSchema, ConstantValue, BooleanSchema, PrimitiveSchema } from "@autorest/codemodel";
+import { AnySchema, SealedChoiceSchema, ChoiceSchema, ChoiceValue, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema, ConstantSchema, ConstantValue, BooleanSchema } from "@autorest/codemodel";
 import {
   getHeaderFieldName,
   getPathParamName,
