@@ -59,7 +59,6 @@ options:
     title: StorageMover
     service-name: StorageMover
     module-name: "{prefix}.{service-name}"
-    emit-modeler-output: true
     metadata:
       authors: Microsoft Corporation
       owners: Microsoft Corporation
