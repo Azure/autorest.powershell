@@ -1,0 +1,184 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Runtime.Extensions;
+
+    /// <summary>The Endpoint resource.</summary>
+    public partial class EndpointBaseUpdateParameters :
+        Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdateParameters,
+        Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdateParametersInternal
+    {
+
+        /// <summary>A description for the Endpoint.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Origin(Microsoft.Azure.PowerShell.Cmdlets.StorageMover.PropertyOrigin.Inlined)]
+        public string Description { get => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdatePropertiesInternal)Property).Description; set => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdatePropertiesInternal)Property).Description = value ?? null; }
+
+        /// <summary>The Endpoint resource type.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Origin(Microsoft.Azure.PowerShell.Cmdlets.StorageMover.PropertyOrigin.Inlined)]
+        public string EndpointType { get => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdatePropertiesInternal)Property).EndpointType; set => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdatePropertiesInternal)Property).EndpointType = value ?? null; }
+
+        /// <summary>Backing field for <see cref="Identity" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentity _identity;
+
+        /// <summary>The managed system identity assigned to this resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Origin(Microsoft.Azure.PowerShell.Cmdlets.StorageMover.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentity Identity { get => (this._identity = this._identity ?? new Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.ManagedServiceIdentity()); set => this._identity = value; }
+
+        /// <summary>
+        /// The service principal ID of the system assigned identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Origin(Microsoft.Azure.PowerShell.Cmdlets.StorageMover.PropertyOrigin.Inlined)]
+        public string IdentityPrincipalId { get => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityInternal)Identity).PrincipalId; }
+
+        /// <summary>
+        /// The tenant ID of the system assigned identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Origin(Microsoft.Azure.PowerShell.Cmdlets.StorageMover.PropertyOrigin.Inlined)]
+        public string IdentityTenantId { get => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityInternal)Identity).TenantId; }
+
+        /// <summary>The type of managed identity assigned to this resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Origin(Microsoft.Azure.PowerShell.Cmdlets.StorageMover.PropertyOrigin.Inlined)]
+        public string IdentityType { get => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityInternal)Identity).Type; set => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityInternal)Identity).Type = value ?? null; }
+
+        /// <summary>The identities assigned to this resource by the user.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Origin(Microsoft.Azure.PowerShell.Cmdlets.StorageMover.PropertyOrigin.Inlined)]
+        public Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for Identity</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentity Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdateParametersInternal.Identity { get => (this._identity = this._identity ?? new Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.ManagedServiceIdentity()); set { {_identity = value;} } }
+
+        /// <summary>Internal Acessors for IdentityPrincipalId</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdateParametersInternal.IdentityPrincipalId { get => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityInternal)Identity).PrincipalId; set => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityInternal)Identity).PrincipalId = value ?? null; }
+
+        /// <summary>Internal Acessors for IdentityTenantId</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdateParametersInternal.IdentityTenantId { get => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityInternal)Identity).TenantId; set => ((Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityInternal)Identity).TenantId = value ?? null; }
+
+        /// <summary>Internal Acessors for Property</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdateProperties Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdateParametersInternal.Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.EndpointBaseUpdateProperties()); set { {_property = value;} } }
+
+        /// <summary>Backing field for <see cref="Property" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdateProperties _property;
+
+        /// <summary>
+        /// The Endpoint resource, which contains information about file sources and targets.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Origin(Microsoft.Azure.PowerShell.Cmdlets.StorageMover.PropertyOrigin.Owned)]
+        public Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdateProperties Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.EndpointBaseUpdateProperties()); set => this._property = value; }
+
+        /// <summary>Creates an new <see cref="EndpointBaseUpdateParameters" /> instance.</summary>
+        public EndpointBaseUpdateParameters()
+        {
+
+        }
+    }
+    /// The Endpoint resource.
+    public partial interface IEndpointBaseUpdateParameters :
+        Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Runtime.IJsonSerializable
+    {
+        /// <summary>A description for the Endpoint.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"A description for the Endpoint.",
+        SerializedName = @"description",
+        PossibleTypes = new [] { typeof(string) })]
+        string Description { get; set; }
+        /// <summary>The Endpoint resource type.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = false,
+        Description = @"The Endpoint resource type.",
+        SerializedName = @"endpointType",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.StorageMover.PSArgumentCompleterAttribute("AzureStorageBlobContainer", "NfsMount", "AzureStorageSmbFileShare", "SmbMount", "AzureMultiCloudConnector", "AzureStorageNfsFileShare")]
+        string EndpointType { get; set; }
+        /// <summary>
+        /// The service principal ID of the system assigned identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The service principal ID of the system assigned identity. This property will only be provided for a system assigned identity.",
+        SerializedName = @"principalId",
+        PossibleTypes = new [] { typeof(string) })]
+        string IdentityPrincipalId { get;  }
+        /// <summary>
+        /// The tenant ID of the system assigned identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The tenant ID of the system assigned identity. This property will only be provided for a system assigned identity.",
+        SerializedName = @"tenantId",
+        PossibleTypes = new [] { typeof(string) })]
+        string IdentityTenantId { get;  }
+        /// <summary>The type of managed identity assigned to this resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The type of managed identity assigned to this resource.",
+        SerializedName = @"type",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.StorageMover.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned")]
+        string IdentityType { get; set; }
+        /// <summary>The identities assigned to this resource by the user.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The identities assigned to this resource by the user.",
+        SerializedName = @"userAssignedIdentities",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityUserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+
+    }
+    /// The Endpoint resource.
+    internal partial interface IEndpointBaseUpdateParametersInternal
+
+    {
+        /// <summary>A description for the Endpoint.</summary>
+        string Description { get; set; }
+        /// <summary>The Endpoint resource type.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.StorageMover.PSArgumentCompleterAttribute("AzureStorageBlobContainer", "NfsMount", "AzureStorageSmbFileShare", "SmbMount", "AzureMultiCloudConnector", "AzureStorageNfsFileShare")]
+        string EndpointType { get; set; }
+        /// <summary>The managed system identity assigned to this resource.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentity Identity { get; set; }
+        /// <summary>
+        /// The service principal ID of the system assigned identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        string IdentityPrincipalId { get; set; }
+        /// <summary>
+        /// The tenant ID of the system assigned identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        string IdentityTenantId { get; set; }
+        /// <summary>The type of managed identity assigned to this resource.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.StorageMover.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned")]
+        string IdentityType { get; set; }
+        /// <summary>The identities assigned to this resource by the user.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        /// <summary>
+        /// The Endpoint resource, which contains information about file sources and targets.
+        /// </summary>
+        Microsoft.Azure.PowerShell.Cmdlets.StorageMover.Models.IEndpointBaseUpdateProperties Property { get; set; }
+
+    }
+}

@@ -550,17 +550,57 @@ function getSchemaForUnion(
     const values = [];
     const [asEnum, _] = getUnionAsEnum(union);
     if (asEnum) {
-      schema = new SealedChoiceSchema(union.name || "", getDoc(dpgContext.program, union) || "");
       for (const [name, member] of asEnum.flattenedMembers.entries()) {
         values.push(getChoiceValueForUnionVariant(dpgContext, member.type, member.value));
       }
-      schema.choices = values;
       // ToDo: by xiaogang, add support for other types of enum except string
-      schema.choiceType = new StringSchema("enum", "string schema for enum");
+      switch (asEnum.kind) {
+        case "number":
+          schema = new SealedChoiceSchema<NumberSchema>(union.name || "", getDoc(dpgContext.program, union) || "");
+          schema.choiceType = new NumberSchema("enum", "number schema for enum", ...getPrecisionForNumberUnion(union));
+          break;
+        case "string":
+        default:
+          schema = new SealedChoiceSchema(union.name || "", getDoc(dpgContext.program, union) || "");
+          schema.choiceType = new StringSchema("enum", "string schema for enum");
+          break;
+      }
+      schema.choices = values;
     }
     //Yabo: if not able to flatten as enum, return empty
   }
   return schema;
+}
+
+function getPrecisionForNumberUnion(union: Union): [SchemaType.Number|SchemaType.Integer, number] {
+  if (union && union.variants) {
+    for (const variant of union.variants.values()) {
+      if (variant.type.kind === "Scalar") {
+        const scalar = variant.type.name;
+        switch (scalar) {
+          case "int8":
+          case "uint8":
+            return [SchemaType.Integer, 8];
+          case "int16":
+          case "uint16":
+            return [SchemaType.Integer, 16];
+          case "int32":
+          case "uint32":
+          case "integer":
+            return [SchemaType.Integer, 32];
+          case "int64":
+          case "uint64":
+            return [SchemaType.Integer, 64];
+          case "float":
+          case "float32":
+            return [SchemaType.Number, 32];
+          case "float64":
+            return [SchemaType.Number, 64];
+        }
+      }
+    }
+  }
+  return [SchemaType.Number, 64];
 }
 
 function getSchemaForUnionVariant(
