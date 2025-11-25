@@ -1,0 +1,242 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Extensions;
+
+    /// <summary>Job details.</summary>
+    public partial class JobDetails
+    {
+
+        /// <summary>
+        /// <c>AfterFromJson</c> will be called after the json deserialization has finished, allowing customization of the object
+        /// before it is returned. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="json">The JsonNode that should be deserialized into this object.</param>
+
+        partial void AfterFromJson(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject json);
+
+        /// <summary>
+        /// <c>AfterToJson</c> will be called after the json serialization has finished, allowing customization of the <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject"
+        /// /> before it is returned. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="container">The JSON container that the serialization result will be placed in.</param>
+
+        partial void AfterToJson(ref Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject container);
+
+        /// <summary>
+        /// <c>BeforeFromJson</c> will be called before the json deserialization has commenced, allowing complete customization of
+        /// the object before it is deserialized.
+        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name= "returnNow" />
+        /// output parameter.
+        /// Implement this method in a partial class to enable this behavior.
+        /// </summary>
+        /// <param name="json">The JsonNode that should be deserialized into this object.</param>
+        /// <param name="returnNow">Determines if the rest of the deserialization should be processed, or if the method should return
+        /// instantly.</param>
+
+        partial void BeforeFromJson(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject json, ref bool returnNow);
+
+        /// <summary>
+        /// <c>BeforeToJson</c> will be called before the json serialization has commenced, allowing complete customization of the
+        /// object before it is serialized.
+        /// If you wish to disable the default serialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output
+        /// parameter.
+        /// Implement this method in a partial class to enable this behavior.
+        /// </summary>
+        /// <param name="container">The JSON container that the serialization result will be placed in.</param>
+        /// <param name="returnNow">Determines if the rest of the serialization should be processed, or if the method should return
+        /// instantly.</param>
+
+        partial void BeforeToJson(ref Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject container, ref bool returnNow);
+
+        /// <summary>
+        /// Deserializes a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode"/> into an instance of Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IJobDetails.
+        /// Note: the Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IJobDetails interface is polymorphic, and the precise model
+        /// class that will get deserialized is determined at runtime based on the payload.
+        /// </summary>
+        /// <param name="node">a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode" /> to deserialize from.</param>
+        /// <returns>an instance of Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IJobDetails.</returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IJobDetails FromJson(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode node)
+        {
+            if (!(node is Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject json))
+            {
+                return null;
+            }
+            // Polymorphic type -- select the appropriate constructor using the discriminator
+
+            switch ( json.StringProperty("jobDetailsType") )
+            {
+                case "DataBoxCustomerDisk":
+                {
+                    return new DataBoxCustomerDiskJobDetails(json);
+                }
+                case "DataBoxDisk":
+                {
+                    return new DataBoxDiskJobDetails(json);
+                }
+                case "DataBoxHeavy":
+                {
+                    return new DataBoxHeavyJobDetails(json);
+                }
+                case "DataBox":
+                {
+                    return new DataBoxJobDetails(json);
+                }
+            }
+            return new JobDetails(json);
+        }
+
+        /// <summary>
+        /// Deserializes a Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject into a new instance of <see cref="JobDetails" />.
+        /// </summary>
+        /// <param name="json">A Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject instance to deserialize from.</param>
+        internal JobDetails(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject json)
+        {
+            bool returnNow = false;
+            BeforeFromJson(json, ref returnNow);
+            if (returnNow)
+            {
+                return;
+            }
+            {_contactDetail = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject>("contactDetails"), out var __jsonContactDetails) ? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ContactDetails.FromJson(__jsonContactDetails) : _contactDetail;}
+            {_shippingAddress = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject>("shippingAddress"), out var __jsonShippingAddress) ? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ShippingAddress.FromJson(__jsonShippingAddress) : _shippingAddress;}
+            {_deliveryPackage = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject>("deliveryPackage"), out var __jsonDeliveryPackage) ? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.PackageShippingDetails.FromJson(__jsonDeliveryPackage) : _deliveryPackage;}
+            {_returnPackage = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject>("returnPackage"), out var __jsonReturnPackage) ? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.PackageShippingDetails.FromJson(__jsonReturnPackage) : _returnPackage;}
+            {_preference = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject>("preferences"), out var __jsonPreferences) ? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.Preferences.FromJson(__jsonPreferences) : _preference;}
+            {_reverseShippingDetail = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject>("reverseShippingDetails"), out var __jsonReverseShippingDetails) ? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ReverseShippingDetails.FromJson(__jsonReverseShippingDetails) : _reverseShippingDetail;}
+            {_deviceErasureDetail = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject>("deviceErasureDetails"), out var __jsonDeviceErasureDetails) ? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.DeviceErasureDetails.FromJson(__jsonDeviceErasureDetails) : _deviceErasureDetail;}
+            {_keyEncryptionKey = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject>("keyEncryptionKey"), out var __jsonKeyEncryptionKey) ? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.KeyEncryptionKey.FromJson(__jsonKeyEncryptionKey) : _keyEncryptionKey;}
+            {_lastMitigationActionOnJob = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject>("lastMitigationActionOnJob"), out var __jsonLastMitigationActionOnJob) ? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.LastMitigationActionOnJob.FromJson(__jsonLastMitigationActionOnJob) : _lastMitigationActionOnJob;}
+            {_datacenterAddress = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject>("datacenterAddress"), out var __jsonDatacenterAddress) ? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.DatacenterAddressResponse.FromJson(__jsonDatacenterAddress) : _datacenterAddress;}
+            {_jobStage = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonArray>("jobStages"), out var __jsonJobStages) ? If( __jsonJobStages as Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonArray, out var __v) ? new global::System.Func<System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IJobStages>>(()=> global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(__v, (__u)=>(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IJobStages) (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.JobStages.FromJson(__u) )) ))() : null : _jobStage;}
+            {_dataImportDetail = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonArray>("dataImportDetails"), out var __jsonDataImportDetails) ? If( __jsonDataImportDetails as Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonArray, out var __q) ? new global::System.Func<System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IDataImportDetails>>(()=> global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(__q, (__p)=>(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IDataImportDetails) (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.DataImportDetails.FromJson(__p) )) ))() : null : _dataImportDetail;}
+            {_dataExportDetail = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonArray>("dataExportDetails"), out var __jsonDataExportDetails) ? If( __jsonDataExportDetails as Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonArray, out var __l) ? new global::System.Func<System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IDataExportDetails>>(()=> global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(__l, (__k)=>(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IDataExportDetails) (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.DataExportDetails.FromJson(__k) )) ))() : null : _dataExportDetail;}
+            {_type = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonString>("jobDetailsType"), out var __jsonJobDetailsType) ? (string)__jsonJobDetailsType : (string)_type;}
+            {_copyLogDetail = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonArray>("copyLogDetails"), out var __jsonCopyLogDetails) ? If( __jsonCopyLogDetails as Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonArray, out var __g) ? new global::System.Func<System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICopyLogDetails>>(()=> global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(__g, (__f)=>(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICopyLogDetails) (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.CopyLogDetails.FromJson(__f) )) ))() : null : _copyLogDetail;}
+            {_reverseShipmentLabelSasKey = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonString>("reverseShipmentLabelSasKey"), out var __jsonReverseShipmentLabelSasKey) ? (string)__jsonReverseShipmentLabelSasKey : (string)_reverseShipmentLabelSasKey;}
+            {_chainOfCustodySasKey = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonString>("chainOfCustodySasKey"), out var __jsonChainOfCustodySasKey) ? (string)__jsonChainOfCustodySasKey : (string)_chainOfCustodySasKey;}
+            {_expectedDataSizeInTeraByte = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNumber>("expectedDataSizeInTeraBytes"), out var __jsonExpectedDataSizeInTeraBytes) ? (int?)__jsonExpectedDataSizeInTeraBytes : _expectedDataSizeInTeraByte;}
+            {_action = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonArray>("actions"), out var __jsonActions) ? If( __jsonActions as Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonArray, out var __b) ? new global::System.Func<System.Collections.Generic.List<string>>(()=> global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(__b, (__a)=>(string) (__a is Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonString ___z ? (string)(___z.ToString()) : null)) ))() : null : _action;}
+            {_dataCenterCode = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonString>("dataCenterCode"), out var __jsonDataCenterCode) ? (string)__jsonDataCenterCode : (string)_dataCenterCode;}
+            AfterFromJson(json);
+        }
+
+        /// <summary>
+        /// Serializes this instance of <see cref="JobDetails" /> into a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode" />.
+        /// </summary>
+        /// <param name="container">The <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject"/> container to serialize this object into. If the caller
+        /// passes in <c>null</c>, a new instance will be created and returned to the caller.</param>
+        /// <param name="serializationMode">Allows the caller to choose the depth of the serialization. See <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode"/>.</param>
+        /// <returns>
+        /// a serialized instance of <see cref="JobDetails" /> as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode" />.
+        /// </returns>
+        public Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode ToJson(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject container, Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode serializationMode)
+        {
+            container = container ?? new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonObject();
+
+            bool returnNow = false;
+            BeforeToJson(ref container, ref returnNow);
+            if (returnNow)
+            {
+                return container;
+            }
+            AddIf( null != this._contactDetail ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) this._contactDetail.ToJson(null,serializationMode) : null, "contactDetails" ,container.Add );
+            AddIf( null != this._shippingAddress ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) this._shippingAddress.ToJson(null,serializationMode) : null, "shippingAddress" ,container.Add );
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode.IncludeRead))
+            {
+                AddIf( null != this._deliveryPackage ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) this._deliveryPackage.ToJson(null,serializationMode) : null, "deliveryPackage" ,container.Add );
+            }
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode.IncludeRead))
+            {
+                AddIf( null != this._returnPackage ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) this._returnPackage.ToJson(null,serializationMode) : null, "returnPackage" ,container.Add );
+            }
+            AddIf( null != this._preference ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) this._preference.ToJson(null,serializationMode) : null, "preferences" ,container.Add );
+            AddIf( null != this._reverseShippingDetail ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) this._reverseShippingDetail.ToJson(null,serializationMode) : null, "reverseShippingDetails" ,container.Add );
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode.IncludeRead))
+            {
+                AddIf( null != this._deviceErasureDetail ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) this._deviceErasureDetail.ToJson(null,serializationMode) : null, "deviceErasureDetails" ,container.Add );
+            }
+            AddIf( null != this._keyEncryptionKey ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) this._keyEncryptionKey.ToJson(null,serializationMode) : null, "keyEncryptionKey" ,container.Add );
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode.IncludeRead))
+            {
+                AddIf( null != this._lastMitigationActionOnJob ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) this._lastMitigationActionOnJob.ToJson(null,serializationMode) : null, "lastMitigationActionOnJob" ,container.Add );
+            }
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode.IncludeRead))
+            {
+                AddIf( null != this._datacenterAddress ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) this._datacenterAddress.ToJson(null,serializationMode) : null, "datacenterAddress" ,container.Add );
+            }
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode.IncludeRead))
+            {
+                if (null != this._jobStage)
+                {
+                    var __w = new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.XNodeArray();
+                    foreach( var __x in this._jobStage )
+                    {
+                        AddIf(__x?.ToJson(null, serializationMode) ,__w.Add);
+                    }
+                    container.Add("jobStages",__w);
+                }
+            }
+            if (null != this._dataImportDetail)
+            {
+                var __r = new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.XNodeArray();
+                foreach( var __s in this._dataImportDetail )
+                {
+                    AddIf(__s?.ToJson(null, serializationMode) ,__r.Add);
+                }
+                container.Add("dataImportDetails",__r);
+            }
+            if (null != this._dataExportDetail)
+            {
+                var __m = new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.XNodeArray();
+                foreach( var __n in this._dataExportDetail )
+                {
+                    AddIf(__n?.ToJson(null, serializationMode) ,__m.Add);
+                }
+                container.Add("dataExportDetails",__m);
+            }
+            AddIf( null != (((object)this._type)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonString(this._type.ToString()) : null, "jobDetailsType" ,container.Add );
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode.IncludeRead))
+            {
+                if (null != this._copyLogDetail)
+                {
+                    var __h = new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.XNodeArray();
+                    foreach( var __i in this._copyLogDetail )
+                    {
+                        AddIf(__i?.ToJson(null, serializationMode) ,__h.Add);
+                    }
+                    container.Add("copyLogDetails",__h);
+                }
+            }
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode.IncludeRead))
+            {
+                AddIf( null != (((object)this._reverseShipmentLabelSasKey)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonString(this._reverseShipmentLabelSasKey.ToString()) : null, "reverseShipmentLabelSasKey" ,container.Add );
+            }
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode.IncludeRead))
+            {
+                AddIf( null != (((object)this._chainOfCustodySasKey)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonString(this._chainOfCustodySasKey.ToString()) : null, "chainOfCustodySasKey" ,container.Add );
+            }
+            AddIf( null != this._expectedDataSizeInTeraByte ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNumber((int)this._expectedDataSizeInTeraByte) : null, "expectedDataSizeInTeraBytes" ,container.Add );
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode.IncludeRead))
+            {
+                if (null != this._action)
+                {
+                    var __c = new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.XNodeArray();
+                    foreach( var __d in this._action )
+                    {
+                        AddIf(null != (((object)__d)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonString(__d.ToString()) : null ,__c.Add);
+                    }
+                    container.Add("actions",__c);
+                }
+            }
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.SerializationMode.IncludeRead))
+            {
+                AddIf( null != (((object)this._dataCenterCode)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Json.JsonString(this._dataCenterCode.ToString()) : null, "dataCenterCode" ,container.Add );
+            }
+            AfterToJson(ref container);
+            return container;
+        }
+    }
+}

@@ -1,0 +1,35 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Extensions;
+
+    /// <summary>Contains the map of disk serial number to the disk details for export jobs.</summary>
+    public partial class DataBoxCustomerDiskJobDetailsExportDiskDetailsCollection :
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IDataBoxCustomerDiskJobDetailsExportDiskDetailsCollection,
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IDataBoxCustomerDiskJobDetailsExportDiskDetailsCollectionInternal
+    {
+
+        /// <summary>
+        /// Creates an new <see cref="DataBoxCustomerDiskJobDetailsExportDiskDetailsCollection" /> instance.
+        /// </summary>
+        public DataBoxCustomerDiskJobDetailsExportDiskDetailsCollection()
+        {
+
+        }
+    }
+    /// Contains the map of disk serial number to the disk details for export jobs.
+    public partial interface IDataBoxCustomerDiskJobDetailsExportDiskDetailsCollection :
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.IJsonSerializable,
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.IAssociativeArray<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IExportDiskDetails>
+    {
+
+    }
+    /// Contains the map of disk serial number to the disk details for export jobs.
+    internal partial interface IDataBoxCustomerDiskJobDetailsExportDiskDetailsCollectionInternal
+
+    {
+
+    }
+}
