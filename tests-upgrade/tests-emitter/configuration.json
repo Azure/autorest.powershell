@@ -24,7 +24,7 @@
     "Sphere.Management",
     "StandbyPool.Management",
     "Workloads.SAPVirtualInstance.Management",
-    "StorageMover.Management",
+    "StorageMover.Management.brown",
     "Chaos.Management.brown",
     "Dashboard.Management.brown",
     "DataReplication.Management.brown",
@@ -38,7 +38,8 @@
     "Oracle.Database.Management.brown",
     "RecoveryServices.brown",
     "ServiceFabricManagedClusters.Management.brown",
-    "StorageAction.Management.brown"
+    "StorageAction.Management.brown",
+    "DataBox.Management.brown"
   ],
   "whiteTestListFull": [
     "AppComplianceAutomation.Management",
@@ -64,7 +65,7 @@
     "Sphere.Management",
     "StandbyPool.Management",
     "Workloads.SAPVirtualInstance.Management",
-    "StorageMover.Management",
+    "StorageMover.Management.brown",
     "Chaos.Management.brown",
     "Dashboard.Management.brown",
     "DataReplication.Management.brown",
@@ -78,7 +79,8 @@
     "Oracle.Database.Management.brown",
     "RecoveryServices.brown",
     "ServiceFabricManagedClusters.Management.brown",
-    "StorageAction.Management.brown"
+    "StorageAction.Management.brown",
+    "DataBox.Management.brown"
   ],
   "blackTestList": [],
   "ignoreFolder": ["examples", "CompareResult"],

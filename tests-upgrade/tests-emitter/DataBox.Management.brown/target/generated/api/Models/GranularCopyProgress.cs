@@ -1,0 +1,552 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Extensions;
+
+    /// <summary>Granular Copy progress.</summary>
+    public partial class GranularCopyProgress :
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgress,
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal
+    {
+
+        /// <summary>Backing field for <see cref="AccountId" /> property.</summary>
+        private string _accountId;
+
+        /// <summary>Id of the account where the data needs to be uploaded.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public string AccountId { get => this._accountId; }
+
+        /// <summary>Backing field for <see cref="Action" /> property.</summary>
+        private System.Collections.Generic.List<string> _action;
+
+        /// <summary>Available actions on the job.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<string> Action { get => this._action; }
+
+        /// <summary>Gets or sets additional error info.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IAdditionalErrorInfo1> AdditionalInfo { get => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).AdditionalInfo; }
+
+        /// <summary>Backing field for <see cref="BytesProcessed" /> property.</summary>
+        private long? _bytesProcessed;
+
+        /// <summary>To indicate bytes transferred.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public long? BytesProcessed { get => this._bytesProcessed; }
+
+        /// <summary>Error code.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Inlined)]
+        public string Code { get => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).Code; }
+
+        /// <summary>Backing field for <see cref="DataAccountType" /> property.</summary>
+        private string _dataAccountType;
+
+        /// <summary>Data Account Type.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public string DataAccountType { get => this._dataAccountType; }
+
+        /// <summary>Gets or sets details for the error.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudError> Detail { get => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).Detail; }
+
+        /// <summary>Backing field for <see cref="DirectoriesErroredOut" /> property.</summary>
+        private long? _directoriesErroredOut;
+
+        /// <summary>To indicate directories errored out in the job.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public long? DirectoriesErroredOut { get => this._directoriesErroredOut; }
+
+        /// <summary>Backing field for <see cref="Error" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudError _error;
+
+        /// <summary>Error, if any, in the stage</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudError Error { get => (this._error = this._error ?? new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.CloudError()); }
+
+        /// <summary>Backing field for <see cref="FilesErroredOut" /> property.</summary>
+        private long? _filesErroredOut;
+
+        /// <summary>Number of files which could not be copied</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public long? FilesErroredOut { get => this._filesErroredOut; }
+
+        /// <summary>Backing field for <see cref="FilesProcessed" /> property.</summary>
+        private long? _filesProcessed;
+
+        /// <summary>Number of files processed</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public long? FilesProcessed { get => this._filesProcessed; }
+
+        /// <summary>Backing field for <see cref="InvalidDirectoriesProcessed" /> property.</summary>
+        private long? _invalidDirectoriesProcessed;
+
+        /// <summary>To indicate directories renamed</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public long? InvalidDirectoriesProcessed { get => this._invalidDirectoriesProcessed; }
+
+        /// <summary>Backing field for <see cref="InvalidFileBytesUploaded" /> property.</summary>
+        private long? _invalidFileBytesUploaded;
+
+        /// <summary>
+        /// Total amount of data not adhering to azure naming conventions which were processed by automatic renaming
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public long? InvalidFileBytesUploaded { get => this._invalidFileBytesUploaded; }
+
+        /// <summary>Backing field for <see cref="InvalidFilesProcessed" /> property.</summary>
+        private long? _invalidFilesProcessed;
+
+        /// <summary>
+        /// Number of files not adhering to azure naming conventions which were processed by automatic renaming
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public long? InvalidFilesProcessed { get => this._invalidFilesProcessed; }
+
+        /// <summary>Backing field for <see cref="IsEnumerationInProgress" /> property.</summary>
+        private bool? _isEnumerationInProgress;
+
+        /// <summary>
+        /// To indicate if enumeration of data is in progress.
+        /// Until this is true, the TotalBytesToProcess may not be valid.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public bool? IsEnumerationInProgress { get => this._isEnumerationInProgress; }
+
+        /// <summary>The error message parsed from the body of the http error response.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Inlined)]
+        public string Message { get => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).Message; }
+
+        /// <summary>Internal Acessors for AccountId</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.AccountId { get => this._accountId; set { {_accountId = value;} } }
+
+        /// <summary>Internal Acessors for Action</summary>
+        System.Collections.Generic.List<string> Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.Action { get => this._action; set { {_action = value;} } }
+
+        /// <summary>Internal Acessors for AdditionalInfo</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IAdditionalErrorInfo1> Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.AdditionalInfo { get => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).AdditionalInfo; set => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).AdditionalInfo = value ?? null /* arrayOf */; }
+
+        /// <summary>Internal Acessors for BytesProcessed</summary>
+        long? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.BytesProcessed { get => this._bytesProcessed; set { {_bytesProcessed = value;} } }
+
+        /// <summary>Internal Acessors for Code</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.Code { get => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).Code; set => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).Code = value ?? null; }
+
+        /// <summary>Internal Acessors for DataAccountType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.DataAccountType { get => this._dataAccountType; set { {_dataAccountType = value;} } }
+
+        /// <summary>Internal Acessors for Detail</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudError> Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.Detail { get => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).Detail; set => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).Detail = value ?? null /* arrayOf */; }
+
+        /// <summary>Internal Acessors for DirectoriesErroredOut</summary>
+        long? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.DirectoriesErroredOut { get => this._directoriesErroredOut; set { {_directoriesErroredOut = value;} } }
+
+        /// <summary>Internal Acessors for Error</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudError Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.Error { get => (this._error = this._error ?? new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.CloudError()); set { {_error = value;} } }
+
+        /// <summary>Internal Acessors for FilesErroredOut</summary>
+        long? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.FilesErroredOut { get => this._filesErroredOut; set { {_filesErroredOut = value;} } }
+
+        /// <summary>Internal Acessors for FilesProcessed</summary>
+        long? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.FilesProcessed { get => this._filesProcessed; set { {_filesProcessed = value;} } }
+
+        /// <summary>Internal Acessors for InvalidDirectoriesProcessed</summary>
+        long? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.InvalidDirectoriesProcessed { get => this._invalidDirectoriesProcessed; set { {_invalidDirectoriesProcessed = value;} } }
+
+        /// <summary>Internal Acessors for InvalidFileBytesUploaded</summary>
+        long? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.InvalidFileBytesUploaded { get => this._invalidFileBytesUploaded; set { {_invalidFileBytesUploaded = value;} } }
+
+        /// <summary>Internal Acessors for InvalidFilesProcessed</summary>
+        long? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.InvalidFilesProcessed { get => this._invalidFilesProcessed; set { {_invalidFilesProcessed = value;} } }
+
+        /// <summary>Internal Acessors for IsEnumerationInProgress</summary>
+        bool? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.IsEnumerationInProgress { get => this._isEnumerationInProgress; set { {_isEnumerationInProgress = value;} } }
+
+        /// <summary>Internal Acessors for Message</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.Message { get => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).Message; set => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).Message = value ?? null; }
+
+        /// <summary>Internal Acessors for RenamedContainerCount</summary>
+        long? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.RenamedContainerCount { get => this._renamedContainerCount; set { {_renamedContainerCount = value;} } }
+
+        /// <summary>Internal Acessors for StorageAccountName</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.StorageAccountName { get => this._storageAccountName; set { {_storageAccountName = value;} } }
+
+        /// <summary>Internal Acessors for Target</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.Target { get => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).Target; set => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).Target = value ?? null; }
+
+        /// <summary>Internal Acessors for TotalBytesToProcess</summary>
+        long? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.TotalBytesToProcess { get => this._totalBytesToProcess; set { {_totalBytesToProcess = value;} } }
+
+        /// <summary>Internal Acessors for TotalFilesToProcess</summary>
+        long? Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.TotalFilesToProcess { get => this._totalFilesToProcess; set { {_totalFilesToProcess = value;} } }
+
+        /// <summary>Internal Acessors for TransferType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IGranularCopyProgressInternal.TransferType { get => this._transferType; set { {_transferType = value;} } }
+
+        /// <summary>Backing field for <see cref="RenamedContainerCount" /> property.</summary>
+        private long? _renamedContainerCount;
+
+        /// <summary>
+        /// Number of folders not adhering to azure naming conventions which were processed by automatic renaming
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public long? RenamedContainerCount { get => this._renamedContainerCount; }
+
+        /// <summary>Backing field for <see cref="StorageAccountName" /> property.</summary>
+        private string _storageAccountName;
+
+        /// <summary>
+        /// Name of the storage account. This will be empty for data account types other than storage account.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public string StorageAccountName { get => this._storageAccountName; }
+
+        /// <summary>Gets or sets the target of the error.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Inlined)]
+        public string Target { get => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudErrorInternal)Error).Target; }
+
+        /// <summary>Backing field for <see cref="TotalBytesToProcess" /> property.</summary>
+        private long? _totalBytesToProcess;
+
+        /// <summary>Total amount of data to be processed by the job.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public long? TotalBytesToProcess { get => this._totalBytesToProcess; }
+
+        /// <summary>Backing field for <see cref="TotalFilesToProcess" /> property.</summary>
+        private long? _totalFilesToProcess;
+
+        /// <summary>Total files to process</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public long? TotalFilesToProcess { get => this._totalFilesToProcess; }
+
+        /// <summary>Backing field for <see cref="TransferType" /> property.</summary>
+        private string _transferType;
+
+        /// <summary>Transfer type of data</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        public string TransferType { get => this._transferType; }
+
+        /// <summary>Creates an new <see cref="GranularCopyProgress" /> instance.</summary>
+        public GranularCopyProgress()
+        {
+
+        }
+    }
+    /// Granular Copy progress.
+    public partial interface IGranularCopyProgress :
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.IJsonSerializable
+    {
+        /// <summary>Id of the account where the data needs to be uploaded.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Id of the account where the data needs to be uploaded.",
+        SerializedName = @"accountId",
+        PossibleTypes = new [] { typeof(string) })]
+        string AccountId { get;  }
+        /// <summary>Available actions on the job.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Available actions on the job.",
+        SerializedName = @"actions",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DataBox.PSArgumentCompleterAttribute("None", "MoveToCleanUpDevice", "Resume", "Restart", "ReachOutToOperation")]
+        System.Collections.Generic.List<string> Action { get;  }
+        /// <summary>Gets or sets additional error info.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Gets or sets additional error info.",
+        SerializedName = @"additionalInfo",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IAdditionalErrorInfo1) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IAdditionalErrorInfo1> AdditionalInfo { get;  }
+        /// <summary>To indicate bytes transferred.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"To indicate bytes transferred.",
+        SerializedName = @"bytesProcessed",
+        PossibleTypes = new [] { typeof(long) })]
+        long? BytesProcessed { get;  }
+        /// <summary>Error code.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Error code.",
+        SerializedName = @"code",
+        PossibleTypes = new [] { typeof(string) })]
+        string Code { get;  }
+        /// <summary>Data Account Type.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Data Account Type.",
+        SerializedName = @"dataAccountType",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DataBox.PSArgumentCompleterAttribute("StorageAccount", "ManagedDisk")]
+        string DataAccountType { get;  }
+        /// <summary>Gets or sets details for the error.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Gets or sets details for the error.",
+        SerializedName = @"details",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudError) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudError> Detail { get;  }
+        /// <summary>To indicate directories errored out in the job.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"To indicate directories errored out in the job.",
+        SerializedName = @"directoriesErroredOut",
+        PossibleTypes = new [] { typeof(long) })]
+        long? DirectoriesErroredOut { get;  }
+        /// <summary>Number of files which could not be copied</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Number of files which could not be copied",
+        SerializedName = @"filesErroredOut",
+        PossibleTypes = new [] { typeof(long) })]
+        long? FilesErroredOut { get;  }
+        /// <summary>Number of files processed</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Number of files processed",
+        SerializedName = @"filesProcessed",
+        PossibleTypes = new [] { typeof(long) })]
+        long? FilesProcessed { get;  }
+        /// <summary>To indicate directories renamed</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"To indicate directories renamed",
+        SerializedName = @"invalidDirectoriesProcessed",
+        PossibleTypes = new [] { typeof(long) })]
+        long? InvalidDirectoriesProcessed { get;  }
+        /// <summary>
+        /// Total amount of data not adhering to azure naming conventions which were processed by automatic renaming
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Total amount of data not adhering to azure naming conventions which were processed by automatic renaming",
+        SerializedName = @"invalidFileBytesUploaded",
+        PossibleTypes = new [] { typeof(long) })]
+        long? InvalidFileBytesUploaded { get;  }
+        /// <summary>
+        /// Number of files not adhering to azure naming conventions which were processed by automatic renaming
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Number of files not adhering to azure naming conventions which were processed by automatic renaming",
+        SerializedName = @"invalidFilesProcessed",
+        PossibleTypes = new [] { typeof(long) })]
+        long? InvalidFilesProcessed { get;  }
+        /// <summary>
+        /// To indicate if enumeration of data is in progress.
+        /// Until this is true, the TotalBytesToProcess may not be valid.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"To indicate if enumeration of data is in progress.
+        Until this is true, the TotalBytesToProcess may not be valid.",
+        SerializedName = @"isEnumerationInProgress",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? IsEnumerationInProgress { get;  }
+        /// <summary>The error message parsed from the body of the http error response.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The error message parsed from the body of the http error response.",
+        SerializedName = @"message",
+        PossibleTypes = new [] { typeof(string) })]
+        string Message { get;  }
+        /// <summary>
+        /// Number of folders not adhering to azure naming conventions which were processed by automatic renaming
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Number of folders not adhering to azure naming conventions which were processed by automatic renaming",
+        SerializedName = @"renamedContainerCount",
+        PossibleTypes = new [] { typeof(long) })]
+        long? RenamedContainerCount { get;  }
+        /// <summary>
+        /// Name of the storage account. This will be empty for data account types other than storage account.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Name of the storage account. This will be empty for data account types other than storage account.",
+        SerializedName = @"storageAccountName",
+        PossibleTypes = new [] { typeof(string) })]
+        string StorageAccountName { get;  }
+        /// <summary>Gets or sets the target of the error.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Gets or sets the target of the error.",
+        SerializedName = @"target",
+        PossibleTypes = new [] { typeof(string) })]
+        string Target { get;  }
+        /// <summary>Total amount of data to be processed by the job.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Total amount of data to be processed by the job.",
+        SerializedName = @"totalBytesToProcess",
+        PossibleTypes = new [] { typeof(long) })]
+        long? TotalBytesToProcess { get;  }
+        /// <summary>Total files to process</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Total files to process",
+        SerializedName = @"totalFilesToProcess",
+        PossibleTypes = new [] { typeof(long) })]
+        long? TotalFilesToProcess { get;  }
+        /// <summary>Transfer type of data</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Transfer type of data",
+        SerializedName = @"transferType",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DataBox.PSArgumentCompleterAttribute("ImportToAzure", "ExportFromAzure")]
+        string TransferType { get;  }
+
+    }
+    /// Granular Copy progress.
+    internal partial interface IGranularCopyProgressInternal
+
+    {
+        /// <summary>Id of the account where the data needs to be uploaded.</summary>
+        string AccountId { get; set; }
+        /// <summary>Available actions on the job.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DataBox.PSArgumentCompleterAttribute("None", "MoveToCleanUpDevice", "Resume", "Restart", "ReachOutToOperation")]
+        System.Collections.Generic.List<string> Action { get; set; }
+        /// <summary>Gets or sets additional error info.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IAdditionalErrorInfo1> AdditionalInfo { get; set; }
+        /// <summary>To indicate bytes transferred.</summary>
+        long? BytesProcessed { get; set; }
+        /// <summary>Error code.</summary>
+        string Code { get; set; }
+        /// <summary>Data Account Type.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DataBox.PSArgumentCompleterAttribute("StorageAccount", "ManagedDisk")]
+        string DataAccountType { get; set; }
+        /// <summary>Gets or sets details for the error.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudError> Detail { get; set; }
+        /// <summary>To indicate directories errored out in the job.</summary>
+        long? DirectoriesErroredOut { get; set; }
+        /// <summary>Error, if any, in the stage</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.ICloudError Error { get; set; }
+        /// <summary>Number of files which could not be copied</summary>
+        long? FilesErroredOut { get; set; }
+        /// <summary>Number of files processed</summary>
+        long? FilesProcessed { get; set; }
+        /// <summary>To indicate directories renamed</summary>
+        long? InvalidDirectoriesProcessed { get; set; }
+        /// <summary>
+        /// Total amount of data not adhering to azure naming conventions which were processed by automatic renaming
+        /// </summary>
+        long? InvalidFileBytesUploaded { get; set; }
+        /// <summary>
+        /// Number of files not adhering to azure naming conventions which were processed by automatic renaming
+        /// </summary>
+        long? InvalidFilesProcessed { get; set; }
+        /// <summary>
+        /// To indicate if enumeration of data is in progress.
+        /// Until this is true, the TotalBytesToProcess may not be valid.
+        /// </summary>
+        bool? IsEnumerationInProgress { get; set; }
+        /// <summary>The error message parsed from the body of the http error response.</summary>
+        string Message { get; set; }
+        /// <summary>
+        /// Number of folders not adhering to azure naming conventions which were processed by automatic renaming
+        /// </summary>
+        long? RenamedContainerCount { get; set; }
+        /// <summary>
+        /// Name of the storage account. This will be empty for data account types other than storage account.
+        /// </summary>
+        string StorageAccountName { get; set; }
+        /// <summary>Gets or sets the target of the error.</summary>
+        string Target { get; set; }
+        /// <summary>Total amount of data to be processed by the job.</summary>
+        long? TotalBytesToProcess { get; set; }
+        /// <summary>Total files to process</summary>
+        long? TotalFilesToProcess { get; set; }
+        /// <summary>Transfer type of data</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DataBox.PSArgumentCompleterAttribute("ImportToAzure", "ExportFromAzure")]
+        string TransferType { get; set; }
+
+    }
+}

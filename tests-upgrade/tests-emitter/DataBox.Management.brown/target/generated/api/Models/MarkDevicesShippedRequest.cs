@@ -1,0 +1,78 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Extensions;
+
+    /// <summary>The request body to provide the delivery package details of job</summary>
+    public partial class MarkDevicesShippedRequest :
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IMarkDevicesShippedRequest,
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IMarkDevicesShippedRequestInternal
+    {
+
+        /// <summary>Backing field for <see cref="DeliverToDcPackageDetail" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IPackageCarrierInfo _deliverToDcPackageDetail;
+
+        /// <summary>Delivery package details</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IPackageCarrierInfo DeliverToDcPackageDetail { get => (this._deliverToDcPackageDetail = this._deliverToDcPackageDetail ?? new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.PackageCarrierInfo()); set => this._deliverToDcPackageDetail = value; }
+
+        /// <summary>Name of the carrier.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Inlined)]
+        public string DeliverToDcPackageDetailCarrierName { get => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IPackageCarrierInfoInternal)DeliverToDcPackageDetail).CarrierName; set => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IPackageCarrierInfoInternal)DeliverToDcPackageDetail).CarrierName = value ?? null; }
+
+        /// <summary>Tracking Id of shipment.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataBox.PropertyOrigin.Inlined)]
+        public string DeliverToDcPackageDetailTrackingId { get => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IPackageCarrierInfoInternal)DeliverToDcPackageDetail).TrackingId; set => ((Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IPackageCarrierInfoInternal)DeliverToDcPackageDetail).TrackingId = value ?? null; }
+
+        /// <summary>Internal Acessors for DeliverToDcPackageDetail</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IPackageCarrierInfo Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IMarkDevicesShippedRequestInternal.DeliverToDcPackageDetail { get => (this._deliverToDcPackageDetail = this._deliverToDcPackageDetail ?? new Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.PackageCarrierInfo()); set { {_deliverToDcPackageDetail = value;} } }
+
+        /// <summary>Creates an new <see cref="MarkDevicesShippedRequest" /> instance.</summary>
+        public MarkDevicesShippedRequest()
+        {
+
+        }
+    }
+    /// The request body to provide the delivery package details of job
+    public partial interface IMarkDevicesShippedRequest :
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.IJsonSerializable
+    {
+        /// <summary>Name of the carrier.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Name of the carrier.",
+        SerializedName = @"carrierName",
+        PossibleTypes = new [] { typeof(string) })]
+        string DeliverToDcPackageDetailCarrierName { get; set; }
+        /// <summary>Tracking Id of shipment.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataBox.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Tracking Id of shipment.",
+        SerializedName = @"trackingId",
+        PossibleTypes = new [] { typeof(string) })]
+        string DeliverToDcPackageDetailTrackingId { get; set; }
+
+    }
+    /// The request body to provide the delivery package details of job
+    internal partial interface IMarkDevicesShippedRequestInternal
+
+    {
+        /// <summary>Delivery package details</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.DataBox.Models.IPackageCarrierInfo DeliverToDcPackageDetail { get; set; }
+        /// <summary>Name of the carrier.</summary>
+        string DeliverToDcPackageDetailCarrierName { get; set; }
+        /// <summary>Tracking Id of shipment.</summary>
+        string DeliverToDcPackageDetailTrackingId { get; set; }
+
+    }
+}

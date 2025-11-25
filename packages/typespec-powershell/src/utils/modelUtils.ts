@@ -989,7 +989,7 @@ function getSchemaForModel(
     } else {
       // If discriminator value is union variant, it will be constant type
       // Otherwise, it will be sealed choice type
-      modelSchema.discriminatorValue = propSchema.type === 'constant' ? (<ConstantSchema>propSchema).value.value : (<SealedChoiceSchema>propSchema).choices[0].value.toString();
+      modelSchema.discriminatorValue = propSchema.type === 'constant' ? (<ConstantSchema>propSchema).value.value : (propSchema.value ? propSchema.value : (<SealedChoiceSchema>propSchema).choices[0].value.toString());
     }
     if (discriminator && propName === discriminator.propertyName) {
       property.isDiscriminator = true;
