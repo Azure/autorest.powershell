@@ -49,7 +49,7 @@ export async function $onEmit(context: EmitContext) {
     context,
     "@azure-tools/typespec-powershell",
   );
-
+  PsContext.enableLegacyHierarchyBuilding = true;
   // const pwshModel = new PwshModel("");
   // const services = listServices(program);
   // if (!context.program.compilerOptions.noEmit) {

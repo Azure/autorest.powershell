@@ -328,6 +328,25 @@ export function isPagingOperation(program: Program, operation: HttpOperation) {
   return extractPageDetails(program, operation) !== undefined;
 }
 
+function getAllProperties(model: Model): Map<string, ModelProperty> {
+  const allProperties = new Map<string, ModelProperty>();
+
+  // Collect properties from base models first (so they can be overridden)
+  if (model.baseModel) {
+    const baseProperties = getAllProperties(model.baseModel);
+    for (const [name, prop] of baseProperties) {
+      allProperties.set(name, prop);
+    }
+  }
+
+  // Add or override with current model's properties
+  for (const [name, prop] of model.properties ?? []) {
+    allProperties.set(name, prop);
+  }
+
+  return allProperties;
+}
+
 function mapFirstSegmentForResultSegments(
   resultSegments: ModelProperty[] | undefined,
   responses: HttpOperationResponse[]
@@ -346,16 +365,17 @@ function mapFirstSegmentForResultSegments(
   // 3. `op test(): {@bodyRoot body: {items, nextLink}}`
 
   if (resultSegments.length > 0 && bodyType && bodyType.kind === "Model") {
+    const allProperties = getAllProperties(bodyType);
     for (let i = 0; i < resultSegments.length; i++) {
       const segment = resultSegments[i];
-      for (const property of bodyType.properties ?? []) {
+      for (const property of allProperties.values()) {
         if (
           property &&
           segment &&
-          findRootSourceProperty(property[1]) ===
+          findRootSourceProperty(property) ===
           findRootSourceProperty(segment)
         ) {
-          return [property[1], ...resultSegments.slice(i + 1)];
+          return [property, ...resultSegments.slice(i + 1)];
         }
       }
     }
