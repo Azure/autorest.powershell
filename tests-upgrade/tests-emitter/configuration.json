@@ -39,7 +39,8 @@
     "RecoveryServices.brown",
     "ServiceFabricManagedClusters.Management.brown",
     "StorageAction.Management.brown",
-    "DataBox.Management.brown"
+    "DataBox.Management.brown",
+    "DataProtection.Management.brown"
   ],
   "whiteTestListFull": [
     "AppComplianceAutomation.Management",
@@ -80,7 +81,8 @@
     "RecoveryServices.brown",
     "ServiceFabricManagedClusters.Management.brown",
     "StorageAction.Management.brown",
-    "DataBox.Management.brown"
+    "DataBox.Management.brown",
+    "DataProtection.Management.brown"
   ],
   "blackTestList": [],
   "ignoreFolder": ["examples", "CompareResult"],

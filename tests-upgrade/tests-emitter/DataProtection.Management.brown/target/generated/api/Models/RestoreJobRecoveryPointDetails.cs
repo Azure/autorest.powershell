@@ -1,0 +1,69 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Runtime.Extensions;
+
+    /// <summary>Details of the Source Recovery Point</summary>
+    public partial class RestoreJobRecoveryPointDetails :
+        Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IRestoreJobRecoveryPointDetails,
+        Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IRestoreJobRecoveryPointDetailsInternal
+    {
+
+        /// <summary>Backing field for <see cref="RecoveryPointId" /> property.</summary>
+        private string _recoveryPointId;
+
+        [Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataProtection.PropertyOrigin.Owned)]
+        public string RecoveryPointId { get => this._recoveryPointId; set => this._recoveryPointId = value; }
+
+        /// <summary>Backing field for <see cref="RecoveryPointTime" /> property.</summary>
+        private global::System.DateTime? _recoveryPointTime;
+
+        /// <summary>An instant in coordinated universal time (UTC)"</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Origin(Microsoft.Azure.PowerShell.Cmdlets.DataProtection.PropertyOrigin.Owned)]
+        public global::System.DateTime? RecoveryPointTime { get => this._recoveryPointTime; set => this._recoveryPointTime = value; }
+
+        /// <summary>Creates an new <see cref="RestoreJobRecoveryPointDetails" /> instance.</summary>
+        public RestoreJobRecoveryPointDetails()
+        {
+
+        }
+    }
+    /// Details of the Source Recovery Point
+    public partial interface IRestoreJobRecoveryPointDetails :
+        Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Runtime.IJsonSerializable
+    {
+        [Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"",
+        SerializedName = @"recoveryPointID",
+        PossibleTypes = new [] { typeof(string) })]
+        string RecoveryPointId { get; set; }
+        /// <summary>An instant in coordinated universal time (UTC)"</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"An instant in coordinated universal time (UTC)""",
+        SerializedName = @"recoveryPointTime",
+        PossibleTypes = new [] { typeof(global::System.DateTime) })]
+        global::System.DateTime? RecoveryPointTime { get; set; }
+
+    }
+    /// Details of the Source Recovery Point
+    internal partial interface IRestoreJobRecoveryPointDetailsInternal
+
+    {
+        string RecoveryPointId { get; set; }
+        /// <summary>An instant in coordinated universal time (UTC)"</summary>
+        global::System.DateTime? RecoveryPointTime { get; set; }
+
+    }
+}

@@ -1,0 +1,394 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models
+{
+    using Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Runtime.PowerShell;
+
+    /// <summary>Patch Request content for Microsoft.DataProtection resources</summary>
+    [System.ComponentModel.TypeConverter(typeof(PatchResourceRequestInputTypeConverter))]
+    public partial class PatchResourceRequestInput
+    {
+
+        /// <summary>
+        /// <c>AfterDeserializeDictionary</c> will be called after the deserialization has finished, allowing customization of the
+        /// object before it is returned. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+
+        partial void AfterDeserializeDictionary(global::System.Collections.IDictionary content);
+
+        /// <summary>
+        /// <c>AfterDeserializePSObject</c> will be called after the deserialization has finished, allowing customization of the object
+        /// before it is returned. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+
+        partial void AfterDeserializePSObject(global::System.Management.Automation.PSObject content);
+
+        /// <summary>
+        /// <c>BeforeDeserializeDictionary</c> will be called before the deserialization has commenced, allowing complete customization
+        /// of the object before it is deserialized.
+        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output
+        /// parameter.
+        /// Implement this method in a partial class to enable this behavior.
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+        /// <param name="returnNow">Determines if the rest of the serialization should be processed, or if the method should return
+        /// instantly.</param>
+
+        partial void BeforeDeserializeDictionary(global::System.Collections.IDictionary content, ref bool returnNow);
+
+        /// <summary>
+        /// <c>BeforeDeserializePSObject</c> will be called before the deserialization has commenced, allowing complete customization
+        /// of the object before it is deserialized.
+        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output
+        /// parameter.
+        /// Implement this method in a partial class to enable this behavior.
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+        /// <param name="returnNow">Determines if the rest of the serialization should be processed, or if the method should return
+        /// instantly.</param>
+
+        partial void BeforeDeserializePSObject(global::System.Management.Automation.PSObject content, ref bool returnNow);
+
+        /// <summary>
+        /// <c>OverrideToString</c> will be called if it is implemented. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="stringResult">/// instance serialized to a string, normally it is a Json</param>
+        /// <param name="returnNow">/// set returnNow to true if you provide a customized OverrideToString function</param>
+
+        partial void OverrideToString(ref string stringResult, ref bool returnNow);
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.PatchResourceRequestInput"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+        /// <returns>
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInput" />.
+        /// </returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInput DeserializeFromDictionary(global::System.Collections.IDictionary content)
+        {
+            return new PatchResourceRequestInput(content);
+        }
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.PatchResourceRequestInput"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+        /// <returns>
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInput" />.
+        /// </returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInput DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
+        {
+            return new PatchResourceRequestInput(content);
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="PatchResourceRequestInput" />, deserializing the content from a json string.
+        /// </summary>
+        /// <param name="jsonText">a string containing a JSON serialized instance of this model.</param>
+        /// <returns>an instance of the <see cref="PatchResourceRequestInput" /> model class.</returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInput FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Runtime.Json.JsonNode.Parse(jsonText));
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.PatchResourceRequestInput"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+        internal PatchResourceRequestInput(global::System.Collections.IDictionary content)
+        {
+            bool returnNow = false;
+            BeforeDeserializeDictionary(content, ref returnNow);
+            if (returnNow)
+            {
+                return;
+            }
+            // actually deserialize
+            if (content.Contains("Identity"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).Identity = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IDppIdentityDetails) content.GetValueForProperty("Identity",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).Identity, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.DppIdentityDetailsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("Property"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchBackupVaultInput) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.PatchBackupVaultInputTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("Tag"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.PatchResourceRequestInputTagsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("MonitoringSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).MonitoringSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IMonitoringSettings) content.GetValueForProperty("MonitoringSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).MonitoringSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.MonitoringSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("SecuritySetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ISecuritySettings) content.GetValueForProperty("SecuritySetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.SecuritySettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("FeatureSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).FeatureSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IFeatureSettings) content.GetValueForProperty("FeatureSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).FeatureSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.FeatureSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityTenantId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityTenantId = (string) content.GetValueForProperty("IdentityTenantId",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityTenantId, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityType = (string) content.GetValueForProperty("IdentityType",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityType, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityUserAssignedIdentity"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IDppIdentityDetailsUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.DppIdentityDetailsUserAssignedIdentitiesTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("ResourceGuardOperationRequest"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).ResourceGuardOperationRequest = (System.Collections.Generic.List<string>) content.GetValueForProperty("ResourceGuardOperationRequest",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).ResourceGuardOperationRequest, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+            }
+            if (content.Contains("SecuritySettingImmutabilitySetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySettingImmutabilitySetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IImmutabilitySettings) content.GetValueForProperty("SecuritySettingImmutabilitySetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySettingImmutabilitySetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ImmutabilitySettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("SecuritySettingEncryptionSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySettingEncryptionSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IEncryptionSettings) content.GetValueForProperty("SecuritySettingEncryptionSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySettingEncryptionSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.EncryptionSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("MonitoringSettingAzureMonitorAlertSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).MonitoringSettingAzureMonitorAlertSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IAzureMonitorAlertSettings) content.GetValueForProperty("MonitoringSettingAzureMonitorAlertSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).MonitoringSettingAzureMonitorAlertSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.AzureMonitorAlertSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("SecuritySettingSoftDeleteSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySettingSoftDeleteSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ISoftDeleteSettings) content.GetValueForProperty("SecuritySettingSoftDeleteSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySettingSoftDeleteSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.SoftDeleteSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("FeatureSettingCrossSubscriptionRestoreSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).FeatureSettingCrossSubscriptionRestoreSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ICrossSubscriptionRestoreSettings) content.GetValueForProperty("FeatureSettingCrossSubscriptionRestoreSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).FeatureSettingCrossSubscriptionRestoreSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.CrossSubscriptionRestoreSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("FeatureSettingCrossRegionRestoreSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).FeatureSettingCrossRegionRestoreSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ICrossRegionRestoreSettings) content.GetValueForProperty("FeatureSettingCrossRegionRestoreSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).FeatureSettingCrossRegionRestoreSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.CrossRegionRestoreSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("AzureMonitorAlertSettingAlertsForAllJobFailure"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).AzureMonitorAlertSettingAlertsForAllJobFailure = (string) content.GetValueForProperty("AzureMonitorAlertSettingAlertsForAllJobFailure",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).AzureMonitorAlertSettingAlertsForAllJobFailure, global::System.Convert.ToString);
+            }
+            if (content.Contains("SoftDeleteSettingState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SoftDeleteSettingState = (string) content.GetValueForProperty("SoftDeleteSettingState",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SoftDeleteSettingState, global::System.Convert.ToString);
+            }
+            if (content.Contains("SoftDeleteSettingRetentionDurationInDay"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SoftDeleteSettingRetentionDurationInDay = (double?) content.GetValueForProperty("SoftDeleteSettingRetentionDurationInDay",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SoftDeleteSettingRetentionDurationInDay, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
+            }
+            if (content.Contains("ImmutabilitySettingState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).ImmutabilitySettingState = (string) content.GetValueForProperty("ImmutabilitySettingState",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).ImmutabilitySettingState, global::System.Convert.ToString);
+            }
+            if (content.Contains("EncryptionSettingKeyVaultProperty"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingKeyVaultProperty = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ICmkKeyVaultProperties) content.GetValueForProperty("EncryptionSettingKeyVaultProperty",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingKeyVaultProperty, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.CmkKeyVaultPropertiesTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("EncryptionSettingKekIdentity"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingKekIdentity = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ICmkKekIdentity) content.GetValueForProperty("EncryptionSettingKekIdentity",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingKekIdentity, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.CmkKekIdentityTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("EncryptionSettingState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingState = (string) content.GetValueForProperty("EncryptionSettingState",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingState, global::System.Convert.ToString);
+            }
+            if (content.Contains("EncryptionSettingInfrastructureEncryption"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingInfrastructureEncryption = (string) content.GetValueForProperty("EncryptionSettingInfrastructureEncryption",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingInfrastructureEncryption, global::System.Convert.ToString);
+            }
+            if (content.Contains("KekIdentityType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).KekIdentityType = (string) content.GetValueForProperty("KekIdentityType",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).KekIdentityType, global::System.Convert.ToString);
+            }
+            if (content.Contains("CrossSubscriptionRestoreSettingState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).CrossSubscriptionRestoreSettingState = (string) content.GetValueForProperty("CrossSubscriptionRestoreSettingState",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).CrossSubscriptionRestoreSettingState, global::System.Convert.ToString);
+            }
+            if (content.Contains("CrossRegionRestoreSettingState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).CrossRegionRestoreSettingState = (string) content.GetValueForProperty("CrossRegionRestoreSettingState",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).CrossRegionRestoreSettingState, global::System.Convert.ToString);
+            }
+            if (content.Contains("KeyVaultPropertyKeyUri"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).KeyVaultPropertyKeyUri = (string) content.GetValueForProperty("KeyVaultPropertyKeyUri",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).KeyVaultPropertyKeyUri, global::System.Convert.ToString);
+            }
+            if (content.Contains("KekIdentityId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).KekIdentityId = (string) content.GetValueForProperty("KekIdentityId",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).KekIdentityId, global::System.Convert.ToString);
+            }
+            AfterDeserializeDictionary(content);
+        }
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.PatchResourceRequestInput"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+        internal PatchResourceRequestInput(global::System.Management.Automation.PSObject content)
+        {
+            bool returnNow = false;
+            BeforeDeserializePSObject(content, ref returnNow);
+            if (returnNow)
+            {
+                return;
+            }
+            // actually deserialize
+            if (content.Contains("Identity"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).Identity = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IDppIdentityDetails) content.GetValueForProperty("Identity",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).Identity, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.DppIdentityDetailsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("Property"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchBackupVaultInput) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.PatchBackupVaultInputTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("Tag"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputTags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.PatchResourceRequestInputTagsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("MonitoringSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).MonitoringSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IMonitoringSettings) content.GetValueForProperty("MonitoringSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).MonitoringSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.MonitoringSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("SecuritySetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ISecuritySettings) content.GetValueForProperty("SecuritySetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.SecuritySettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("FeatureSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).FeatureSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IFeatureSettings) content.GetValueForProperty("FeatureSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).FeatureSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.FeatureSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityTenantId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityTenantId = (string) content.GetValueForProperty("IdentityTenantId",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityTenantId, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityType = (string) content.GetValueForProperty("IdentityType",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityType, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityUserAssignedIdentity"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IDppIdentityDetailsUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.DppIdentityDetailsUserAssignedIdentitiesTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("ResourceGuardOperationRequest"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).ResourceGuardOperationRequest = (System.Collections.Generic.List<string>) content.GetValueForProperty("ResourceGuardOperationRequest",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).ResourceGuardOperationRequest, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
+            }
+            if (content.Contains("SecuritySettingImmutabilitySetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySettingImmutabilitySetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IImmutabilitySettings) content.GetValueForProperty("SecuritySettingImmutabilitySetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySettingImmutabilitySetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ImmutabilitySettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("SecuritySettingEncryptionSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySettingEncryptionSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IEncryptionSettings) content.GetValueForProperty("SecuritySettingEncryptionSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySettingEncryptionSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.EncryptionSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("MonitoringSettingAzureMonitorAlertSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).MonitoringSettingAzureMonitorAlertSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IAzureMonitorAlertSettings) content.GetValueForProperty("MonitoringSettingAzureMonitorAlertSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).MonitoringSettingAzureMonitorAlertSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.AzureMonitorAlertSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("SecuritySettingSoftDeleteSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySettingSoftDeleteSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ISoftDeleteSettings) content.GetValueForProperty("SecuritySettingSoftDeleteSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SecuritySettingSoftDeleteSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.SoftDeleteSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("FeatureSettingCrossSubscriptionRestoreSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).FeatureSettingCrossSubscriptionRestoreSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ICrossSubscriptionRestoreSettings) content.GetValueForProperty("FeatureSettingCrossSubscriptionRestoreSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).FeatureSettingCrossSubscriptionRestoreSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.CrossSubscriptionRestoreSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("FeatureSettingCrossRegionRestoreSetting"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).FeatureSettingCrossRegionRestoreSetting = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ICrossRegionRestoreSettings) content.GetValueForProperty("FeatureSettingCrossRegionRestoreSetting",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).FeatureSettingCrossRegionRestoreSetting, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.CrossRegionRestoreSettingsTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("AzureMonitorAlertSettingAlertsForAllJobFailure"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).AzureMonitorAlertSettingAlertsForAllJobFailure = (string) content.GetValueForProperty("AzureMonitorAlertSettingAlertsForAllJobFailure",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).AzureMonitorAlertSettingAlertsForAllJobFailure, global::System.Convert.ToString);
+            }
+            if (content.Contains("SoftDeleteSettingState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SoftDeleteSettingState = (string) content.GetValueForProperty("SoftDeleteSettingState",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SoftDeleteSettingState, global::System.Convert.ToString);
+            }
+            if (content.Contains("SoftDeleteSettingRetentionDurationInDay"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SoftDeleteSettingRetentionDurationInDay = (double?) content.GetValueForProperty("SoftDeleteSettingRetentionDurationInDay",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).SoftDeleteSettingRetentionDurationInDay, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
+            }
+            if (content.Contains("ImmutabilitySettingState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).ImmutabilitySettingState = (string) content.GetValueForProperty("ImmutabilitySettingState",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).ImmutabilitySettingState, global::System.Convert.ToString);
+            }
+            if (content.Contains("EncryptionSettingKeyVaultProperty"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingKeyVaultProperty = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ICmkKeyVaultProperties) content.GetValueForProperty("EncryptionSettingKeyVaultProperty",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingKeyVaultProperty, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.CmkKeyVaultPropertiesTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("EncryptionSettingKekIdentity"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingKekIdentity = (Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.ICmkKekIdentity) content.GetValueForProperty("EncryptionSettingKekIdentity",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingKekIdentity, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.CmkKekIdentityTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("EncryptionSettingState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingState = (string) content.GetValueForProperty("EncryptionSettingState",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingState, global::System.Convert.ToString);
+            }
+            if (content.Contains("EncryptionSettingInfrastructureEncryption"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingInfrastructureEncryption = (string) content.GetValueForProperty("EncryptionSettingInfrastructureEncryption",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).EncryptionSettingInfrastructureEncryption, global::System.Convert.ToString);
+            }
+            if (content.Contains("KekIdentityType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).KekIdentityType = (string) content.GetValueForProperty("KekIdentityType",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).KekIdentityType, global::System.Convert.ToString);
+            }
+            if (content.Contains("CrossSubscriptionRestoreSettingState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).CrossSubscriptionRestoreSettingState = (string) content.GetValueForProperty("CrossSubscriptionRestoreSettingState",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).CrossSubscriptionRestoreSettingState, global::System.Convert.ToString);
+            }
+            if (content.Contains("CrossRegionRestoreSettingState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).CrossRegionRestoreSettingState = (string) content.GetValueForProperty("CrossRegionRestoreSettingState",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).CrossRegionRestoreSettingState, global::System.Convert.ToString);
+            }
+            if (content.Contains("KeyVaultPropertyKeyUri"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).KeyVaultPropertyKeyUri = (string) content.GetValueForProperty("KeyVaultPropertyKeyUri",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).KeyVaultPropertyKeyUri, global::System.Convert.ToString);
+            }
+            if (content.Contains("KekIdentityId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).KekIdentityId = (string) content.GetValueForProperty("KekIdentityId",((Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Models.IPatchResourceRequestInputInternal)this).KekIdentityId, global::System.Convert.ToString);
+            }
+            AfterDeserializePSObject(content);
+        }
+
+        /// <summary>Serializes this instance to a json string.</summary>
+
+        /// <returns>a <see cref="System.String" /> containing this model serialized to JSON text.</returns>
+        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.DataProtection.Runtime.SerializationMode.IncludeAll)?.ToString();
+
+        public override string ToString()
+        {
+            var returnNow = false;
+            var result = global::System.String.Empty;
+            OverrideToString(ref result, ref returnNow);
+            if (returnNow)
+            {
+                return result;
+            }
+            return ToJsonString();
+        }
+    }
+    /// Patch Request content for Microsoft.DataProtection resources
+    [System.ComponentModel.TypeConverter(typeof(PatchResourceRequestInputTypeConverter))]
+    public partial interface IPatchResourceRequestInput
+
+    {
+
+    }
+}

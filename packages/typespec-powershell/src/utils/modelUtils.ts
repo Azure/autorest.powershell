@@ -47,7 +47,7 @@ import {
   getLifecycleVisibilityEnum,
   getVisibilityForClass,
 } from "@typespec/compiler";
-import { SdkContext, isReadOnly, getWireName, getClientNameOverride } from "@azure-tools/typespec-client-generator-core";
+import { SdkContext, isReadOnly, getWireName, getClientNameOverride, getLegacyHierarchyBuilding } from "@azure-tools/typespec-client-generator-core";
 
 import { reportDiagnostic } from "../lib.js";
 import { AnySchema, SealedChoiceSchema, ChoiceSchema, ChoiceValue, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema, ConstantSchema, ConstantValue, BooleanSchema } from "@autorest/codemodel";
@@ -374,6 +374,41 @@ export function includeDerivedModel(
       model.templateMapper.args?.length === 0 ||
       model.derivedModels.length > 0)
   );
+}
+
+/**
+ * Get all child models that have a hierarchyBuilding decorator pointing to the current model as parent
+ */
+function getHierarchyBuildingChildren(dpgContext: SdkContext, parentModel: Model): Model[] {
+  const children: Model[] = [];
+  const hierarchyChildren = new Set<Model>();
+
+  // Recursively search through all namespaces to find models with hierarchyBuilding
+  function searchNamespace(namespace: any): void {
+    if (!namespace || !namespace.models) return;
+
+    for (const model of namespace.models.values()) {
+      if (model.kind === "Model") {
+        const hierarchyParent = getLegacyHierarchyBuilding(dpgContext, model);
+        if (hierarchyParent && hierarchyParent.name === parentModel.name) {
+          hierarchyChildren.add(model);
+        }
+      }
+    }
+
+    // Recursively search child namespaces
+    if (namespace.namespaces) {
+      for (const childNs of namespace.namespaces.values()) {
+        searchNamespace(childNs);
+      }
+    }
+  }
+
+  // Start search from the root namespace
+  const rootNamespace = dpgContext.program.getGlobalNamespaceType();
+  searchNamespace(rootNamespace);
+
+  return Array.from(hierarchyChildren);
 }
 
 function applyEncoding(
@@ -803,7 +838,7 @@ function getSchemaForModel(
   if (isArrayModelType(dpgContext.program, model)) {
     return getSchemaForArrayModel(dpgContext, model, options);
   }
-
+  const rawBaseModel = getLegacyHierarchyBuilding(dpgContext, model);
   const program = dpgContext.program;
   const overridedModelName = getClientNameOverride(dpgContext, model, "powershell") ??
     getFriendlyName(program, model) ?? getWireName(dpgContext, model);
@@ -838,12 +873,19 @@ function getSchemaForModel(
         })
       ],
       immediate: [
-        getSchemaForType(dpgContext, model.baseModel, {
+        getSchemaForType(dpgContext, rawBaseModel ?? model.baseModel, {
           usage,
           needRef: true
         })
       ]
     };
+    if (rawBaseModel) {
+      // Remove the base model from delayedModelSet to avoid duplicate processing
+      modelSchema.parents.all.unshift(getSchemaForType(dpgContext, rawBaseModel, {
+        usage,
+        needRef: true
+      }));
+    }
   }
   modelSchema.language.default.name = pascalCase(deconstruct(modelSchema.language.default.name));
   if (isRecordModelType(program, model)) {
@@ -920,6 +962,13 @@ function getSchemaForModel(
     };
   }
   for (const [propName, prop] of model.properties) {
+    if (rawBaseModel && rawBaseModel.properties.has(prop.name)) {
+      const baseProp = rawBaseModel.properties.get(prop.name);
+      if (baseProp?.name === prop.name && baseProp.type === prop.type) {
+        // If the property is the same as the base model, skip it
+        continue;
+      }
+    }
     const clientName = getClientNameOverride(dpgContext, prop, "powershell");
     const encodedName = resolveEncodedName(program, prop, "application/json");
     const restApiName = getWireName(dpgContext, prop);
@@ -991,10 +1040,13 @@ function getSchemaForModel(
       // Otherwise, it will be sealed choice type
       modelSchema.discriminatorValue = propSchema.type === 'constant' ? (<ConstantSchema>propSchema).value.value : (propSchema.value ? propSchema.value : (<SealedChoiceSchema>propSchema).choices[0].value.toString());
     }
-    if (discriminator && propName === discriminator.propertyName) {
+    const children = getHierarchyBuildingChildren(dpgContext, model);
+    if ((discriminator && propName === discriminator.propertyName) || (isDiscriminatorInChild && children.length > 0)) {
       property.isDiscriminator = true;
       modelSchema.discriminator = new M4Discriminator(property);
     }
+
+
     // if this property is a discriminator property, remove it to keep autorest validation happy
     //const { propertyName } = getDiscriminator(program, model) || {};
     // ToDo: by xiaoang, skip polymorphism for the time being.
