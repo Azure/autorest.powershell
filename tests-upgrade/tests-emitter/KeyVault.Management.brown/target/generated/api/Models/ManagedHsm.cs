@@ -1,0 +1,774 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Extensions;
+
+    /// <summary>Resource information with extended details.</summary>
+    public partial class ManagedHsm :
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsm,
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal,
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.IValidates
+    {
+        /// <summary>
+        /// Backing field for Inherited model <see cref= "Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResource" />
+        /// </summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResource __resource = new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.Resource();
+
+        /// <summary>
+        /// The create mode to indicate whether the resource is being created or is being recovered from a deleted resource.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string CreateMode { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).CreateMode; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).CreateMode = value ?? null; }
+
+        /// <summary>
+        /// Property specifying whether protection against purge is enabled for this managed HSM pool. Setting this property to true
+        /// activates protection against purge for this managed HSM pool and its content - only the Managed HSM service may initiate
+        /// a hard, irrecoverable deletion. Enabling this functionality is irreversible.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public bool? EnablePurgeProtection { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).EnablePurgeProtection; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).EnablePurgeProtection = value ?? default(bool); }
+
+        /// <summary>
+        /// Property to specify whether the 'soft delete' functionality is enabled for this managed HSM pool. Soft delete is enabled
+        /// by default for all managed HSMs and is immutable.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public bool? EnableSoftDelete { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).EnableSoftDelete; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).EnableSoftDelete = value ?? default(bool); }
+
+        /// <summary>The URI of the managed hsm pool for performing operations on keys.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string HsmUri { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).HsmUri; }
+
+        /// <summary>
+        /// Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string Id { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).Id; }
+
+        /// <summary>Backing field for <see cref="Identity" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentity _identity;
+
+        /// <summary>Managed service identity</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentity Identity { get => (this._identity = this._identity ?? new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ManagedServiceIdentity()); set => this._identity = value; }
+
+        /// <summary>
+        /// The service principal ID of the system assigned identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string IdentityPrincipalId { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityInternal)Identity).PrincipalId; }
+
+        /// <summary>
+        /// The tenant ID of the system assigned identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string IdentityTenantId { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityInternal)Identity).TenantId; }
+
+        /// <summary>The type of managed identity assigned to this resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string IdentityType { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityInternal)Identity).Type; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityInternal)Identity).Type = value ?? null; }
+
+        /// <summary>The identities assigned to this resource by the user.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityInternal)Identity).UserAssignedIdentity = value ?? null /* model class */; }
+
+        /// <summary>Array of initial administrators object ids for this managed hsm pool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<string> InitialAdminObjectId { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).InitialAdminObjectId; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).InitialAdminObjectId = value ?? null /* arrayOf */; }
+
+        /// <summary>Backing field for <see cref="Location" /> property.</summary>
+        private string _location;
+
+        /// <summary>The geo-location where the resource lives</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string Location { get => this._location; set => this._location = value; }
+
+        /// <summary>Internal Acessors for HsmUri</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.HsmUri { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).HsmUri; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).HsmUri = value ?? null; }
+
+        /// <summary>Internal Acessors for Identity</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentity Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.Identity { get => (this._identity = this._identity ?? new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ManagedServiceIdentity()); set { {_identity = value;} } }
+
+        /// <summary>Internal Acessors for IdentityPrincipalId</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.IdentityPrincipalId { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityInternal)Identity).PrincipalId; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityInternal)Identity).PrincipalId = value ?? null; }
+
+        /// <summary>Internal Acessors for IdentityTenantId</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.IdentityTenantId { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityInternal)Identity).TenantId; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityInternal)Identity).TenantId = value ?? null; }
+
+        /// <summary>Internal Acessors for NetworkAcls</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmNetworkRuleSet Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.NetworkAcls { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).NetworkAcls; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).NetworkAcls = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for PrivateEndpointConnection</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmPrivateEndpointConnectionItem> Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.PrivateEndpointConnection { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).PrivateEndpointConnection; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).PrivateEndpointConnection = value ?? null /* arrayOf */; }
+
+        /// <summary>Internal Acessors for Property</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmProperties Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ManagedHsmProperties()); set { {_property = value;} } }
+
+        /// <summary>Internal Acessors for ProvisioningState</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.ProvisioningState { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).ProvisioningState; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).ProvisioningState = value ?? null; }
+
+        /// <summary>Internal Acessors for ScheduledPurgeDate</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.ScheduledPurgeDate { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).ScheduledPurgeDate; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).ScheduledPurgeDate = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for SecurityDomainProperty</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmSecurityDomainProperties Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.SecurityDomainProperty { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).SecurityDomainProperty; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).SecurityDomainProperty = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for SecurityDomainPropertyActivationStatus</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.SecurityDomainPropertyActivationStatus { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).SecurityDomainPropertyActivationStatus; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).SecurityDomainPropertyActivationStatus = value ?? null; }
+
+        /// <summary>Internal Acessors for SecurityDomainPropertyActivationStatusMessage</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.SecurityDomainPropertyActivationStatusMessage { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).SecurityDomainPropertyActivationStatusMessage; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).SecurityDomainPropertyActivationStatusMessage = value ?? null; }
+
+        /// <summary>Internal Acessors for Sku</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmSku Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.Sku { get => (this._sku = this._sku ?? new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ManagedHsmSku()); set { {_sku = value;} } }
+
+        /// <summary>Internal Acessors for StatusMessage</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmInternal.StatusMessage { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).StatusMessage; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).StatusMessage = value ?? null; }
+
+        /// <summary>Internal Acessors for Id</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.Id { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).Id; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).Id = value ?? null; }
+
+        /// <summary>Internal Acessors for Name</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.Name { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).Name; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).Name = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemData</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ISystemData Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemData { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemData; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemData = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for SystemDataCreatedAt</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemDataCreatedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataCreatedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataCreatedAt = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for SystemDataCreatedBy</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemDataCreatedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataCreatedBy; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataCreatedBy = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemDataCreatedByType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemDataCreatedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataCreatedByType; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataCreatedByType = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemDataLastModifiedAt</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemDataLastModifiedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataLastModifiedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataLastModifiedAt = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for SystemDataLastModifiedBy</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemDataLastModifiedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataLastModifiedBy; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataLastModifiedBy = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemDataLastModifiedByType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemDataLastModifiedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataLastModifiedByType; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataLastModifiedByType = value ?? null; }
+
+        /// <summary>Internal Acessors for Type</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.Type { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).Type; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).Type = value ?? null; }
+
+        /// <summary>The name of the resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string Name { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).Name; }
+
+        /// <summary>
+        /// Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'. If not specified the default is 'AzureServices'.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string NetworkAclsBypass { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).NetworkAclsBypass; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).NetworkAclsBypass = value ?? null; }
+
+        /// <summary>
+        /// The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property
+        /// has been evaluated.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string NetworkAclsDefaultAction { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).NetworkAclsDefaultAction; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).NetworkAclsDefaultAction = value ?? null; }
+
+        /// <summary>The list of IP address rules.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmipRule> NetworkAclsIPRule { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).NetworkAclsIPRule; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).NetworkAclsIPRule = value ?? null /* arrayOf */; }
+
+        /// <summary>The list of service tags.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmServiceTagRule> NetworkAclsServiceTag { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).NetworkAclsServiceTag; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).NetworkAclsServiceTag = value ?? null /* arrayOf */; }
+
+        /// <summary>The list of virtual network rules.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmVirtualNetworkRule> NetworkAclsVirtualNetworkRule { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).NetworkAclsVirtualNetworkRule; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).NetworkAclsVirtualNetworkRule = value ?? null /* arrayOf */; }
+
+        /// <summary>List of private endpoint connections associated with the managed hsm pool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmPrivateEndpointConnectionItem> PrivateEndpointConnection { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).PrivateEndpointConnection; }
+
+        /// <summary>Backing field for <see cref="Property" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmProperties _property;
+
+        /// <summary>Properties of the managed HSM</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmProperties Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ManagedHsmProperties()); set => this._property = value; }
+
+        /// <summary>Provisioning state.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string ProvisioningState { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).ProvisioningState; }
+
+        /// <summary>Control permission to the managed HSM from public networks.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string PublicNetworkAccess { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).PublicNetworkAccess; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).PublicNetworkAccess = value ?? null; }
+
+        /// <summary>List of all regions associated with the managed hsm pool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmGeoReplicatedRegion> Region { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).Region; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).Region = value ?? null /* arrayOf */; }
+
+        /// <summary>Gets the resource group name</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string ResourceGroupName { get => (new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Success ? new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Groups["resourceGroupName"].Value : null); }
+
+        /// <summary>The scheduled purge date in UTC.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public global::System.DateTime? ScheduledPurgeDate { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).ScheduledPurgeDate; }
+
+        /// <summary>Activation Status</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string SecurityDomainPropertyActivationStatus { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).SecurityDomainPropertyActivationStatus; }
+
+        /// <summary>Activation Status Message.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string SecurityDomainPropertyActivationStatusMessage { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).SecurityDomainPropertyActivationStatusMessage; }
+
+        /// <summary>Backing field for <see cref="Sku" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmSku _sku;
+
+        /// <summary>SKU details</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmSku Sku { get => (this._sku = this._sku ?? new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ManagedHsmSku()); set => this._sku = value; }
+
+        /// <summary>SKU Family of the managed HSM Pool</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string SkuFamily { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmSkuInternal)Sku).Family; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmSkuInternal)Sku).Family = value ?? null; }
+
+        /// <summary>SKU of the managed HSM Pool</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string SkuName { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmSkuInternal)Sku).Name; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmSkuInternal)Sku).Name = value ?? null; }
+
+        /// <summary>
+        /// Soft deleted data retention days. When you delete an HSM or a key, it will remain recoverable for the configured retention
+        /// period or for a default period of 90 days. It accepts values between 7 and 90.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public int? SoftDeleteRetentionInDay { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).SoftDeleteRetentionInDay; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).SoftDeleteRetentionInDay = value ?? default(int); }
+
+        /// <summary>Resource Status Message.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string StatusMessage { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).StatusMessage; }
+
+        /// <summary>
+        /// Azure Resource Manager metadata containing createdBy and modifiedBy information.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ISystemData SystemData { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemData; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemData = value ?? null /* model class */; }
+
+        /// <summary>The timestamp of resource creation (UTC).</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public global::System.DateTime? SystemDataCreatedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataCreatedAt; }
+
+        /// <summary>The identity that created the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string SystemDataCreatedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataCreatedBy; }
+
+        /// <summary>The type of identity that created the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string SystemDataCreatedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataCreatedByType; }
+
+        /// <summary>The timestamp of resource last modification (UTC)</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public global::System.DateTime? SystemDataLastModifiedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataLastModifiedAt; }
+
+        /// <summary>The identity that last modified the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string SystemDataLastModifiedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataLastModifiedBy; }
+
+        /// <summary>The type of identity that last modified the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string SystemDataLastModifiedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).SystemDataLastModifiedByType; }
+
+        /// <summary>Backing field for <see cref="Tag" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmTags _tag;
+
+        /// <summary>Resource tags.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ManagedHsmTags()); set => this._tag = value; }
+
+        /// <summary>
+        /// The Azure Active Directory tenant ID that should be used for authenticating requests to the managed HSM pool.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string TenantId { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).TenantId; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmPropertiesInternal)Property).TenantId = value ?? null; }
+
+        /// <summary>
+        /// The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string Type { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__resource).Type; }
+
+        /// <summary>Creates an new <see cref="ManagedHsm" /> instance.</summary>
+        public ManagedHsm()
+        {
+
+        }
+
+        /// <summary>Validates that this object meets the validation criteria.</summary>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.IEventListener" /> instance that will receive validation
+        /// events.</param>
+        /// <returns>
+        /// A <see cref = "global::System.Threading.Tasks.Task" /> that will be complete when validation is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task Validate(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.IEventListener eventListener)
+        {
+            await eventListener.AssertNotNull(nameof(__resource), __resource);
+            await eventListener.AssertObjectIsValid(nameof(__resource), __resource);
+        }
+    }
+    /// Resource information with extended details.
+    public partial interface IManagedHsm :
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.IJsonSerializable,
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResource
+    {
+        /// <summary>
+        /// The create mode to indicate whether the resource is being created or is being recovered from a deleted resource.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = false,
+        Create = true,
+        Update = true,
+        Description = @"The create mode to indicate whether the resource is being created or is being recovered from a deleted resource.",
+        SerializedName = @"createMode",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("recover", "default")]
+        string CreateMode { get; set; }
+        /// <summary>
+        /// Property specifying whether protection against purge is enabled for this managed HSM pool. Setting this property to true
+        /// activates protection against purge for this managed HSM pool and its content - only the Managed HSM service may initiate
+        /// a hard, irrecoverable deletion. Enabling this functionality is irreversible.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Property specifying whether protection against purge is enabled for this managed HSM pool. Setting this property to true activates protection against purge for this managed HSM pool and its content - only the Managed HSM service may initiate a hard, irrecoverable deletion. Enabling this functionality is irreversible.",
+        SerializedName = @"enablePurgeProtection",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? EnablePurgeProtection { get; set; }
+        /// <summary>
+        /// Property to specify whether the 'soft delete' functionality is enabled for this managed HSM pool. Soft delete is enabled
+        /// by default for all managed HSMs and is immutable.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Property to specify whether the 'soft delete' functionality is enabled for this managed HSM pool. Soft delete is enabled by default for all managed HSMs and is immutable.",
+        SerializedName = @"enableSoftDelete",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? EnableSoftDelete { get; set; }
+        /// <summary>The URI of the managed hsm pool for performing operations on keys.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The URI of the managed hsm pool for performing operations on keys.",
+        SerializedName = @"hsmUri",
+        PossibleTypes = new [] { typeof(string) })]
+        string HsmUri { get;  }
+        /// <summary>
+        /// The service principal ID of the system assigned identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The service principal ID of the system assigned identity. This property will only be provided for a system assigned identity.",
+        SerializedName = @"principalId",
+        PossibleTypes = new [] { typeof(string) })]
+        string IdentityPrincipalId { get;  }
+        /// <summary>
+        /// The tenant ID of the system assigned identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The tenant ID of the system assigned identity. This property will only be provided for a system assigned identity.",
+        SerializedName = @"tenantId",
+        PossibleTypes = new [] { typeof(string) })]
+        string IdentityTenantId { get;  }
+        /// <summary>The type of managed identity assigned to this resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The type of managed identity assigned to this resource.",
+        SerializedName = @"type",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned")]
+        string IdentityType { get; set; }
+        /// <summary>The identities assigned to this resource by the user.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The identities assigned to this resource by the user.",
+        SerializedName = @"userAssignedIdentities",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityUserAssignedIdentities) })]
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        /// <summary>Array of initial administrators object ids for this managed hsm pool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Array of initial administrators object ids for this managed hsm pool.",
+        SerializedName = @"initialAdminObjectIds",
+        PossibleTypes = new [] { typeof(string) })]
+        System.Collections.Generic.List<string> InitialAdminObjectId { get; set; }
+        /// <summary>The geo-location where the resource lives</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = false,
+        Description = @"The geo-location where the resource lives",
+        SerializedName = @"location",
+        PossibleTypes = new [] { typeof(string) })]
+        string Location { get; set; }
+        /// <summary>
+        /// Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'. If not specified the default is 'AzureServices'.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'.  If not specified the default is 'AzureServices'.",
+        SerializedName = @"bypass",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("AzureServices", "None")]
+        string NetworkAclsBypass { get; set; }
+        /// <summary>
+        /// The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property
+        /// has been evaluated.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property has been evaluated.",
+        SerializedName = @"defaultAction",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Allow", "Deny")]
+        string NetworkAclsDefaultAction { get; set; }
+        /// <summary>The list of IP address rules.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The list of IP address rules.",
+        SerializedName = @"ipRules",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmipRule) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmipRule> NetworkAclsIPRule { get; set; }
+        /// <summary>The list of service tags.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The list of service tags.",
+        SerializedName = @"serviceTags",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmServiceTagRule) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmServiceTagRule> NetworkAclsServiceTag { get; set; }
+        /// <summary>The list of virtual network rules.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The list of virtual network rules.",
+        SerializedName = @"virtualNetworkRules",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmVirtualNetworkRule) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmVirtualNetworkRule> NetworkAclsVirtualNetworkRule { get; set; }
+        /// <summary>List of private endpoint connections associated with the managed hsm pool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"List of private endpoint connections associated with the managed hsm pool.",
+        SerializedName = @"privateEndpointConnections",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmPrivateEndpointConnectionItem) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmPrivateEndpointConnectionItem> PrivateEndpointConnection { get;  }
+        /// <summary>Provisioning state.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Provisioning state.",
+        SerializedName = @"provisioningState",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Succeeded", "Provisioning", "Failed", "Updating", "Deleting", "Activated", "SecurityDomainRestore", "Restoring")]
+        string ProvisioningState { get;  }
+        /// <summary>Control permission to the managed HSM from public networks.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Control permission to the managed HSM from public networks.",
+        SerializedName = @"publicNetworkAccess",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Enabled", "Disabled")]
+        string PublicNetworkAccess { get; set; }
+        /// <summary>List of all regions associated with the managed hsm pool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"List of all regions associated with the managed hsm pool.",
+        SerializedName = @"regions",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmGeoReplicatedRegion) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmGeoReplicatedRegion> Region { get; set; }
+        /// <summary>The scheduled purge date in UTC.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The scheduled purge date in UTC.",
+        SerializedName = @"scheduledPurgeDate",
+        PossibleTypes = new [] { typeof(global::System.DateTime) })]
+        global::System.DateTime? ScheduledPurgeDate { get;  }
+        /// <summary>Activation Status</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Activation Status",
+        SerializedName = @"activationStatus",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Active", "NotActivated", "Unknown", "Failed")]
+        string SecurityDomainPropertyActivationStatus { get;  }
+        /// <summary>Activation Status Message.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Activation Status Message.",
+        SerializedName = @"activationStatusMessage",
+        PossibleTypes = new [] { typeof(string) })]
+        string SecurityDomainPropertyActivationStatusMessage { get;  }
+        /// <summary>SKU Family of the managed HSM Pool</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"SKU Family of the managed HSM Pool",
+        SerializedName = @"family",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("B", "C")]
+        string SkuFamily { get; set; }
+        /// <summary>SKU of the managed HSM Pool</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"SKU of the managed HSM Pool",
+        SerializedName = @"name",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Standard_B1", "Custom_B32", "Custom_B6", "Custom_C42", "Custom_C10")]
+        string SkuName { get; set; }
+        /// <summary>
+        /// Soft deleted data retention days. When you delete an HSM or a key, it will remain recoverable for the configured retention
+        /// period or for a default period of 90 days. It accepts values between 7 and 90.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Soft deleted data retention days. When you delete an HSM or a key, it will remain recoverable for the configured retention period or for a default period of 90 days. It accepts values between 7 and 90.",
+        SerializedName = @"softDeleteRetentionInDays",
+        PossibleTypes = new [] { typeof(int) })]
+        int? SoftDeleteRetentionInDay { get; set; }
+        /// <summary>Resource Status Message.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Resource Status Message.",
+        SerializedName = @"statusMessage",
+        PossibleTypes = new [] { typeof(string) })]
+        string StatusMessage { get;  }
+        /// <summary>Resource tags.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Resource tags.",
+        SerializedName = @"tags",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmTags Tag { get; set; }
+        /// <summary>
+        /// The Azure Active Directory tenant ID that should be used for authenticating requests to the managed HSM pool.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The Azure Active Directory tenant ID that should be used for authenticating requests to the managed HSM pool.",
+        SerializedName = @"tenantId",
+        PossibleTypes = new [] { typeof(string) })]
+        string TenantId { get; set; }
+
+    }
+    /// Resource information with extended details.
+    internal partial interface IManagedHsmInternal :
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal
+    {
+        /// <summary>
+        /// The create mode to indicate whether the resource is being created or is being recovered from a deleted resource.
+        /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("recover", "default")]
+        string CreateMode { get; set; }
+        /// <summary>
+        /// Property specifying whether protection against purge is enabled for this managed HSM pool. Setting this property to true
+        /// activates protection against purge for this managed HSM pool and its content - only the Managed HSM service may initiate
+        /// a hard, irrecoverable deletion. Enabling this functionality is irreversible.
+        /// </summary>
+        bool? EnablePurgeProtection { get; set; }
+        /// <summary>
+        /// Property to specify whether the 'soft delete' functionality is enabled for this managed HSM pool. Soft delete is enabled
+        /// by default for all managed HSMs and is immutable.
+        /// </summary>
+        bool? EnableSoftDelete { get; set; }
+        /// <summary>The URI of the managed hsm pool for performing operations on keys.</summary>
+        string HsmUri { get; set; }
+        /// <summary>Managed service identity</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentity Identity { get; set; }
+        /// <summary>
+        /// The service principal ID of the system assigned identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        string IdentityPrincipalId { get; set; }
+        /// <summary>
+        /// The tenant ID of the system assigned identity. This property will only be provided for a system assigned identity.
+        /// </summary>
+        string IdentityTenantId { get; set; }
+        /// <summary>The type of managed identity assigned to this resource.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("None", "SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned")]
+        string IdentityType { get; set; }
+        /// <summary>The identities assigned to this resource by the user.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedServiceIdentityUserAssignedIdentities IdentityUserAssignedIdentity { get; set; }
+        /// <summary>Array of initial administrators object ids for this managed hsm pool.</summary>
+        System.Collections.Generic.List<string> InitialAdminObjectId { get; set; }
+        /// <summary>The geo-location where the resource lives</summary>
+        string Location { get; set; }
+        /// <summary>
+        /// Rules governing the accessibility of the key vault from specific network locations.
+        /// </summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmNetworkRuleSet NetworkAcls { get; set; }
+        /// <summary>
+        /// Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'. If not specified the default is 'AzureServices'.
+        /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("AzureServices", "None")]
+        string NetworkAclsBypass { get; set; }
+        /// <summary>
+        /// The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property
+        /// has been evaluated.
+        /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Allow", "Deny")]
+        string NetworkAclsDefaultAction { get; set; }
+        /// <summary>The list of IP address rules.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmipRule> NetworkAclsIPRule { get; set; }
+        /// <summary>The list of service tags.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmServiceTagRule> NetworkAclsServiceTag { get; set; }
+        /// <summary>The list of virtual network rules.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmVirtualNetworkRule> NetworkAclsVirtualNetworkRule { get; set; }
+        /// <summary>List of private endpoint connections associated with the managed hsm pool.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmPrivateEndpointConnectionItem> PrivateEndpointConnection { get; set; }
+        /// <summary>Properties of the managed HSM</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmProperties Property { get; set; }
+        /// <summary>Provisioning state.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Succeeded", "Provisioning", "Failed", "Updating", "Deleting", "Activated", "SecurityDomainRestore", "Restoring")]
+        string ProvisioningState { get; set; }
+        /// <summary>Control permission to the managed HSM from public networks.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Enabled", "Disabled")]
+        string PublicNetworkAccess { get; set; }
+        /// <summary>List of all regions associated with the managed hsm pool.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IMhsmGeoReplicatedRegion> Region { get; set; }
+        /// <summary>The scheduled purge date in UTC.</summary>
+        global::System.DateTime? ScheduledPurgeDate { get; set; }
+        /// <summary>Managed HSM security domain properties.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmSecurityDomainProperties SecurityDomainProperty { get; set; }
+        /// <summary>Activation Status</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Active", "NotActivated", "Unknown", "Failed")]
+        string SecurityDomainPropertyActivationStatus { get; set; }
+        /// <summary>Activation Status Message.</summary>
+        string SecurityDomainPropertyActivationStatusMessage { get; set; }
+        /// <summary>SKU details</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmSku Sku { get; set; }
+        /// <summary>SKU Family of the managed HSM Pool</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("B", "C")]
+        string SkuFamily { get; set; }
+        /// <summary>SKU of the managed HSM Pool</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Standard_B1", "Custom_B32", "Custom_B6", "Custom_C42", "Custom_C10")]
+        string SkuName { get; set; }
+        /// <summary>
+        /// Soft deleted data retention days. When you delete an HSM or a key, it will remain recoverable for the configured retention
+        /// period or for a default period of 90 days. It accepts values between 7 and 90.
+        /// </summary>
+        int? SoftDeleteRetentionInDay { get; set; }
+        /// <summary>Resource Status Message.</summary>
+        string StatusMessage { get; set; }
+        /// <summary>Resource tags.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmTags Tag { get; set; }
+        /// <summary>
+        /// The Azure Active Directory tenant ID that should be used for authenticating requests to the managed HSM pool.
+        /// </summary>
+        string TenantId { get; set; }
+
+    }
+}

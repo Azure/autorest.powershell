@@ -1,0 +1,72 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Extensions;
+
+    /// <summary>The response of a ManagedHsm list operation.</summary>
+    public partial class ManagedHsmListResult :
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmListResult,
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsmListResultInternal
+    {
+
+        /// <summary>Backing field for <see cref="NextLink" /> property.</summary>
+        private string _nextLink;
+
+        /// <summary>The link to the next page of items</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string NextLink { get => this._nextLink; set => this._nextLink = value; }
+
+        /// <summary>Backing field for <see cref="Value" /> property.</summary>
+        private System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsm> _value;
+
+        /// <summary>The ManagedHsm items on this page</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsm> Value { get => this._value; set => this._value = value; }
+
+        /// <summary>Creates an new <see cref="ManagedHsmListResult" /> instance.</summary>
+        public ManagedHsmListResult()
+        {
+
+        }
+    }
+    /// The response of a ManagedHsm list operation.
+    public partial interface IManagedHsmListResult :
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.IJsonSerializable
+    {
+        /// <summary>The link to the next page of items</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The link to the next page of items",
+        SerializedName = @"nextLink",
+        PossibleTypes = new [] { typeof(string) })]
+        string NextLink { get; set; }
+        /// <summary>The ManagedHsm items on this page</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The ManagedHsm items on this page",
+        SerializedName = @"value",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsm) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsm> Value { get; set; }
+
+    }
+    /// The response of a ManagedHsm list operation.
+    internal partial interface IManagedHsmListResultInternal
+
+    {
+        /// <summary>The link to the next page of items</summary>
+        string NextLink { get; set; }
+        /// <summary>The ManagedHsm items on this page</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IManagedHsm> Value { get; set; }
+
+    }
+}

@@ -1,0 +1,251 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Extensions;
+
+    public partial class KeyVaultIdentity :
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IKeyVaultIdentity,
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IKeyVaultIdentityInternal
+    {
+
+        /// <summary>Backing field for <see cref="Id" /> property.</summary>
+        private string _id;
+
+        /// <summary>Resource identity path</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string Id { get => this._id; set => this._id = value; }
+
+        /// <summary>Backing field for <see cref="KeyName" /> property.</summary>
+        private string _keyName;
+
+        /// <summary>The name of the key to be retrieved.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string KeyName { get => this._keyName; set => this._keyName = value; }
+
+        /// <summary>Backing field for <see cref="KeyVersion" /> property.</summary>
+        private string _keyVersion;
+
+        /// <summary>The version of the key to be retrieved.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string KeyVersion { get => this._keyVersion; set => this._keyVersion = value; }
+
+        /// <summary>Backing field for <see cref="Location" /> property.</summary>
+        private string _location;
+
+        /// <summary>The name of the Azure region.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string Location { get => this._location; set => this._location = value; }
+
+        /// <summary>Backing field for <see cref="Name" /> property.</summary>
+        private string _name;
+
+        /// <summary>The name of the managed HSM Pool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string Name { get => this._name; set => this._name = value; }
+
+        /// <summary>Backing field for <see cref="OperationKind" /> property.</summary>
+        private string _operationKind;
+
+        /// <summary>Name of the operation</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string OperationKind { get => this._operationKind; set => this._operationKind = value; }
+
+        /// <summary>Backing field for <see cref="PrivateEndpointConnectionName" /> property.</summary>
+        private string _privateEndpointConnectionName;
+
+        /// <summary>Name of the private endpoint connection associated with the key vault.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string PrivateEndpointConnectionName { get => this._privateEndpointConnectionName; set => this._privateEndpointConnectionName = value; }
+
+        /// <summary>Backing field for <see cref="ResourceGroupName" /> property.</summary>
+        private string _resourceGroupName;
+
+        /// <summary>The name of the resource group. The name is case insensitive.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string ResourceGroupName { get => this._resourceGroupName; set => this._resourceGroupName = value; }
+
+        /// <summary>Backing field for <see cref="SecretName" /> property.</summary>
+        private string _secretName;
+
+        /// <summary>The name of the secret.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string SecretName { get => this._secretName; set => this._secretName = value; }
+
+        /// <summary>Backing field for <see cref="SubscriptionId" /> property.</summary>
+        private string _subscriptionId;
+
+        /// <summary>The ID of the target subscription. The value must be an UUID.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string SubscriptionId { get => this._subscriptionId; set => this._subscriptionId = value; }
+
+        /// <summary>Backing field for <see cref="VaultName" /> property.</summary>
+        private string _vaultName;
+
+        /// <summary>The name of the vault.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string VaultName { get => this._vaultName; set => this._vaultName = value; }
+
+        /// <summary>Creates an new <see cref="KeyVaultIdentity" /> instance.</summary>
+        public KeyVaultIdentity()
+        {
+
+        }
+    }
+    public partial interface IKeyVaultIdentity :
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.IJsonSerializable
+    {
+        /// <summary>Resource identity path</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Resource identity path",
+        SerializedName = @"id",
+        PossibleTypes = new [] { typeof(string) })]
+        string Id { get; set; }
+        /// <summary>The name of the key to be retrieved.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the key to be retrieved.",
+        SerializedName = @"keyName",
+        PossibleTypes = new [] { typeof(string) })]
+        string KeyName { get; set; }
+        /// <summary>The version of the key to be retrieved.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The version of the key to be retrieved.",
+        SerializedName = @"keyVersion",
+        PossibleTypes = new [] { typeof(string) })]
+        string KeyVersion { get; set; }
+        /// <summary>The name of the Azure region.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the Azure region.",
+        SerializedName = @"location",
+        PossibleTypes = new [] { typeof(string) })]
+        string Location { get; set; }
+        /// <summary>The name of the managed HSM Pool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the managed HSM Pool.",
+        SerializedName = @"name",
+        PossibleTypes = new [] { typeof(string) })]
+        string Name { get; set; }
+        /// <summary>Name of the operation</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Name of the operation",
+        SerializedName = @"operationKind",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("add", "replace", "remove")]
+        string OperationKind { get; set; }
+        /// <summary>Name of the private endpoint connection associated with the key vault.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Name of the private endpoint connection associated with the key vault.",
+        SerializedName = @"privateEndpointConnectionName",
+        PossibleTypes = new [] { typeof(string) })]
+        string PrivateEndpointConnectionName { get; set; }
+        /// <summary>The name of the resource group. The name is case insensitive.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the resource group. The name is case insensitive.",
+        SerializedName = @"resourceGroupName",
+        PossibleTypes = new [] { typeof(string) })]
+        string ResourceGroupName { get; set; }
+        /// <summary>The name of the secret.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the secret.",
+        SerializedName = @"secretName",
+        PossibleTypes = new [] { typeof(string) })]
+        string SecretName { get; set; }
+        /// <summary>The ID of the target subscription. The value must be an UUID.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The ID of the target subscription. The value must be an UUID.",
+        SerializedName = @"subscriptionId",
+        PossibleTypes = new [] { typeof(string) })]
+        string SubscriptionId { get; set; }
+        /// <summary>The name of the vault.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the vault.",
+        SerializedName = @"vaultName",
+        PossibleTypes = new [] { typeof(string) })]
+        string VaultName { get; set; }
+
+    }
+    internal partial interface IKeyVaultIdentityInternal
+
+    {
+        /// <summary>Resource identity path</summary>
+        string Id { get; set; }
+        /// <summary>The name of the key to be retrieved.</summary>
+        string KeyName { get; set; }
+        /// <summary>The version of the key to be retrieved.</summary>
+        string KeyVersion { get; set; }
+        /// <summary>The name of the Azure region.</summary>
+        string Location { get; set; }
+        /// <summary>The name of the managed HSM Pool.</summary>
+        string Name { get; set; }
+        /// <summary>Name of the operation</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("add", "replace", "remove")]
+        string OperationKind { get; set; }
+        /// <summary>Name of the private endpoint connection associated with the key vault.</summary>
+        string PrivateEndpointConnectionName { get; set; }
+        /// <summary>The name of the resource group. The name is case insensitive.</summary>
+        string ResourceGroupName { get; set; }
+        /// <summary>The name of the secret.</summary>
+        string SecretName { get; set; }
+        /// <summary>The ID of the target subscription. The value must be an UUID.</summary>
+        string SubscriptionId { get; set; }
+        /// <summary>The name of the vault.</summary>
+        string VaultName { get; set; }
+
+    }
+}

@@ -221,6 +221,9 @@ export function getSchemaForType(
         case "rfc7231":
           (<any>propertySchema).format = "date-time-rfc1123";
           break;
+        case "unixTimestamp":
+          (<any>propertySchema).type = SchemaType.UnixTime;
+          break;
         default:
           break;
       }
