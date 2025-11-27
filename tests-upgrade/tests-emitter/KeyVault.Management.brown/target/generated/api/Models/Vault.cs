@@ -1,0 +1,690 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Extensions;
+
+    /// <summary>Resource information with extended details.</summary>
+    public partial class Vault :
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVault,
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultInternal,
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.IValidates
+    {
+        /// <summary>
+        /// Backing field for Inherited model <see cref= "Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IProxyResource" />
+        /// </summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IProxyResource __proxyResource = new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ProxyResource();
+
+        /// <summary>
+        /// An array of 0 to 1024 identities that have access to the key vault. All identities in the array must use the same tenant
+        /// ID as the key vault's tenant ID. When `createMode` is set to `recover`, access policies are not required. Otherwise, access
+        /// policies are required.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IAccessPolicyEntry> AccessPolicy { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).AccessPolicy; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).AccessPolicy = value ?? null /* arrayOf */; }
+
+        /// <summary>
+        /// The vault's create mode to indicate whether the vault need to be recovered or not.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string CreateMode { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).CreateMode; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).CreateMode = value ?? null; }
+
+        /// <summary>
+        /// Property specifying whether protection against purge is enabled for this vault. Setting this property to true activates
+        /// protection against purge for this vault and its content - only the Key Vault service may initiate a hard, irrecoverable
+        /// deletion. The setting is effective only if soft delete is also enabled. Enabling this functionality is irreversible -
+        /// that is, the property does not accept false as its value.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public bool? EnablePurgeProtection { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).EnablePurgeProtection; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).EnablePurgeProtection = value ?? default(bool); }
+
+        /// <summary>
+        /// Property that controls how data actions are authorized. When true, the key vault will use Role Based Access Control (RBAC)
+        /// for authorization of data actions, and the access policies specified in vault properties will be ignored. When false,
+        /// the key vault will use the access policies specified in vault properties, and any policy stored on Azure Resource Manager
+        /// will be ignored. If null or not specified, the vault is created with the default value of false. Note that management
+        /// actions are always authorized with RBAC.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public bool? EnableRbacAuthorization { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).EnableRbacAuthorization; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).EnableRbacAuthorization = value ?? default(bool); }
+
+        /// <summary>
+        /// Property to specify whether the 'soft delete' functionality is enabled for this key vault. If it's not set to any value(true
+        /// or false) when creating new key vault, it will be set to true by default. Once set to true, it cannot be reverted to false.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public bool? EnableSoftDelete { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).EnableSoftDelete; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).EnableSoftDelete = value ?? default(bool); }
+
+        /// <summary>
+        /// Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key
+        /// vault.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public bool? EnabledForDeployment { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).EnabledForDeployment; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).EnabledForDeployment = value ?? default(bool); }
+
+        /// <summary>
+        /// Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public bool? EnabledForDiskEncryption { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).EnabledForDiskEncryption; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).EnabledForDiskEncryption = value ?? default(bool); }
+
+        /// <summary>
+        /// Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public bool? EnabledForTemplateDeployment { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).EnabledForTemplateDeployment; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).EnabledForTemplateDeployment = value ?? default(bool); }
+
+        /// <summary>The resource id of HSM Pool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string HsmPoolResourceId { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).HsmPoolResourceId; }
+
+        /// <summary>
+        /// Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string Id { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).Id; }
+
+        /// <summary>Backing field for <see cref="Location" /> property.</summary>
+        private string _location;
+
+        /// <summary>Azure location of the key vault resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string Location { get => this._location; set => this._location = value; }
+
+        /// <summary>Internal Acessors for Id</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.Id { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).Id; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).Id = value ?? null; }
+
+        /// <summary>Internal Acessors for Name</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.Name { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).Name; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).Name = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemData</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ISystemData Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemData { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemData; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemData = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for SystemDataCreatedAt</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemDataCreatedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataCreatedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataCreatedAt = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for SystemDataCreatedBy</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemDataCreatedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataCreatedBy; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataCreatedBy = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemDataCreatedByType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemDataCreatedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataCreatedByType; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataCreatedByType = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemDataLastModifiedAt</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemDataLastModifiedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedAt; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedAt = value ?? default(global::System.DateTime); }
+
+        /// <summary>Internal Acessors for SystemDataLastModifiedBy</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemDataLastModifiedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedBy; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedBy = value ?? null; }
+
+        /// <summary>Internal Acessors for SystemDataLastModifiedByType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.SystemDataLastModifiedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedByType; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedByType = value ?? null; }
+
+        /// <summary>Internal Acessors for Type</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal.Type { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).Type; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).Type = value ?? null; }
+
+        /// <summary>Internal Acessors for HsmPoolResourceId</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultInternal.HsmPoolResourceId { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).HsmPoolResourceId; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).HsmPoolResourceId = value ?? null; }
+
+        /// <summary>Internal Acessors for NetworkAcls</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.INetworkRuleSet Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultInternal.NetworkAcls { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).NetworkAcls; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).NetworkAcls = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for PrivateEndpointConnection</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IPrivateEndpointConnectionItem> Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultInternal.PrivateEndpointConnection { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).PrivateEndpointConnection; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).PrivateEndpointConnection = value ?? null /* arrayOf */; }
+
+        /// <summary>Internal Acessors for Property</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultProperties Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultInternal.Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.VaultProperties()); set { {_property = value;} } }
+
+        /// <summary>Internal Acessors for Sku</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ISku Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultInternal.Sku { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).Sku; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).Sku = value ?? null /* model class */; }
+
+        /// <summary>Internal Acessors for SkuFamily</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultInternal.SkuFamily { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).SkuFamily; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).SkuFamily = value ; }
+
+        /// <summary>The name of the resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string Name { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).Name; }
+
+        /// <summary>
+        /// Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'. If not specified the default is 'AzureServices'.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string NetworkAclsBypass { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).NetworkAclsBypass; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).NetworkAclsBypass = value ?? null; }
+
+        /// <summary>
+        /// The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property
+        /// has been evaluated.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string NetworkAclsDefaultAction { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).NetworkAclsDefaultAction; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).NetworkAclsDefaultAction = value ?? null; }
+
+        /// <summary>The list of IP address rules.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IIPRule> NetworkAclsIPRule { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).NetworkAclsIPRule; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).NetworkAclsIPRule = value ?? null /* arrayOf */; }
+
+        /// <summary>The list of virtual network rules.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVirtualNetworkRule> NetworkAclsVirtualNetworkRule { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).NetworkAclsVirtualNetworkRule; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).NetworkAclsVirtualNetworkRule = value ?? null /* arrayOf */; }
+
+        /// <summary>List of private endpoint connections associated with the key vault.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IPrivateEndpointConnectionItem> PrivateEndpointConnection { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).PrivateEndpointConnection; }
+
+        /// <summary>Backing field for <see cref="Property" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultProperties _property;
+
+        /// <summary>Properties of the vault</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultProperties Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.VaultProperties()); set => this._property = value; }
+
+        /// <summary>Provisioning state of the vault.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string ProvisioningState { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).ProvisioningState; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).ProvisioningState = value ?? null; }
+
+        /// <summary>
+        /// Property to specify whether the vault will accept traffic from public internet. If set to 'disabled' all traffic except
+        /// private endpoint traffic and that that originates from trusted services will be blocked. This will override the set firewall
+        /// rules, meaning that even if the firewall rules are present we will not honor the rules.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string PublicNetworkAccess { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).PublicNetworkAccess; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).PublicNetworkAccess = value ?? null; }
+
+        /// <summary>Gets the resource group name</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public string ResourceGroupName { get => (new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Success ? new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Groups["resourceGroupName"].Value : null); }
+
+        /// <summary>SKU family name</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string SkuFamily { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).SkuFamily; }
+
+        /// <summary>
+        /// SKU name to specify whether the key vault is a standard vault or a premium vault.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string SkuName { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).SkuName; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).SkuName = value ; }
+
+        /// <summary>softDelete data retention days. It accepts >=7 and <=90.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public int? SoftDeleteRetentionInDay { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).SoftDeleteRetentionInDay; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).SoftDeleteRetentionInDay = value ?? default(int); }
+
+        /// <summary>
+        /// Azure Resource Manager metadata containing createdBy and modifiedBy information.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ISystemData SystemData { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemData; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemData = value ?? null /* model class */; }
+
+        /// <summary>The timestamp of resource creation (UTC).</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public global::System.DateTime? SystemDataCreatedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataCreatedAt; }
+
+        /// <summary>The identity that created the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string SystemDataCreatedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataCreatedBy; }
+
+        /// <summary>The type of identity that created the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string SystemDataCreatedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataCreatedByType; }
+
+        /// <summary>The timestamp of resource last modification (UTC)</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public global::System.DateTime? SystemDataLastModifiedAt { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedAt; }
+
+        /// <summary>The identity that last modified the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string SystemDataLastModifiedBy { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedBy; }
+
+        /// <summary>The type of identity that last modified the resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string SystemDataLastModifiedByType { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).SystemDataLastModifiedByType; }
+
+        /// <summary>Backing field for <see cref="Tag" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultTags _tag;
+
+        /// <summary>Tags assigned to the key vault resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Owned)]
+        public Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultTags Tag { get => (this._tag = this._tag ?? new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.VaultTags()); set => this._tag = value; }
+
+        /// <summary>
+        /// The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string TenantId { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).TenantId; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).TenantId = value ; }
+
+        /// <summary>
+        /// The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inherited)]
+        public string Type { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IResourceInternal)__proxyResource).Type; }
+
+        /// <summary>The URI of the vault for performing operations on keys and secrets.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Origin(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PropertyOrigin.Inlined)]
+        public string Uri { get => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).VaultUri; set => ((Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultPropertiesInternal)Property).VaultUri = value ?? null; }
+
+        /// <summary>Validates that this object meets the validation criteria.</summary>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.IEventListener" /> instance that will receive validation
+        /// events.</param>
+        /// <returns>
+        /// A <see cref = "global::System.Threading.Tasks.Task" /> that will be complete when validation is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task Validate(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.IEventListener eventListener)
+        {
+            await eventListener.AssertNotNull(nameof(__proxyResource), __proxyResource);
+            await eventListener.AssertObjectIsValid(nameof(__proxyResource), __proxyResource);
+        }
+
+        /// <summary>Creates an new <see cref="Vault" /> instance.</summary>
+        public Vault()
+        {
+
+        }
+    }
+    /// Resource information with extended details.
+    public partial interface IVault :
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.IJsonSerializable,
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IProxyResource
+    {
+        /// <summary>
+        /// An array of 0 to 1024 identities that have access to the key vault. All identities in the array must use the same tenant
+        /// ID as the key vault's tenant ID. When `createMode` is set to `recover`, access policies are not required. Otherwise, access
+        /// policies are required.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"An array of 0 to 1024 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. When `createMode` is set to `recover`, access policies are not required. Otherwise, access policies are required.",
+        SerializedName = @"accessPolicies",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IAccessPolicyEntry) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IAccessPolicyEntry> AccessPolicy { get; set; }
+        /// <summary>
+        /// The vault's create mode to indicate whether the vault need to be recovered or not.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = false,
+        Create = true,
+        Update = true,
+        Description = @"The vault's create mode to indicate whether the vault need to be recovered or not.",
+        SerializedName = @"createMode",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("recover", "default")]
+        string CreateMode { get; set; }
+        /// <summary>
+        /// Property specifying whether protection against purge is enabled for this vault. Setting this property to true activates
+        /// protection against purge for this vault and its content - only the Key Vault service may initiate a hard, irrecoverable
+        /// deletion. The setting is effective only if soft delete is also enabled. Enabling this functionality is irreversible -
+        /// that is, the property does not accept false as its value.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Property specifying whether protection against purge is enabled for this vault. Setting this property to true activates protection against purge for this vault and its content - only the Key Vault service may initiate a hard, irrecoverable deletion. The setting is effective only if soft delete is also enabled. Enabling this functionality is irreversible - that is, the property does not accept false as its value.",
+        SerializedName = @"enablePurgeProtection",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? EnablePurgeProtection { get; set; }
+        /// <summary>
+        /// Property that controls how data actions are authorized. When true, the key vault will use Role Based Access Control (RBAC)
+        /// for authorization of data actions, and the access policies specified in vault properties will be ignored. When false,
+        /// the key vault will use the access policies specified in vault properties, and any policy stored on Azure Resource Manager
+        /// will be ignored. If null or not specified, the vault is created with the default value of false. Note that management
+        /// actions are always authorized with RBAC.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Property that controls how data actions are authorized. When true, the key vault will use Role Based Access Control (RBAC) for authorization of data actions, and the access policies specified in vault properties will be  ignored. When false, the key vault will use the access policies specified in vault properties, and any policy stored on Azure Resource Manager will be ignored. If null or not specified, the vault is created with the default value of false. Note that management actions are always authorized with RBAC.",
+        SerializedName = @"enableRbacAuthorization",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? EnableRbacAuthorization { get; set; }
+        /// <summary>
+        /// Property to specify whether the 'soft delete' functionality is enabled for this key vault. If it's not set to any value(true
+        /// or false) when creating new key vault, it will be set to true by default. Once set to true, it cannot be reverted to false.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Property to specify whether the 'soft delete' functionality is enabled for this key vault. If it's not set to any value(true or false) when creating new key vault, it will be set to true by default. Once set to true, it cannot be reverted to false.",
+        SerializedName = @"enableSoftDelete",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? EnableSoftDelete { get; set; }
+        /// <summary>
+        /// Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key
+        /// vault.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault.",
+        SerializedName = @"enabledForDeployment",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? EnabledForDeployment { get; set; }
+        /// <summary>
+        /// Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys.",
+        SerializedName = @"enabledForDiskEncryption",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? EnabledForDiskEncryption { get; set; }
+        /// <summary>
+        /// Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault.",
+        SerializedName = @"enabledForTemplateDeployment",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? EnabledForTemplateDeployment { get; set; }
+        /// <summary>The resource id of HSM Pool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"The resource id of HSM Pool.",
+        SerializedName = @"hsmPoolResourceId",
+        PossibleTypes = new [] { typeof(string) })]
+        string HsmPoolResourceId { get;  }
+        /// <summary>Azure location of the key vault resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Azure location of the key vault resource.",
+        SerializedName = @"location",
+        PossibleTypes = new [] { typeof(string) })]
+        string Location { get; set; }
+        /// <summary>
+        /// Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'. If not specified the default is 'AzureServices'.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'.  If not specified the default is 'AzureServices'.",
+        SerializedName = @"bypass",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("AzureServices", "None")]
+        string NetworkAclsBypass { get; set; }
+        /// <summary>
+        /// The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property
+        /// has been evaluated.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property has been evaluated.",
+        SerializedName = @"defaultAction",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Allow", "Deny")]
+        string NetworkAclsDefaultAction { get; set; }
+        /// <summary>The list of IP address rules.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The list of IP address rules.",
+        SerializedName = @"ipRules",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IIPRule) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IIPRule> NetworkAclsIPRule { get; set; }
+        /// <summary>The list of virtual network rules.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The list of virtual network rules.",
+        SerializedName = @"virtualNetworkRules",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVirtualNetworkRule) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVirtualNetworkRule> NetworkAclsVirtualNetworkRule { get; set; }
+        /// <summary>List of private endpoint connections associated with the key vault.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"List of private endpoint connections associated with the key vault.",
+        SerializedName = @"privateEndpointConnections",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IPrivateEndpointConnectionItem) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IPrivateEndpointConnectionItem> PrivateEndpointConnection { get;  }
+        /// <summary>Provisioning state of the vault.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Provisioning state of the vault.",
+        SerializedName = @"provisioningState",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Succeeded", "RegisteringDns")]
+        string ProvisioningState { get; set; }
+        /// <summary>
+        /// Property to specify whether the vault will accept traffic from public internet. If set to 'disabled' all traffic except
+        /// private endpoint traffic and that that originates from trusted services will be blocked. This will override the set firewall
+        /// rules, meaning that even if the firewall rules are present we will not honor the rules.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Property to specify whether the vault will accept traffic from public internet. If set to 'disabled' all traffic except private endpoint traffic and that that originates from trusted services will be blocked. This will override the set firewall rules, meaning that even if the firewall rules are present we will not honor the rules.",
+        SerializedName = @"publicNetworkAccess",
+        PossibleTypes = new [] { typeof(string) })]
+        string PublicNetworkAccess { get; set; }
+        /// <summary>SKU family name</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = true,
+        ReadOnly = true,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"SKU family name",
+        SerializedName = @"family",
+        PossibleTypes = new [] { typeof(string) })]
+        string SkuFamily { get;  }
+        /// <summary>
+        /// SKU name to specify whether the key vault is a standard vault or a premium vault.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"SKU name to specify whether the key vault is a standard vault or a premium vault.",
+        SerializedName = @"name",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("standard", "premium")]
+        string SkuName { get; set; }
+        /// <summary>softDelete data retention days. It accepts >=7 and <=90.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"softDelete data retention days. It accepts >=7 and <=90.",
+        SerializedName = @"softDeleteRetentionInDays",
+        PossibleTypes = new [] { typeof(int) })]
+        int? SoftDeleteRetentionInDay { get; set; }
+        /// <summary>Tags assigned to the key vault resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Tags assigned to the key vault resource.",
+        SerializedName = @"tags",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultTags) })]
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultTags Tag { get; set; }
+        /// <summary>
+        /// The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.",
+        SerializedName = @"tenantId",
+        PossibleTypes = new [] { typeof(string) })]
+        string TenantId { get; set; }
+        /// <summary>The URI of the vault for performing operations on keys and secrets.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The URI of the vault for performing operations on keys and secrets.",
+        SerializedName = @"vaultUri",
+        PossibleTypes = new [] { typeof(string) })]
+        string Uri { get; set; }
+
+    }
+    /// Resource information with extended details.
+    internal partial interface IVaultInternal :
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IProxyResourceInternal
+    {
+        /// <summary>
+        /// An array of 0 to 1024 identities that have access to the key vault. All identities in the array must use the same tenant
+        /// ID as the key vault's tenant ID. When `createMode` is set to `recover`, access policies are not required. Otherwise, access
+        /// policies are required.
+        /// </summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IAccessPolicyEntry> AccessPolicy { get; set; }
+        /// <summary>
+        /// The vault's create mode to indicate whether the vault need to be recovered or not.
+        /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("recover", "default")]
+        string CreateMode { get; set; }
+        /// <summary>
+        /// Property specifying whether protection against purge is enabled for this vault. Setting this property to true activates
+        /// protection against purge for this vault and its content - only the Key Vault service may initiate a hard, irrecoverable
+        /// deletion. The setting is effective only if soft delete is also enabled. Enabling this functionality is irreversible -
+        /// that is, the property does not accept false as its value.
+        /// </summary>
+        bool? EnablePurgeProtection { get; set; }
+        /// <summary>
+        /// Property that controls how data actions are authorized. When true, the key vault will use Role Based Access Control (RBAC)
+        /// for authorization of data actions, and the access policies specified in vault properties will be ignored. When false,
+        /// the key vault will use the access policies specified in vault properties, and any policy stored on Azure Resource Manager
+        /// will be ignored. If null or not specified, the vault is created with the default value of false. Note that management
+        /// actions are always authorized with RBAC.
+        /// </summary>
+        bool? EnableRbacAuthorization { get; set; }
+        /// <summary>
+        /// Property to specify whether the 'soft delete' functionality is enabled for this key vault. If it's not set to any value(true
+        /// or false) when creating new key vault, it will be set to true by default. Once set to true, it cannot be reverted to false.
+        /// </summary>
+        bool? EnableSoftDelete { get; set; }
+        /// <summary>
+        /// Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key
+        /// vault.
+        /// </summary>
+        bool? EnabledForDeployment { get; set; }
+        /// <summary>
+        /// Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys.
+        /// </summary>
+        bool? EnabledForDiskEncryption { get; set; }
+        /// <summary>
+        /// Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault.
+        /// </summary>
+        bool? EnabledForTemplateDeployment { get; set; }
+        /// <summary>The resource id of HSM Pool.</summary>
+        string HsmPoolResourceId { get; set; }
+        /// <summary>Azure location of the key vault resource.</summary>
+        string Location { get; set; }
+        /// <summary>
+        /// Rules governing the accessibility of the key vault from specific network locations.
+        /// </summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.INetworkRuleSet NetworkAcls { get; set; }
+        /// <summary>
+        /// Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'. If not specified the default is 'AzureServices'.
+        /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("AzureServices", "None")]
+        string NetworkAclsBypass { get; set; }
+        /// <summary>
+        /// The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property
+        /// has been evaluated.
+        /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Allow", "Deny")]
+        string NetworkAclsDefaultAction { get; set; }
+        /// <summary>The list of IP address rules.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IIPRule> NetworkAclsIPRule { get; set; }
+        /// <summary>The list of virtual network rules.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVirtualNetworkRule> NetworkAclsVirtualNetworkRule { get; set; }
+        /// <summary>List of private endpoint connections associated with the key vault.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IPrivateEndpointConnectionItem> PrivateEndpointConnection { get; set; }
+        /// <summary>Properties of the vault</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultProperties Property { get; set; }
+        /// <summary>Provisioning state of the vault.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("Succeeded", "RegisteringDns")]
+        string ProvisioningState { get; set; }
+        /// <summary>
+        /// Property to specify whether the vault will accept traffic from public internet. If set to 'disabled' all traffic except
+        /// private endpoint traffic and that that originates from trusted services will be blocked. This will override the set firewall
+        /// rules, meaning that even if the firewall rules are present we will not honor the rules.
+        /// </summary>
+        string PublicNetworkAccess { get; set; }
+        /// <summary>SKU details</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.ISku Sku { get; set; }
+        /// <summary>SKU family name</summary>
+        string SkuFamily { get; set; }
+        /// <summary>
+        /// SKU name to specify whether the key vault is a standard vault or a premium vault.
+        /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.KeyVault.PSArgumentCompleterAttribute("standard", "premium")]
+        string SkuName { get; set; }
+        /// <summary>softDelete data retention days. It accepts >=7 and <=90.</summary>
+        int? SoftDeleteRetentionInDay { get; set; }
+        /// <summary>Tags assigned to the key vault resource.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Models.IVaultTags Tag { get; set; }
+        /// <summary>
+        /// The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+        /// </summary>
+        string TenantId { get; set; }
+        /// <summary>The URI of the vault for performing operations on keys and secrets.</summary>
+        string Uri { get; set; }
+
+    }
+}

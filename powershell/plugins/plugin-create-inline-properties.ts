@@ -435,7 +435,7 @@ export async function createVirtuals(state: State): Promise<PwshModel> {
     for (const each of conflicts) {
       state.error(each, ['circular reference']);
     }
-    throw new Error('Circular references exists, must mark models as `no-inline`');
+    throw new Error('Circular references exists, must mark models as `no-inline`\n' + conflicts.join('\n'));
   }
   //dolauli update operations under commands
   for (const operation of values(state.model.commands.operations)) {
