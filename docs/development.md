@@ -1,5 +1,37 @@
 # AutoRest PowerShell Generator - Development
 
+## Getting Started with Dev Containers (Recommended)
+
+The easiest way to get started is using the provided Dev Container configuration, which automatically sets up all required tools and dependencies.
+
+### Prerequisites
+- [Docker](https://www.docker.com/get-started) or [Podman](https://podman.io/)
+- [Visual Studio Code](https://code.visualstudio.com/) with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+### Setup
+1. Clone the repository:
+   ```powershell
+   git clone https://github.com/azure/autorest.powershell
+   cd autorest.powershell
+   ```
+
+2. Open in VS Code and reopen in container:
+   - Open the folder in VS Code
+   - When prompted, click "Reopen in Container" (or press `F1` and select "Dev Containers: Reopen in Container")
+   - Wait for the container to build and initialize (this may take a few minutes on first run)
+
+3. Once the container is ready, all tools are pre-installed and configured:
+   - Node.js 20.19.0
+   - Rush 5.112.2
+   - PowerShell 7.5+
+   - .NET SDK 2.1
+
+4. Build the project:
+   ```powershell
+   rush update
+   rush rebuild
+   ```
+
 ## Requirements
 
 Use of this project requires the following:
@@ -14,7 +46,7 @@ Use of this project requires the following:
 
 ## Cloning this repository
 
-``` powershell
+```powershell
 # clone recursively
 git clone https://github.com/azure/autorest.powershell
 
@@ -27,14 +59,14 @@ npm install
 
 This repository is built as a 'monorepo' using [RushJS](https://rushjs.io/) - which manages multiple nodejs projects in a single repository.
 
-``` powershell
+```powershell
 # install nodejs modules for all projects in the monorepo
 rush update
 ```
 
 Rush is used to make sure that package versions are consistent between sub-projects
 
-``` powershell
+```powershell
 # ensure all projects are using the same versions
 rush sync-versions
 
@@ -46,7 +78,7 @@ rush update
 
 Rush is used to build `autorest.powershell`
 
-``` powershell
+```powershell
 # build everything
 rush rebuild
 ```
@@ -54,7 +86,7 @@ rush rebuild
 You can use `watch` to compile when a file is changed, which will rebuild dependencies automatically.
 Just kill the process with ctrl-c to stop it.
 
-``` powershell
+```powershell
 # start watching 
 rush watch
 ```
@@ -63,15 +95,14 @@ rush watch
 
 To use the locally built version of the plugin, add `--use:<path>` to the command line 
 
-``` powershell
-# using a local build
-> autorest --use:c:/work/autorest.powershell <...arguments>
-
+```powershell
+# using a local build (adjust path for your platform)
+autorest --use:/path/to/autorest.powershell <...arguments>
 ```
 
 ### Debugging 
 
-1. Start generating: `autorest --use:C:\path\to\local\autorest.powershell --powershell.debugger`. It will wait for debugger to attach.
+1. Start generating: `autorest --use:/path/to/local/autorest.powershell --powershell.debugger`. It will wait for debugger to attach.
 1. Start debugging: open autorest.powershell repo in vscode; press `F5`. You will see "Debugger attached." in your autorest console, then you can start debugging.
 
 ### Testing
