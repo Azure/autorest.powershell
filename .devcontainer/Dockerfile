@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/base:bullseye
+FROM --platform=linux/amd64 mcr.microsoft.com/devcontainers/base:bullseye
 
 # Install .NET SDK 2.1
 RUN apt-get update \
@@ -22,9 +22,10 @@ RUN git clone https://github.com/jasongin/nvs "${NVS_HOME}" \
     && nvs use 20.19.0 \
     && nvs link 20.19.0
 
-# Install Rush globally
+# Install Rush and AutoRest globally
 RUN . "${NVS_HOME}/nvs.sh" \
-    && npm install -g @microsoft/rush@5.112.2
+    && npm install -g @microsoft/rush@5.112.2 \
+    && npm install -g autorest@latest
 
 # Add nvs to shell profiles
 RUN echo 'export NVS_HOME="$HOME/.nvs"' >> ~/.bashrc \
