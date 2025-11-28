@@ -1,0 +1,21 @@
+{
+  "name": "AutoRest PowerShell",
+  "build": {
+    "context": "..",
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/powershell:1": {
+      "version": "latest"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/postcreate.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.powershell",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  }
+}
