@@ -1,0 +1,35 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Extensions;
+
+    /// <summary>Attribute to provide information on various DBs.</summary>
+    public partial class DpmProtectedItemExtendedInfoProtectableObjectLoadPath :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmProtectedItemExtendedInfoProtectableObjectLoadPath,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmProtectedItemExtendedInfoProtectableObjectLoadPathInternal
+    {
+
+        /// <summary>
+        /// Creates an new <see cref="DpmProtectedItemExtendedInfoProtectableObjectLoadPath" /> instance.
+        /// </summary>
+        public DpmProtectedItemExtendedInfoProtectableObjectLoadPath()
+        {
+
+        }
+    }
+    /// Attribute to provide information on various DBs.
+    public partial interface IDpmProtectedItemExtendedInfoProtectableObjectLoadPath :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IJsonSerializable,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IAssociativeArray<string>
+    {
+
+    }
+    /// Attribute to provide information on various DBs.
+    internal partial interface IDpmProtectedItemExtendedInfoProtectableObjectLoadPathInternal
+
+    {
+
+    }
+}

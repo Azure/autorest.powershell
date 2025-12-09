@@ -1,0 +1,322 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models
+{
+    using Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.PowerShell;
+
+    /// <summary>Backup engine type when Azure Backup Server is used to manage the backups.</summary>
+    [System.ComponentModel.TypeConverter(typeof(AzureBackupServerEngineTypeConverter))]
+    public partial class AzureBackupServerEngine
+    {
+
+        /// <summary>
+        /// <c>AfterDeserializeDictionary</c> will be called after the deserialization has finished, allowing customization of the
+        /// object before it is returned. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+
+        partial void AfterDeserializeDictionary(global::System.Collections.IDictionary content);
+
+        /// <summary>
+        /// <c>AfterDeserializePSObject</c> will be called after the deserialization has finished, allowing customization of the object
+        /// before it is returned. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+
+        partial void AfterDeserializePSObject(global::System.Management.Automation.PSObject content);
+
+        /// <summary>
+        /// <c>BeforeDeserializeDictionary</c> will be called before the deserialization has commenced, allowing complete customization
+        /// of the object before it is deserialized.
+        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output
+        /// parameter.
+        /// Implement this method in a partial class to enable this behavior.
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+        /// <param name="returnNow">Determines if the rest of the serialization should be processed, or if the method should return
+        /// instantly.</param>
+
+        partial void BeforeDeserializeDictionary(global::System.Collections.IDictionary content, ref bool returnNow);
+
+        /// <summary>
+        /// <c>BeforeDeserializePSObject</c> will be called before the deserialization has commenced, allowing complete customization
+        /// of the object before it is deserialized.
+        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output
+        /// parameter.
+        /// Implement this method in a partial class to enable this behavior.
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+        /// <param name="returnNow">Determines if the rest of the serialization should be processed, or if the method should return
+        /// instantly.</param>
+
+        partial void BeforeDeserializePSObject(global::System.Management.Automation.PSObject content, ref bool returnNow);
+
+        /// <summary>
+        /// <c>OverrideToString</c> will be called if it is implemented. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="stringResult">/// instance serialized to a string, normally it is a Json</param>
+        /// <param name="returnNow">/// set returnNow to true if you provide a customized OverrideToString function</param>
+
+        partial void OverrideToString(ref string stringResult, ref bool returnNow);
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.AzureBackupServerEngine"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+        internal AzureBackupServerEngine(global::System.Collections.IDictionary content)
+        {
+            bool returnNow = false;
+            BeforeDeserializeDictionary(content, ref returnNow);
+            if (returnNow)
+            {
+                return;
+            }
+            // actually deserialize
+            if (content.Contains("ExtendedInfoDatabaseName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoDatabaseName = (string) content.GetValueForProperty("ExtendedInfoDatabaseName",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoDatabaseName, global::System.Convert.ToString);
+            }
+            if (content.Contains("ExtendedInfoProtectedItemsCount"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoProtectedItemsCount = (int?) content.GetValueForProperty("ExtendedInfoProtectedItemsCount",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoProtectedItemsCount, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("ExtendedInfoProtectedServersCount"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoProtectedServersCount = (int?) content.GetValueForProperty("ExtendedInfoProtectedServersCount",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoProtectedServersCount, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("ExtendedInfoDiskCount"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoDiskCount = (int?) content.GetValueForProperty("ExtendedInfoDiskCount",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoDiskCount, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("ExtendedInfoUsedDiskSpace"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoUsedDiskSpace = (double?) content.GetValueForProperty("ExtendedInfoUsedDiskSpace",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoUsedDiskSpace, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
+            }
+            if (content.Contains("ExtendedInfoAvailableDiskSpace"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoAvailableDiskSpace = (double?) content.GetValueForProperty("ExtendedInfoAvailableDiskSpace",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoAvailableDiskSpace, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
+            }
+            if (content.Contains("ExtendedInfoRefreshedAt"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoRefreshedAt = (global::System.DateTime?) content.GetValueForProperty("ExtendedInfoRefreshedAt",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoRefreshedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+            }
+            if (content.Contains("ExtendedInfoAzureProtectedInstance"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoAzureProtectedInstance = (int?) content.GetValueForProperty("ExtendedInfoAzureProtectedInstance",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoAzureProtectedInstance, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("ExtendedInfo"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfo = (Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineExtendedInfo) content.GetValueForProperty("ExtendedInfo",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfo, Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.BackupEngineExtendedInfoTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("FriendlyName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).FriendlyName = (string) content.GetValueForProperty("FriendlyName",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).FriendlyName, global::System.Convert.ToString);
+            }
+            if (content.Contains("BackupManagementType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupManagementType = (string) content.GetValueForProperty("BackupManagementType",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupManagementType, global::System.Convert.ToString);
+            }
+            if (content.Contains("RegistrationStatus"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).RegistrationStatus = (string) content.GetValueForProperty("RegistrationStatus",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).RegistrationStatus, global::System.Convert.ToString);
+            }
+            if (content.Contains("BackupEngineState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupEngineState = (string) content.GetValueForProperty("BackupEngineState",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupEngineState, global::System.Convert.ToString);
+            }
+            if (content.Contains("HealthStatus"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).HealthStatus = (string) content.GetValueForProperty("HealthStatus",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).HealthStatus, global::System.Convert.ToString);
+            }
+            if (content.Contains("BackupEngineType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupEngineType = (string) content.GetValueForProperty("BackupEngineType",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupEngineType, global::System.Convert.ToString);
+            }
+            if (content.Contains("CanReRegister"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).CanReRegister = (bool?) content.GetValueForProperty("CanReRegister",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).CanReRegister, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
+            }
+            if (content.Contains("BackupEngineId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupEngineId = (string) content.GetValueForProperty("BackupEngineId",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupEngineId, global::System.Convert.ToString);
+            }
+            if (content.Contains("DpmVersion"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).DpmVersion = (string) content.GetValueForProperty("DpmVersion",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).DpmVersion, global::System.Convert.ToString);
+            }
+            if (content.Contains("AzureBackupAgentVersion"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).AzureBackupAgentVersion = (string) content.GetValueForProperty("AzureBackupAgentVersion",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).AzureBackupAgentVersion, global::System.Convert.ToString);
+            }
+            if (content.Contains("IsAzureBackupAgentUpgradeAvailable"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).IsAzureBackupAgentUpgradeAvailable = (bool?) content.GetValueForProperty("IsAzureBackupAgentUpgradeAvailable",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).IsAzureBackupAgentUpgradeAvailable, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
+            }
+            if (content.Contains("IsDpmUpgradeAvailable"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).IsDpmUpgradeAvailable = (bool?) content.GetValueForProperty("IsDpmUpgradeAvailable",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).IsDpmUpgradeAvailable, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
+            }
+            AfterDeserializeDictionary(content);
+        }
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.AzureBackupServerEngine"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+        internal AzureBackupServerEngine(global::System.Management.Automation.PSObject content)
+        {
+            bool returnNow = false;
+            BeforeDeserializePSObject(content, ref returnNow);
+            if (returnNow)
+            {
+                return;
+            }
+            // actually deserialize
+            if (content.Contains("ExtendedInfoDatabaseName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoDatabaseName = (string) content.GetValueForProperty("ExtendedInfoDatabaseName",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoDatabaseName, global::System.Convert.ToString);
+            }
+            if (content.Contains("ExtendedInfoProtectedItemsCount"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoProtectedItemsCount = (int?) content.GetValueForProperty("ExtendedInfoProtectedItemsCount",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoProtectedItemsCount, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("ExtendedInfoProtectedServersCount"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoProtectedServersCount = (int?) content.GetValueForProperty("ExtendedInfoProtectedServersCount",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoProtectedServersCount, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("ExtendedInfoDiskCount"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoDiskCount = (int?) content.GetValueForProperty("ExtendedInfoDiskCount",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoDiskCount, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("ExtendedInfoUsedDiskSpace"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoUsedDiskSpace = (double?) content.GetValueForProperty("ExtendedInfoUsedDiskSpace",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoUsedDiskSpace, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
+            }
+            if (content.Contains("ExtendedInfoAvailableDiskSpace"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoAvailableDiskSpace = (double?) content.GetValueForProperty("ExtendedInfoAvailableDiskSpace",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoAvailableDiskSpace, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
+            }
+            if (content.Contains("ExtendedInfoRefreshedAt"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoRefreshedAt = (global::System.DateTime?) content.GetValueForProperty("ExtendedInfoRefreshedAt",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoRefreshedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+            }
+            if (content.Contains("ExtendedInfoAzureProtectedInstance"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoAzureProtectedInstance = (int?) content.GetValueForProperty("ExtendedInfoAzureProtectedInstance",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfoAzureProtectedInstance, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("ExtendedInfo"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfo = (Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineExtendedInfo) content.GetValueForProperty("ExtendedInfo",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).ExtendedInfo, Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.BackupEngineExtendedInfoTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("FriendlyName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).FriendlyName = (string) content.GetValueForProperty("FriendlyName",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).FriendlyName, global::System.Convert.ToString);
+            }
+            if (content.Contains("BackupManagementType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupManagementType = (string) content.GetValueForProperty("BackupManagementType",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupManagementType, global::System.Convert.ToString);
+            }
+            if (content.Contains("RegistrationStatus"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).RegistrationStatus = (string) content.GetValueForProperty("RegistrationStatus",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).RegistrationStatus, global::System.Convert.ToString);
+            }
+            if (content.Contains("BackupEngineState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupEngineState = (string) content.GetValueForProperty("BackupEngineState",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupEngineState, global::System.Convert.ToString);
+            }
+            if (content.Contains("HealthStatus"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).HealthStatus = (string) content.GetValueForProperty("HealthStatus",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).HealthStatus, global::System.Convert.ToString);
+            }
+            if (content.Contains("BackupEngineType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupEngineType = (string) content.GetValueForProperty("BackupEngineType",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupEngineType, global::System.Convert.ToString);
+            }
+            if (content.Contains("CanReRegister"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).CanReRegister = (bool?) content.GetValueForProperty("CanReRegister",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).CanReRegister, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
+            }
+            if (content.Contains("BackupEngineId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupEngineId = (string) content.GetValueForProperty("BackupEngineId",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).BackupEngineId, global::System.Convert.ToString);
+            }
+            if (content.Contains("DpmVersion"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).DpmVersion = (string) content.GetValueForProperty("DpmVersion",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).DpmVersion, global::System.Convert.ToString);
+            }
+            if (content.Contains("AzureBackupAgentVersion"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).AzureBackupAgentVersion = (string) content.GetValueForProperty("AzureBackupAgentVersion",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).AzureBackupAgentVersion, global::System.Convert.ToString);
+            }
+            if (content.Contains("IsAzureBackupAgentUpgradeAvailable"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).IsAzureBackupAgentUpgradeAvailable = (bool?) content.GetValueForProperty("IsAzureBackupAgentUpgradeAvailable",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).IsAzureBackupAgentUpgradeAvailable, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
+            }
+            if (content.Contains("IsDpmUpgradeAvailable"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).IsDpmUpgradeAvailable = (bool?) content.GetValueForProperty("IsDpmUpgradeAvailable",((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupEngineBaseInternal)this).IsDpmUpgradeAvailable, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
+            }
+            AfterDeserializePSObject(content);
+        }
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.AzureBackupServerEngine"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+        /// <returns>
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IAzureBackupServerEngine" />.
+        /// </returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IAzureBackupServerEngine DeserializeFromDictionary(global::System.Collections.IDictionary content)
+        {
+            return new AzureBackupServerEngine(content);
+        }
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.AzureBackupServerEngine"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+        /// <returns>
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IAzureBackupServerEngine" />.
+        /// </returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IAzureBackupServerEngine DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
+        {
+            return new AzureBackupServerEngine(content);
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="AzureBackupServerEngine" />, deserializing the content from a json string.
+        /// </summary>
+        /// <param name="jsonText">a string containing a JSON serialized instance of this model.</param>
+        /// <returns>an instance of the <see cref="AzureBackupServerEngine" /> model class.</returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IAzureBackupServerEngine FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Json.JsonNode.Parse(jsonText));
+
+        /// <summary>Serializes this instance to a json string.</summary>
+
+        /// <returns>a <see cref="System.String" /> containing this model serialized to JSON text.</returns>
+        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.SerializationMode.IncludeAll)?.ToString();
+
+        public override string ToString()
+        {
+            var returnNow = false;
+            var result = global::System.String.Empty;
+            OverrideToString(ref result, ref returnNow);
+            if (returnNow)
+            {
+                return result;
+            }
+            return ToJsonString();
+        }
+    }
+    /// Backup engine type when Azure Backup Server is used to manage the backups.
+    [System.ComponentModel.TypeConverter(typeof(AzureBackupServerEngineTypeConverter))]
+    public partial interface IAzureBackupServerEngine
+
+    {
+
+    }
+}

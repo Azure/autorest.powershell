@@ -1,0 +1,198 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Extensions;
+
+    /// <summary>
+    /// BEK is bitlocker key.
+    /// KEK is encryption key for BEK
+    /// If the VM was encrypted then we will store following details :
+    /// 1. Secret(BEK) - Url + Backup Data + vaultId.
+    /// 2. Key(KEK) - Url + Backup Data + vaultId.
+    /// 3. EncryptionMechanism
+    /// BEK and KEK can potentially have different vault ids.
+    /// </summary>
+    public partial class KeyAndSecretDetails :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKeyAndSecretDetails,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKeyAndSecretDetailsInternal
+    {
+
+        /// <summary>Backing field for <see cref="BekDetail" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBekDetails _bekDetail;
+
+        /// <summary>BEK is bitlocker encryption key.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBekDetails BekDetail { get => (this._bekDetail = this._bekDetail ?? new Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.BekDetails()); set => this._bekDetail = value; }
+
+        /// <summary>BEK data.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inlined)]
+        public string BekDetailSecretData { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBekDetailsInternal)BekDetail).SecretData; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBekDetailsInternal)BekDetail).SecretData = value ?? null; }
+
+        /// <summary>Secret is BEK.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inlined)]
+        public string BekDetailSecretUrl { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBekDetailsInternal)BekDetail).SecretUrl; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBekDetailsInternal)BekDetail).SecretUrl = value ?? null; }
+
+        /// <summary>ID of the Key Vault where this Secret is stored.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inlined)]
+        public string BekDetailSecretVaultId { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBekDetailsInternal)BekDetail).SecretVaultId; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBekDetailsInternal)BekDetail).SecretVaultId = value ?? null; }
+
+        /// <summary>Backing field for <see cref="EncryptionMechanism" /> property.</summary>
+        private string _encryptionMechanism;
+
+        /// <summary>Encryption mechanism: None/ SinglePass/ DoublePass</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public string EncryptionMechanism { get => this._encryptionMechanism; set => this._encryptionMechanism = value; }
+
+        /// <summary>Backing field for <see cref="KekDetail" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKekDetails _kekDetail;
+
+        /// <summary>KEK is encryption key for BEK.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKekDetails KekDetail { get => (this._kekDetail = this._kekDetail ?? new Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.KekDetails()); set => this._kekDetail = value; }
+
+        /// <summary>KEK data.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inlined)]
+        public string KekDetailKeyBackupData { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKekDetailsInternal)KekDetail).KeyBackupData; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKekDetailsInternal)KekDetail).KeyBackupData = value ?? null; }
+
+        /// <summary>Key is KEK.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inlined)]
+        public string KekDetailKeyUrl { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKekDetailsInternal)KekDetail).KeyUrl; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKekDetailsInternal)KekDetail).KeyUrl = value ?? null; }
+
+        /// <summary>Key Vault ID where this Key is stored.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inlined)]
+        public string KekDetailKeyVaultId { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKekDetailsInternal)KekDetail).KeyVaultId; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKekDetailsInternal)KekDetail).KeyVaultId = value ?? null; }
+
+        /// <summary>Internal Acessors for BekDetail</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBekDetails Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKeyAndSecretDetailsInternal.BekDetail { get => (this._bekDetail = this._bekDetail ?? new Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.BekDetails()); set { {_bekDetail = value;} } }
+
+        /// <summary>Internal Acessors for KekDetail</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKekDetails Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKeyAndSecretDetailsInternal.KekDetail { get => (this._kekDetail = this._kekDetail ?? new Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.KekDetails()); set { {_kekDetail = value;} } }
+
+        /// <summary>Creates an new <see cref="KeyAndSecretDetails" /> instance.</summary>
+        public KeyAndSecretDetails()
+        {
+
+        }
+    }
+    /// BEK is bitlocker key.
+    /// KEK is encryption key for BEK
+    /// If the VM was encrypted then we will store following details :
+    /// 1. Secret(BEK) - Url + Backup Data + vaultId.
+    /// 2. Key(KEK) - Url + Backup Data + vaultId.
+    /// 3. EncryptionMechanism
+    /// BEK and KEK can potentially have different vault ids.
+    public partial interface IKeyAndSecretDetails :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IJsonSerializable
+    {
+        /// <summary>BEK data.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"BEK data.",
+        SerializedName = @"secretData",
+        PossibleTypes = new [] { typeof(string) })]
+        string BekDetailSecretData { get; set; }
+        /// <summary>Secret is BEK.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Secret is BEK.",
+        SerializedName = @"secretUrl",
+        PossibleTypes = new [] { typeof(string) })]
+        string BekDetailSecretUrl { get; set; }
+        /// <summary>ID of the Key Vault where this Secret is stored.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"ID of the Key Vault where this Secret is stored.",
+        SerializedName = @"secretVaultId",
+        PossibleTypes = new [] { typeof(string) })]
+        string BekDetailSecretVaultId { get; set; }
+        /// <summary>Encryption mechanism: None/ SinglePass/ DoublePass</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Encryption mechanism: None/ SinglePass/ DoublePass",
+        SerializedName = @"encryptionMechanism",
+        PossibleTypes = new [] { typeof(string) })]
+        string EncryptionMechanism { get; set; }
+        /// <summary>KEK data.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"KEK data.",
+        SerializedName = @"keyBackupData",
+        PossibleTypes = new [] { typeof(string) })]
+        string KekDetailKeyBackupData { get; set; }
+        /// <summary>Key is KEK.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Key is KEK.",
+        SerializedName = @"keyUrl",
+        PossibleTypes = new [] { typeof(string) })]
+        string KekDetailKeyUrl { get; set; }
+        /// <summary>Key Vault ID where this Key is stored.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Key Vault ID where this Key is stored.",
+        SerializedName = @"keyVaultId",
+        PossibleTypes = new [] { typeof(string) })]
+        string KekDetailKeyVaultId { get; set; }
+
+    }
+    /// BEK is bitlocker key.
+    /// KEK is encryption key for BEK
+    /// If the VM was encrypted then we will store following details :
+    /// 1. Secret(BEK) - Url + Backup Data + vaultId.
+    /// 2. Key(KEK) - Url + Backup Data + vaultId.
+    /// 3. EncryptionMechanism
+    /// BEK and KEK can potentially have different vault ids.
+    internal partial interface IKeyAndSecretDetailsInternal
+
+    {
+        /// <summary>BEK is bitlocker encryption key.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBekDetails BekDetail { get; set; }
+        /// <summary>BEK data.</summary>
+        string BekDetailSecretData { get; set; }
+        /// <summary>Secret is BEK.</summary>
+        string BekDetailSecretUrl { get; set; }
+        /// <summary>ID of the Key Vault where this Secret is stored.</summary>
+        string BekDetailSecretVaultId { get; set; }
+        /// <summary>Encryption mechanism: None/ SinglePass/ DoublePass</summary>
+        string EncryptionMechanism { get; set; }
+        /// <summary>KEK is encryption key for BEK.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IKekDetails KekDetail { get; set; }
+        /// <summary>KEK data.</summary>
+        string KekDetailKeyBackupData { get; set; }
+        /// <summary>Key is KEK.</summary>
+        string KekDetailKeyUrl { get; set; }
+        /// <summary>Key Vault ID where this Key is stored.</summary>
+        string KekDetailKeyVaultId { get; set; }
+
+    }
+}

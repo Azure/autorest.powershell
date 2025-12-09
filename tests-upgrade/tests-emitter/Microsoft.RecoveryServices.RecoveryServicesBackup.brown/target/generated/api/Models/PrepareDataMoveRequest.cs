@@ -1,0 +1,144 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Extensions;
+
+    /// <summary>Prepare DataMove Request</summary>
+    public partial class PrepareDataMoveRequest :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IPrepareDataMoveRequest,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IPrepareDataMoveRequestInternal
+    {
+
+        /// <summary>Backing field for <see cref="DataMoveLevel" /> property.</summary>
+        private string _dataMoveLevel;
+
+        /// <summary>DataMove Level</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public string DataMoveLevel { get => this._dataMoveLevel; set => this._dataMoveLevel = value; }
+
+        /// <summary>Backing field for <see cref="IgnoreMoved" /> property.</summary>
+        private bool? _ignoreMoved;
+
+        /// <summary>Ignore the artifacts which are already moved.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public bool? IgnoreMoved { get => this._ignoreMoved; set => this._ignoreMoved = value; }
+
+        /// <summary>Backing field for <see cref="SourceContainerArmId" /> property.</summary>
+        private System.Collections.Generic.List<string> _sourceContainerArmId;
+
+        /// <summary>
+        /// Source Container ArmIds
+        /// This needs to be populated only if DataMoveLevel is set to container
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<string> SourceContainerArmId { get => this._sourceContainerArmId; set => this._sourceContainerArmId = value; }
+
+        /// <summary>Backing field for <see cref="TargetRegion" /> property.</summary>
+        private string _targetRegion;
+
+        /// <summary>Target Region</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public string TargetRegion { get => this._targetRegion; set => this._targetRegion = value; }
+
+        /// <summary>Backing field for <see cref="TargetResourceId" /> property.</summary>
+        private string _targetResourceId;
+
+        /// <summary>ARM Id of target vault</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public string TargetResourceId { get => this._targetResourceId; set => this._targetResourceId = value; }
+
+        /// <summary>Creates an new <see cref="PrepareDataMoveRequest" /> instance.</summary>
+        public PrepareDataMoveRequest()
+        {
+
+        }
+    }
+    /// Prepare DataMove Request
+    public partial interface IPrepareDataMoveRequest :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IJsonSerializable
+    {
+        /// <summary>DataMove Level</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"DataMove Level",
+        SerializedName = @"dataMoveLevel",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PSArgumentCompleterAttribute("Invalid", "Vault", "Container")]
+        string DataMoveLevel { get; set; }
+        /// <summary>Ignore the artifacts which are already moved.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Ignore the artifacts which are already moved.",
+        SerializedName = @"ignoreMoved",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? IgnoreMoved { get; set; }
+        /// <summary>
+        /// Source Container ArmIds
+        /// This needs to be populated only if DataMoveLevel is set to container
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Source Container ArmIds
+        This needs to be populated only if DataMoveLevel is set to container",
+        SerializedName = @"sourceContainerArmIds",
+        PossibleTypes = new [] { typeof(string) })]
+        System.Collections.Generic.List<string> SourceContainerArmId { get; set; }
+        /// <summary>Target Region</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Target Region",
+        SerializedName = @"targetRegion",
+        PossibleTypes = new [] { typeof(string) })]
+        string TargetRegion { get; set; }
+        /// <summary>ARM Id of target vault</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"ARM Id of target vault",
+        SerializedName = @"targetResourceId",
+        PossibleTypes = new [] { typeof(string) })]
+        string TargetResourceId { get; set; }
+
+    }
+    /// Prepare DataMove Request
+    internal partial interface IPrepareDataMoveRequestInternal
+
+    {
+        /// <summary>DataMove Level</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PSArgumentCompleterAttribute("Invalid", "Vault", "Container")]
+        string DataMoveLevel { get; set; }
+        /// <summary>Ignore the artifacts which are already moved.</summary>
+        bool? IgnoreMoved { get; set; }
+        /// <summary>
+        /// Source Container ArmIds
+        /// This needs to be populated only if DataMoveLevel is set to container
+        /// </summary>
+        System.Collections.Generic.List<string> SourceContainerArmId { get; set; }
+        /// <summary>Target Region</summary>
+        string TargetRegion { get; set; }
+        /// <summary>ARM Id of target vault</summary>
+        string TargetResourceId { get; set; }
+
+    }
+}

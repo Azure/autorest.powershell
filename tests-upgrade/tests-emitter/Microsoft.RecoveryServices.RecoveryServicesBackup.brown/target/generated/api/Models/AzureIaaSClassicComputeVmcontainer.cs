@@ -1,0 +1,97 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Extensions;
+
+    /// <summary>IaaS VM workload-specific backup item representing a classic virtual machine.</summary>
+    public partial class AzureIaaSClassicComputeVmcontainer :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IAzureIaaSClassicComputeVmcontainer,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IAzureIaaSClassicComputeVmcontainerInternal,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IValidates
+    {
+        /// <summary>
+        /// Backing field for Inherited model <see cref= "Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IIaaSvmContainer"
+        /// />
+        /// </summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IIaaSvmContainer __iaaSvmContainer = new Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IaaSvmContainer();
+
+        /// <summary>Type of backup management for the container.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inherited)]
+        public string BackupManagementType { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IProtectionContainerInternal)__iaaSvmContainer).BackupManagementType; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IProtectionContainerInternal)__iaaSvmContainer).BackupManagementType = value ?? null; }
+
+        /// <summary>
+        /// Type of the container. The value of this property for: 1. Compute Azure VM is Microsoft.Compute/virtualMachines 2.
+        /// Classic Compute Azure VM is Microsoft.ClassicCompute/virtualMachines 3. Windows machines (like MAB, DPM etc) is
+        /// Windows 4. Azure SQL instance is AzureSqlContainer. 5. Storage containers is StorageContainer. 6. Azure workload
+        /// Backup is VMAppContainer
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Constant]
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inherited)]
+        public string ContainerType { get => "Microsoft.ClassicCompute/virtualMachines"; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IProtectionContainerInternal)__iaaSvmContainer).ContainerType = "Microsoft.ClassicCompute/virtualMachines"; }
+
+        /// <summary>Friendly name of the container.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inherited)]
+        public string FriendlyName { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IProtectionContainerInternal)__iaaSvmContainer).FriendlyName; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IProtectionContainerInternal)__iaaSvmContainer).FriendlyName = value ?? null; }
+
+        /// <summary>Status of health of the container.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inherited)]
+        public string HealthStatus { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IProtectionContainerInternal)__iaaSvmContainer).HealthStatus; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IProtectionContainerInternal)__iaaSvmContainer).HealthStatus = value ?? null; }
+
+        /// <summary>Type of the protectable object associated with this container</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inherited)]
+        public string ProtectableObjectType { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IProtectionContainerInternal)__iaaSvmContainer).ProtectableObjectType; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IProtectionContainerInternal)__iaaSvmContainer).ProtectableObjectType = value ?? null; }
+
+        /// <summary>Status of registration of the container with the Recovery Services Vault.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inherited)]
+        public string RegistrationStatus { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IProtectionContainerInternal)__iaaSvmContainer).RegistrationStatus; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IProtectionContainerInternal)__iaaSvmContainer).RegistrationStatus = value ?? null; }
+
+        /// <summary>Resource group name of Recovery Services Vault.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inherited)]
+        public string ResourceGroup { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IIaaSvmContainerInternal)__iaaSvmContainer).ResourceGroup; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IIaaSvmContainerInternal)__iaaSvmContainer).ResourceGroup = value ?? null; }
+
+        /// <summary>
+        /// Fully qualified ARM url of the virtual machine represented by this Azure IaaS VM container.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inherited)]
+        public string VirtualMachineId { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IIaaSvmContainerInternal)__iaaSvmContainer).VirtualMachineId; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IIaaSvmContainerInternal)__iaaSvmContainer).VirtualMachineId = value ?? null; }
+
+        /// <summary>
+        /// Specifies whether the container represents a Classic or an Azure Resource Manager VM.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inherited)]
+        public string VirtualMachineVersion { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IIaaSvmContainerInternal)__iaaSvmContainer).VirtualMachineVersion; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IIaaSvmContainerInternal)__iaaSvmContainer).VirtualMachineVersion = value ?? null; }
+
+        /// <summary>Creates an new <see cref="AzureIaaSClassicComputeVmcontainer" /> instance.</summary>
+        public AzureIaaSClassicComputeVmcontainer()
+        {
+            this.__iaaSvmContainer.ContainerType = "Microsoft.ClassicCompute/virtualMachines";
+        }
+
+        /// <summary>Validates that this object meets the validation criteria.</summary>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IEventListener" /> instance that will receive validation
+        /// events.</param>
+        /// <returns>
+        /// A <see cref = "global::System.Threading.Tasks.Task" /> that will be complete when validation is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task Validate(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IEventListener eventListener)
+        {
+            await eventListener.AssertNotNull(nameof(__iaaSvmContainer), __iaaSvmContainer);
+            await eventListener.AssertObjectIsValid(nameof(__iaaSvmContainer), __iaaSvmContainer);
+        }
+    }
+    /// IaaS VM workload-specific backup item representing a classic virtual machine.
+    public partial interface IAzureIaaSClassicComputeVmcontainer :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IJsonSerializable,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IIaaSvmContainer
+    {
+
+    }
+    /// IaaS VM workload-specific backup item representing a classic virtual machine.
+    internal partial interface IAzureIaaSClassicComputeVmcontainerInternal :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IIaaSvmContainerInternal
+    {
+
+    }
+}

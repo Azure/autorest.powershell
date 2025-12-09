@@ -41,7 +41,9 @@
     "StorageAction.Management.brown",
     "DataBox.Management.brown",
     "DataProtection.Management.brown",
-    "KeyVault.Management.brown"
+    "KeyVault.Management.brown",
+    "Microsoft.RecoveryServices.RecoveryServicesBackup.brown",
+    "Microsoft.DBforMySQL.FlexibleServers.brown"
   ],
   "whiteTestListFull": [
     "AppComplianceAutomation.Management",
@@ -84,7 +86,9 @@
     "StorageAction.Management.brown",
     "DataBox.Management.brown",
     "DataProtection.Management.brown",
-    "KeyVault.Management.brown"
+    "KeyVault.Management.brown",
+    "Microsoft.RecoveryServices.RecoveryServicesBackup.brown",
+    "Microsoft.DBforMySQL.FlexibleServers.brown"
   ],
   "blackTestList": [],
   "ignoreFolder": ["examples", "CompareResult"],
