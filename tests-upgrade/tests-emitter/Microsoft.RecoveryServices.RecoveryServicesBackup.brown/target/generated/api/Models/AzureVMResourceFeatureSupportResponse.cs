@@ -1,0 +1,54 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Extensions;
+
+    /// <summary>Response for feature support requests for Azure IaasVm</summary>
+    public partial class AzureVMResourceFeatureSupportResponse :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IAzureVMResourceFeatureSupportResponse,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IAzureVMResourceFeatureSupportResponseInternal
+    {
+
+        /// <summary>Backing field for <see cref="SupportStatus" /> property.</summary>
+        private string _supportStatus;
+
+        /// <summary>Support status of feature</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public string SupportStatus { get => this._supportStatus; set => this._supportStatus = value; }
+
+        /// <summary>Creates an new <see cref="AzureVMResourceFeatureSupportResponse" /> instance.</summary>
+        public AzureVMResourceFeatureSupportResponse()
+        {
+
+        }
+    }
+    /// Response for feature support requests for Azure IaasVm
+    public partial interface IAzureVMResourceFeatureSupportResponse :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IJsonSerializable
+    {
+        /// <summary>Support status of feature</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Support status of feature",
+        SerializedName = @"supportStatus",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PSArgumentCompleterAttribute("Invalid", "Supported", "DefaultOFF", "DefaultON", "NotSupported")]
+        string SupportStatus { get; set; }
+
+    }
+    /// Response for feature support requests for Azure IaasVm
+    internal partial interface IAzureVMResourceFeatureSupportResponseInternal
+
+    {
+        /// <summary>Support status of feature</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PSArgumentCompleterAttribute("Invalid", "Supported", "DefaultOFF", "DefaultON", "NotSupported")]
+        string SupportStatus { get; set; }
+
+    }
+}

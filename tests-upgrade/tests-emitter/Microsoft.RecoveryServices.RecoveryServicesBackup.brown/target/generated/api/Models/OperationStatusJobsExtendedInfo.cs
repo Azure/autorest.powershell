@@ -1,0 +1,98 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Extensions;
+
+    /// <summary>Operation status extended info for list of jobs.</summary>
+    public partial class OperationStatusJobsExtendedInfo :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IOperationStatusJobsExtendedInfo,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IOperationStatusJobsExtendedInfoInternal,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IValidates
+    {
+        /// <summary>
+        /// Backing field for Inherited model <see cref= "Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IOperationStatusExtendedInfo"
+        /// />
+        /// </summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IOperationStatusExtendedInfo __operationStatusExtendedInfo = new Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.OperationStatusExtendedInfo();
+
+        /// <summary>Backing field for <see cref="FailedJobsError" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IOperationStatusJobsExtendedInfoFailedJobsError _failedJobsError;
+
+        /// <summary>Stores all the failed jobs along with the corresponding error codes.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IOperationStatusJobsExtendedInfoFailedJobsError FailedJobsError { get => (this._failedJobsError = this._failedJobsError ?? new Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.OperationStatusJobsExtendedInfoFailedJobsError()); set => this._failedJobsError = value; }
+
+        /// <summary>Backing field for <see cref="JobId" /> property.</summary>
+        private System.Collections.Generic.List<string> _jobId;
+
+        /// <summary>IDs of the jobs created for the protected item.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<string> JobId { get => this._jobId; set => this._jobId = value; }
+
+        /// <summary>
+        /// This property will be used as the discriminator for deciding the specific types in the polymorphic chain of types.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Constant]
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inherited)]
+        public string ObjectType { get => "OperationStatusJobsExtendedInfo"; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IOperationStatusExtendedInfoInternal)__operationStatusExtendedInfo).ObjectType = "OperationStatusJobsExtendedInfo"; }
+
+        /// <summary>Creates an new <see cref="OperationStatusJobsExtendedInfo" /> instance.</summary>
+        public OperationStatusJobsExtendedInfo()
+        {
+            this.__operationStatusExtendedInfo.ObjectType = "OperationStatusJobsExtendedInfo";
+        }
+
+        /// <summary>Validates that this object meets the validation criteria.</summary>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IEventListener" /> instance that will receive validation
+        /// events.</param>
+        /// <returns>
+        /// A <see cref = "global::System.Threading.Tasks.Task" /> that will be complete when validation is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task Validate(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IEventListener eventListener)
+        {
+            await eventListener.AssertNotNull(nameof(__operationStatusExtendedInfo), __operationStatusExtendedInfo);
+            await eventListener.AssertObjectIsValid(nameof(__operationStatusExtendedInfo), __operationStatusExtendedInfo);
+        }
+    }
+    /// Operation status extended info for list of jobs.
+    public partial interface IOperationStatusJobsExtendedInfo :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IJsonSerializable,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IOperationStatusExtendedInfo
+    {
+        /// <summary>Stores all the failed jobs along with the corresponding error codes.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Stores all the failed jobs along with the corresponding error codes.",
+        SerializedName = @"failedJobsError",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IOperationStatusJobsExtendedInfoFailedJobsError) })]
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IOperationStatusJobsExtendedInfoFailedJobsError FailedJobsError { get; set; }
+        /// <summary>IDs of the jobs created for the protected item.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"IDs of the jobs created for the protected item.",
+        SerializedName = @"jobIds",
+        PossibleTypes = new [] { typeof(string) })]
+        System.Collections.Generic.List<string> JobId { get; set; }
+
+    }
+    /// Operation status extended info for list of jobs.
+    internal partial interface IOperationStatusJobsExtendedInfoInternal :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IOperationStatusExtendedInfoInternal
+    {
+        /// <summary>Stores all the failed jobs along with the corresponding error codes.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IOperationStatusJobsExtendedInfoFailedJobsError FailedJobsError { get; set; }
+        /// <summary>IDs of the jobs created for the protected item.</summary>
+        System.Collections.Generic.List<string> JobId { get; set; }
+
+    }
+}

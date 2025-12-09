@@ -1,0 +1,180 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Extensions;
+
+    /// <summary>Backup management usages of a vault.</summary>
+    public partial class BackupManagementUsage :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupManagementUsage,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupManagementUsageInternal
+    {
+
+        /// <summary>Backing field for <see cref="CurrentValue" /> property.</summary>
+        private long? _currentValue;
+
+        /// <summary>Current value of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public long? CurrentValue { get => this._currentValue; set => this._currentValue = value; }
+
+        /// <summary>Backing field for <see cref="Limit" /> property.</summary>
+        private long? _limit;
+
+        /// <summary>Limit of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public long? Limit { get => this._limit; set => this._limit = value; }
+
+        /// <summary>Internal Acessors for Name</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.INameInfo Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IBackupManagementUsageInternal.Name { get => (this._name = this._name ?? new Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.NameInfo()); set { {_name = value;} } }
+
+        /// <summary>Backing field for <see cref="Name" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.INameInfo _name;
+
+        /// <summary>Name of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        internal Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.INameInfo Name { get => (this._name = this._name ?? new Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.NameInfo()); set => this._name = value; }
+
+        /// <summary>Localized value of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inlined)]
+        public string NameLocalizedValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.INameInfoInternal)Name).LocalizedValue; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.INameInfoInternal)Name).LocalizedValue = value ?? null; }
+
+        /// <summary>Value of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Inlined)]
+        public string NameValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.INameInfoInternal)Name).Value; set => ((Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.INameInfoInternal)Name).Value = value ?? null; }
+
+        /// <summary>Backing field for <see cref="NextResetTime" /> property.</summary>
+        private global::System.DateTime? _nextResetTime;
+
+        /// <summary>Next reset time of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public global::System.DateTime? NextResetTime { get => this._nextResetTime; set => this._nextResetTime = value; }
+
+        /// <summary>Backing field for <see cref="QuotaPeriod" /> property.</summary>
+        private string _quotaPeriod;
+
+        /// <summary>Quota period of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public string QuotaPeriod { get => this._quotaPeriod; set => this._quotaPeriod = value; }
+
+        /// <summary>Backing field for <see cref="Unit" /> property.</summary>
+        private string _unit;
+
+        /// <summary>Unit of the usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public string Unit { get => this._unit; set => this._unit = value; }
+
+        /// <summary>Creates an new <see cref="BackupManagementUsage" /> instance.</summary>
+        public BackupManagementUsage()
+        {
+
+        }
+    }
+    /// Backup management usages of a vault.
+    public partial interface IBackupManagementUsage :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IJsonSerializable
+    {
+        /// <summary>Current value of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Current value of usage.",
+        SerializedName = @"currentValue",
+        PossibleTypes = new [] { typeof(long) })]
+        long? CurrentValue { get; set; }
+        /// <summary>Limit of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Limit of usage.",
+        SerializedName = @"limit",
+        PossibleTypes = new [] { typeof(long) })]
+        long? Limit { get; set; }
+        /// <summary>Localized value of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Localized value of usage.",
+        SerializedName = @"localizedValue",
+        PossibleTypes = new [] { typeof(string) })]
+        string NameLocalizedValue { get; set; }
+        /// <summary>Value of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Value of usage.",
+        SerializedName = @"value",
+        PossibleTypes = new [] { typeof(string) })]
+        string NameValue { get; set; }
+        /// <summary>Next reset time of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Next reset time of usage.",
+        SerializedName = @"nextResetTime",
+        PossibleTypes = new [] { typeof(global::System.DateTime) })]
+        global::System.DateTime? NextResetTime { get; set; }
+        /// <summary>Quota period of usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Quota period of usage.",
+        SerializedName = @"quotaPeriod",
+        PossibleTypes = new [] { typeof(string) })]
+        string QuotaPeriod { get; set; }
+        /// <summary>Unit of the usage.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Unit of the usage.",
+        SerializedName = @"unit",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PSArgumentCompleterAttribute("Count", "Bytes", "Seconds", "Percent", "CountPerSecond", "BytesPerSecond")]
+        string Unit { get; set; }
+
+    }
+    /// Backup management usages of a vault.
+    internal partial interface IBackupManagementUsageInternal
+
+    {
+        /// <summary>Current value of usage.</summary>
+        long? CurrentValue { get; set; }
+        /// <summary>Limit of usage.</summary>
+        long? Limit { get; set; }
+        /// <summary>Name of usage.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.INameInfo Name { get; set; }
+        /// <summary>Localized value of usage.</summary>
+        string NameLocalizedValue { get; set; }
+        /// <summary>Value of usage.</summary>
+        string NameValue { get; set; }
+        /// <summary>Next reset time of usage.</summary>
+        global::System.DateTime? NextResetTime { get; set; }
+        /// <summary>Quota period of usage.</summary>
+        string QuotaPeriod { get; set; }
+        /// <summary>Unit of the usage.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PSArgumentCompleterAttribute("Count", "Bytes", "Seconds", "Percent", "CountPerSecond", "BytesPerSecond")]
+        string Unit { get; set; }
+
+    }
+}

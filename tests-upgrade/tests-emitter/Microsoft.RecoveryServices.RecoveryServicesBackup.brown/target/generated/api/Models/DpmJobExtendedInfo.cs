@@ -1,0 +1,92 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Extensions;
+
+    /// <summary>Additional information on the DPM workload-specific job.</summary>
+    public partial class DpmJobExtendedInfo :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmJobExtendedInfo,
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmJobExtendedInfoInternal
+    {
+
+        /// <summary>Backing field for <see cref="DynamicErrorMessage" /> property.</summary>
+        private string _dynamicErrorMessage;
+
+        /// <summary>Non localized error message on job execution.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public string DynamicErrorMessage { get => this._dynamicErrorMessage; set => this._dynamicErrorMessage = value; }
+
+        /// <summary>Backing field for <see cref="PropertyBag" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmJobExtendedInfoPropertyBag _propertyBag;
+
+        /// <summary>The job properties.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmJobExtendedInfoPropertyBag PropertyBag { get => (this._propertyBag = this._propertyBag ?? new Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.DpmJobExtendedInfoPropertyBag()); set => this._propertyBag = value; }
+
+        /// <summary>Backing field for <see cref="TasksList" /> property.</summary>
+        private System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmJobTaskDetails> _tasksList;
+
+        /// <summary>List of tasks associated with this job.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Origin(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmJobTaskDetails> TasksList { get => this._tasksList; set => this._tasksList = value; }
+
+        /// <summary>Creates an new <see cref="DpmJobExtendedInfo" /> instance.</summary>
+        public DpmJobExtendedInfo()
+        {
+
+        }
+    }
+    /// Additional information on the DPM workload-specific job.
+    public partial interface IDpmJobExtendedInfo :
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.IJsonSerializable
+    {
+        /// <summary>Non localized error message on job execution.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Non localized error message on job execution.",
+        SerializedName = @"dynamicErrorMessage",
+        PossibleTypes = new [] { typeof(string) })]
+        string DynamicErrorMessage { get; set; }
+        /// <summary>The job properties.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The job properties.",
+        SerializedName = @"propertyBag",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmJobExtendedInfoPropertyBag) })]
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmJobExtendedInfoPropertyBag PropertyBag { get; set; }
+        /// <summary>List of tasks associated with this job.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"List of tasks associated with this job.",
+        SerializedName = @"tasksList",
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmJobTaskDetails) })]
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmJobTaskDetails> TasksList { get; set; }
+
+    }
+    /// Additional information on the DPM workload-specific job.
+    internal partial interface IDpmJobExtendedInfoInternal
+
+    {
+        /// <summary>Non localized error message on job execution.</summary>
+        string DynamicErrorMessage { get; set; }
+        /// <summary>The job properties.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmJobExtendedInfoPropertyBag PropertyBag { get; set; }
+        /// <summary>List of tasks associated with this job.</summary>
+        System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.RecoveryServicesBackup.Models.IDpmJobTaskDetails> TasksList { get; set; }
+
+    }
+}

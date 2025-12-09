@@ -1,0 +1,353 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.MySql.Models
+{
+    using static Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Extensions;
+
+    public partial class MySqlIdentity :
+        Microsoft.Azure.PowerShell.Cmdlets.MySql.Models.IMySqlIdentity,
+        Microsoft.Azure.PowerShell.Cmdlets.MySql.Models.IMySqlIdentityInternal
+    {
+
+        /// <summary>Backing field for <see cref="AdministratorName" /> property.</summary>
+        private string _administratorName;
+
+        /// <summary>The name of the Azure AD Administrator.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string AdministratorName { get => this._administratorName; set => this._administratorName = value; }
+
+        /// <summary>Backing field for <see cref="AdvancedThreatProtectionName" /> property.</summary>
+        private string _advancedThreatProtectionName;
+
+        /// <summary>The name of the Advanced Threat Protection state.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string AdvancedThreatProtectionName { get => this._advancedThreatProtectionName; set => this._advancedThreatProtectionName = value; }
+
+        /// <summary>Backing field for <see cref="BackupName" /> property.</summary>
+        private string _backupName;
+
+        /// <summary>The name of the backup.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string BackupName { get => this._backupName; set => this._backupName = value; }
+
+        /// <summary>Backing field for <see cref="CapabilitySetName" /> property.</summary>
+        private string _capabilitySetName;
+
+        /// <summary>Name of capability set</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string CapabilitySetName { get => this._capabilitySetName; set => this._capabilitySetName = value; }
+
+        /// <summary>Backing field for <see cref="ConfigurationName" /> property.</summary>
+        private string _configurationName;
+
+        /// <summary>The name of the server configuration.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string ConfigurationName { get => this._configurationName; set => this._configurationName = value; }
+
+        /// <summary>Backing field for <see cref="DatabaseName" /> property.</summary>
+        private string _databaseName;
+
+        /// <summary>The name of the database.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string DatabaseName { get => this._databaseName; set => this._databaseName = value; }
+
+        /// <summary>Backing field for <see cref="FirewallRuleName" /> property.</summary>
+        private string _firewallRuleName;
+
+        /// <summary>The name of the server firewall rule.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string FirewallRuleName { get => this._firewallRuleName; set => this._firewallRuleName = value; }
+
+        /// <summary>Backing field for <see cref="GroupName" /> property.</summary>
+        private string _groupName;
+
+        /// <summary>The name of the private link resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string GroupName { get => this._groupName; set => this._groupName = value; }
+
+        /// <summary>Backing field for <see cref="Id" /> property.</summary>
+        private string _id;
+
+        /// <summary>Resource identity path</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string Id { get => this._id; set => this._id = value; }
+
+        /// <summary>Backing field for <see cref="LocationName" /> property.</summary>
+        private string _locationName;
+
+        /// <summary>The name of the location.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string LocationName { get => this._locationName; set => this._locationName = value; }
+
+        /// <summary>Backing field for <see cref="MaintenanceName" /> property.</summary>
+        private string _maintenanceName;
+
+        /// <summary>The name of the maintenance.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string MaintenanceName { get => this._maintenanceName; set => this._maintenanceName = value; }
+
+        /// <summary>Backing field for <see cref="OperationId" /> property.</summary>
+        private string _operationId;
+
+        /// <summary>The ID of an ongoing async operation.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string OperationId { get => this._operationId; set => this._operationId = value; }
+
+        /// <summary>Backing field for <see cref="PrivateEndpointConnectionName" /> property.</summary>
+        private string _privateEndpointConnectionName;
+
+        /// <summary>The name of the private endpoint connection associated with the Azure resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string PrivateEndpointConnectionName { get => this._privateEndpointConnectionName; set => this._privateEndpointConnectionName = value; }
+
+        /// <summary>Backing field for <see cref="ResourceGroupName" /> property.</summary>
+        private string _resourceGroupName;
+
+        /// <summary>The name of the resource group. The name is case insensitive.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string ResourceGroupName { get => this._resourceGroupName; set => this._resourceGroupName = value; }
+
+        /// <summary>Backing field for <see cref="ServerName" /> property.</summary>
+        private string _serverName;
+
+        /// <summary>The name of the server.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string ServerName { get => this._serverName; set => this._serverName = value; }
+
+        /// <summary>Backing field for <see cref="SubscriptionId" /> property.</summary>
+        private string _subscriptionId;
+
+        /// <summary>The ID of the target subscription. The value must be an UUID.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Origin(Microsoft.Azure.PowerShell.Cmdlets.MySql.PropertyOrigin.Owned)]
+        public string SubscriptionId { get => this._subscriptionId; set => this._subscriptionId = value; }
+
+        /// <summary>Creates an new <see cref="MySqlIdentity" /> instance.</summary>
+        public MySqlIdentity()
+        {
+
+        }
+    }
+    public partial interface IMySqlIdentity :
+        Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.IJsonSerializable
+    {
+        /// <summary>The name of the Azure AD Administrator.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the Azure AD Administrator.",
+        SerializedName = @"administratorName",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.MySql.PSArgumentCompleterAttribute("ActiveDirectory")]
+        string AdministratorName { get; set; }
+        /// <summary>The name of the Advanced Threat Protection state.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the Advanced Threat Protection state.",
+        SerializedName = @"advancedThreatProtectionName",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.MySql.PSArgumentCompleterAttribute("Default")]
+        string AdvancedThreatProtectionName { get; set; }
+        /// <summary>The name of the backup.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the backup.",
+        SerializedName = @"backupName",
+        PossibleTypes = new [] { typeof(string) })]
+        string BackupName { get; set; }
+        /// <summary>Name of capability set</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Name of capability set",
+        SerializedName = @"capabilitySetName",
+        PossibleTypes = new [] { typeof(string) })]
+        string CapabilitySetName { get; set; }
+        /// <summary>The name of the server configuration.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the server configuration.",
+        SerializedName = @"configurationName",
+        PossibleTypes = new [] { typeof(string) })]
+        string ConfigurationName { get; set; }
+        /// <summary>The name of the database.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the database.",
+        SerializedName = @"databaseName",
+        PossibleTypes = new [] { typeof(string) })]
+        string DatabaseName { get; set; }
+        /// <summary>The name of the server firewall rule.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the server firewall rule.",
+        SerializedName = @"firewallRuleName",
+        PossibleTypes = new [] { typeof(string) })]
+        string FirewallRuleName { get; set; }
+        /// <summary>The name of the private link resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the private link resource.",
+        SerializedName = @"groupName",
+        PossibleTypes = new [] { typeof(string) })]
+        string GroupName { get; set; }
+        /// <summary>Resource identity path</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Resource identity path",
+        SerializedName = @"id",
+        PossibleTypes = new [] { typeof(string) })]
+        string Id { get; set; }
+        /// <summary>The name of the location.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the location.",
+        SerializedName = @"locationName",
+        PossibleTypes = new [] { typeof(string) })]
+        string LocationName { get; set; }
+        /// <summary>The name of the maintenance.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the maintenance.",
+        SerializedName = @"maintenanceName",
+        PossibleTypes = new [] { typeof(string) })]
+        string MaintenanceName { get; set; }
+        /// <summary>The ID of an ongoing async operation.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The ID of an ongoing async operation.",
+        SerializedName = @"operationId",
+        PossibleTypes = new [] { typeof(string) })]
+        string OperationId { get; set; }
+        /// <summary>The name of the private endpoint connection associated with the Azure resource.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the private endpoint connection associated with the Azure resource.",
+        SerializedName = @"privateEndpointConnectionName",
+        PossibleTypes = new [] { typeof(string) })]
+        string PrivateEndpointConnectionName { get; set; }
+        /// <summary>The name of the resource group. The name is case insensitive.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the resource group. The name is case insensitive.",
+        SerializedName = @"resourceGroupName",
+        PossibleTypes = new [] { typeof(string) })]
+        string ResourceGroupName { get; set; }
+        /// <summary>The name of the server.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The name of the server.",
+        SerializedName = @"serverName",
+        PossibleTypes = new [] { typeof(string) })]
+        string ServerName { get; set; }
+        /// <summary>The ID of the target subscription. The value must be an UUID.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MySql.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The ID of the target subscription. The value must be an UUID.",
+        SerializedName = @"subscriptionId",
+        PossibleTypes = new [] { typeof(string) })]
+        string SubscriptionId { get; set; }
+
+    }
+    internal partial interface IMySqlIdentityInternal
+
+    {
+        /// <summary>The name of the Azure AD Administrator.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.MySql.PSArgumentCompleterAttribute("ActiveDirectory")]
+        string AdministratorName { get; set; }
+        /// <summary>The name of the Advanced Threat Protection state.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.MySql.PSArgumentCompleterAttribute("Default")]
+        string AdvancedThreatProtectionName { get; set; }
+        /// <summary>The name of the backup.</summary>
+        string BackupName { get; set; }
+        /// <summary>Name of capability set</summary>
+        string CapabilitySetName { get; set; }
+        /// <summary>The name of the server configuration.</summary>
+        string ConfigurationName { get; set; }
+        /// <summary>The name of the database.</summary>
+        string DatabaseName { get; set; }
+        /// <summary>The name of the server firewall rule.</summary>
+        string FirewallRuleName { get; set; }
+        /// <summary>The name of the private link resource.</summary>
+        string GroupName { get; set; }
+        /// <summary>Resource identity path</summary>
+        string Id { get; set; }
+        /// <summary>The name of the location.</summary>
+        string LocationName { get; set; }
+        /// <summary>The name of the maintenance.</summary>
+        string MaintenanceName { get; set; }
+        /// <summary>The ID of an ongoing async operation.</summary>
+        string OperationId { get; set; }
+        /// <summary>The name of the private endpoint connection associated with the Azure resource.</summary>
+        string PrivateEndpointConnectionName { get; set; }
+        /// <summary>The name of the resource group. The name is case insensitive.</summary>
+        string ResourceGroupName { get; set; }
+        /// <summary>The name of the server.</summary>
+        string ServerName { get; set; }
+        /// <summary>The ID of the target subscription. The value must be an UUID.</summary>
+        string SubscriptionId { get; set; }
+
+    }
+}
