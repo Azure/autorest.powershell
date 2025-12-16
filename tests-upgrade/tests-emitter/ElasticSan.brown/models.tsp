@@ -967,7 +967,7 @@ model PrivateLinkResource extends Azure.ResourceManager.Foundations.Resource {
    * Resource properties.
    */
   #suppress "@azure-tools/typespec-azure-core/no-private-usage" "FIXME: Update justification, follow aka.ms/tsp/conversion-fix for details"
-  @Azure.ResourceManager.Private.conditionalClientFlatten
+  @Azure.ClientGenerator.Core.Legacy.flattenProperty
   properties?: PrivateLinkResourceProperties;
 }
 
