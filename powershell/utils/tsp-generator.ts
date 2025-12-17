@@ -31,6 +31,7 @@ async function clearOutputFiles(state: ModelState<PwshModel>) {
     const readme = './README.md';
     const tempTypeSpecFiles = './TempTypeSpecFiles';
     const tspLocation = './tsp-location.yaml';
+    const tspconfig = './tspconfig.yaml';
 
     const protectFiles = new Set<string>();
     protectFiles.add(psd1);
@@ -43,6 +44,7 @@ async function clearOutputFiles(state: ModelState<PwshModel>) {
     protectFiles.add(readme);
     protectFiles.add(tempTypeSpecFiles);
     protectFiles.add(tspLocation);
+    protectFiles.add(tspconfig);
     await clearFolder(outputFolder, [...protectFiles].map((each) => resolveUri(outputFolder, each)));
   }
   return;
