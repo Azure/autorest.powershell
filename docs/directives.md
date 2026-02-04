@@ -279,7 +279,8 @@ directive:
 
 Notes:
 - Only applies to `command` targets.
-- Use when pagination is an implementation detail rather than a meaningful filter.
+- This hides pagination parameters from the cmdlet; leave this directive off if users need manual paging control.
+- Use for small to medium result sets where fetching everything is practical; avoid for large datasets where automatic paging could be costly.
 
 ### Parameter Rename
 To select a parameter you need to provide the `parameter-name`. Furthermore, if you want to target specific cmdlets you can provide the `subject-prefix`, `subject`, `verb`, and/or `variant` (i.e. parameter-set). For example:
