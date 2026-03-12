@@ -43,7 +43,7 @@ export class Password extends String {
       switch (mediaType) {
         case KnownMediaType.Json:
           // node should be a JsonString
-          return toExpression(`${node} is ${ClientRuntime.JsonString} ${tmp} ? (${this.declaration})(${tmp}.ToString()) : ${defaultValue}`);
+          return toExpression(`${node} is ${ClientRuntime.JsonString} ${tmp} ? (${this.declaration})(new System.Net.NetworkCredential("",(string)${tmp}).SecurePassword) : ${defaultValue}`);
       }
     } finally {
       popTempVar();
