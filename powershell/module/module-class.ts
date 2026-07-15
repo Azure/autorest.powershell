@@ -239,6 +239,13 @@ export class NewModuleClass extends Class {
       dotnet.String, /* parameterName */
       /* returns */ dotnet.Object)));
 
+    const getDynamicParametersDelegate = namespace.add(new Alias('GetDynamicParametersDelegate', System.Func(
+      dotnet.String, /* resourceId */
+      dotnet.String, /* moduleName */
+      InvocationInfo, /* invocationInfo */
+      dotnet.String, /* correlationId */
+      /* returns */ dotnet.Object)));
+
     const moduleLoadPipelineDelegate = namespace.add(new Alias('ModuleLoadPipelineDelegate', System.Action(
       dotnet.String, /* resourceId */
       dotnet.String, /* moduleName */
@@ -331,6 +338,7 @@ export class NewModuleClass extends Class {
       this.add(OnNewRequest);
     }
     const GetParameterValue = this.add(new Property('GetParameterValue', getParameterDelegate, { description: 'The delegate to call to get parameter data from a common module.' }));
+    const GetDynamicParametersValue = this.add(new Property('GetDynamicParametersValue', getDynamicParametersDelegate, { description: 'The delegate to call to get the Change Safety dynamic parameters from a common module.' }));
     const EventListener = this.add(new Property('EventListener', eventListenerDelegate, { description: 'A delegate that gets called for each signalled event' }));
     const ArgumentCompleter = this.add(new Property('ArgumentCompleter', argumentCompleterDelegate, { description: 'Gets completion data for azure specific fields' }));
     const ProfileName = this.add(new Property('ProfileName', System.String, { description: 'The name of the currently selected Azure profile' }));
@@ -344,6 +352,13 @@ export class NewModuleClass extends Class {
       parameters: [this.pInvocationInfo, this.pCorrelationId, this.pParameterName],
       description: 'Gets parameters from a common module.',
       returnsDescription: 'The parameter value from the common module. (Note: this should be type converted on the way back)'
+    }));
+
+    /* get Change Safety dynamic parameters method (calls azAccounts) */
+    this.add(new LambdaMethod('GetDynamicParameters', dotnet.Object, new LiteralExpression(`${GetDynamicParametersValue.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value}, ${$this.pInvocationInfo.value}, ${$this.pCorrelationId.value} )`), {
+      parameters: [this.pInvocationInfo, this.pCorrelationId],
+      description: 'Gets the Change Safety dynamic parameters from a common module.',
+      returnsDescription: 'The RuntimeDefinedParameterDictionary of Change Safety parameters, or null.'
     }));
 
     /* signal method (calls azAccounts) */

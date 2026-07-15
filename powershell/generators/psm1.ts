@@ -118,6 +118,9 @@ ${requestHandler}
   # Gets shared parameter values
   $instance.GetParameterValue = $VTable.GetParameterValue
 
+  # Delegate to get the Change Safety dynamic parameters
+  $instance.GetDynamicParametersValue = $VTable.GetDynamicParametersValue
+
   # Allows shared module to listen to events from this module
   $instance.EventListener = $VTable.EventListener
 
