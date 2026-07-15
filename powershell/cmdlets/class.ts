@@ -11,11 +11,11 @@ import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties 
 import { escapeString, docComment, serialize, pascalCase, DeepPartial, camelCase } from '@azure-tools/codegen';
 import { items, values, Dictionary, length } from '@azure-tools/linq';
 import {
-  Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
+  Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While, LiteralStatement, Not, ElseIf
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
-import { NullableBoolean, Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute, NotSuggestDefaultParameterSetAttribute } from '../internal/powershell-declarations';
+import { NullableBoolean, Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, IDynamicParameters, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute, NotSuggestDefaultParameterSetAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@autorest/extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
@@ -459,6 +459,9 @@ export class CmdletClass extends Class {
 
     // implement part of the IContext
     this.implementIContext();
+
+    // implement IDynamicParameters for write-verb cmdlets (Change Safety)
+    this.implementIDynamicParameters();
 
     // add constructors
     this.implementConstructors();
@@ -1621,6 +1624,23 @@ export class CmdletClass extends Class {
     const extensibleParametersProp = new Property('ExtensibleParameters', System.Collections.Generic.IDictionary(System.String, System.Object), { description: 'Accessor for extensibleParameters.' });
     extensibleParametersProp.get = toExpression(`${extensibleParameters.value} `);
     this.add(extensibleParametersProp);
+  }
+  private implementIDynamicParameters() {
+    // Change Safety: only write-verb cmdlets (PUT/POST/DELETE/PATCH) participate in dynamic parameter discovery.
+    // The correlation id field only exists for azure projects, so gate on that as well.
+    if (!this.state.project.azure) {
+      return;
+    }
+    const httpMethod = (this.apiCall.requests?.[0]?.protocol.http?.method ?? '').toLowerCase();
+    if (!['put', 'post', 'delete', 'patch'].includes(httpMethod)) {
+      return;
+    }
+    const $this = this;
+    this.interfaces.push(IDynamicParameters);
+    this.add(new LambdaMethod('GetDynamicParameters', dotnet.Object, new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetDynamicParameters(this.${$this.invocationInfo.value}, ${$this.correlationId.value})`), {
+      description: 'Gets the Change Safety dynamic parameters from a common module.',
+      returnsDescription: 'The RuntimeDefinedParameterDictionary of Change Safety parameters, or null.'
+    }));
   }
   private implementIEventListener() {
     const $this = this;

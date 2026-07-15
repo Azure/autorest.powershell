@@ -32,6 +32,7 @@ export const ErrorRecord: TypeDeclaration = new ClassType(sma, 'ErrorRecord');
 export const SwitchParameter: TypeDeclaration = new ClassType(sma, 'SwitchParameter');
 export const NullableBoolean: TypeDeclaration = new ClassType(new Namespace('System'), 'Boolean?');
 export const IArgumentCompleter: IInterface = { allProperties: [], declaration: 'System.Management.Automation.IArgumentCompleter' };
+export const IDynamicParameters: IInterface = { allProperties: [], declaration: 'System.Management.Automation.IDynamicParameters' };
 export const CompletionResult: TypeDeclaration = new ClassType(sma, 'CompletionResult');
 export const CommandAst: TypeDeclaration = new ClassType(`${sma}.Language`, 'CommandAst');
 export const CompletionResultType: TypeDeclaration = new ClassType(sma, 'CompletionResultType');
