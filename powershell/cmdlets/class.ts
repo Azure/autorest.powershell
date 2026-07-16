@@ -460,6 +460,9 @@ export class CmdletClass extends Class {
     // implement part of the IContext
     this.implementIContext();
 
+    // Change Safety: emit codegen-owned static parameters on write-verb cmdlets
+    this.implementChangeSafetyParameters();
+
     // add constructors
     this.implementConstructors();
 
@@ -1621,6 +1624,28 @@ export class CmdletClass extends Class {
     const extensibleParametersProp = new Property('ExtensibleParameters', System.Collections.Generic.IDictionary(System.String, System.Object), { description: 'Accessor for extensibleParameters.' });
     extensibleParametersProp.get = toExpression(`${extensibleParameters.value} `);
     this.add(extensibleParametersProp);
+  }
+  private implementChangeSafetyParameters() {
+    // Change Safety (codegen-owned static parameters): only azure write-verb cmdlets
+    // (PUT/POST/DELETE/PATCH) expose the opt-in Change Safety parameters. The parameter
+    // values are read by the module-level HTTP pipeline step (in Az.Accounts) from the
+    // cmdlet's BoundParameters, so no runtime-wired delegate is required here.
+    if (!this.state.project.azure) {
+      return;
+    }
+    const httpMethod = (this.apiCall.requests?.[0]?.protocol.http?.method ?? '').toLowerCase();
+    if (!['put', 'post', 'delete', 'patch'].includes(httpMethod)) {
+      return;
+    }
+
+    const acquirePolicyToken = this.add(new Property('AcquirePolicyToken', SwitchParameter, { attributes: [], description: 'Acquire a policy evaluation token for this change and include it on the write request.' }));
+    acquirePolicyToken.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "Acquire a policy evaluation token for this change and include it on the write request."'] }));
+    acquirePolicyToken.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Azure`] }));
+
+    const changeReference = this.add(new Property('ChangeReference', dotnet.String, { attributes: [], description: 'A caller-supplied reference that correlates this change with an external change-management record.' }));
+    changeReference.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "A caller-supplied reference that correlates this change with an external change-management record."'] }));
+    changeReference.add(new Attribute(ValidateNotNull));
+    changeReference.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Azure`] }));
   }
   private implementIEventListener() {
     const $this = this;
