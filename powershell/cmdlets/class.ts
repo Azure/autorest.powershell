@@ -1626,11 +1626,17 @@ export class CmdletClass extends Class {
     this.add(extensibleParametersProp);
   }
   private implementChangeSafetyParameters() {
-    // Change Safety (codegen-owned static parameters): only azure write-verb cmdlets
-    // (PUT/POST/DELETE/PATCH) expose the opt-in Change Safety parameters. The parameter
-    // values are read by the module-level HTTP pipeline step (in Az.Accounts) from the
-    // cmdlet's BoundParameters, so no runtime-wired delegate is required here.
+    // Change Safety (codegen-owned static parameters): only azure management-plane (ARM)
+    // write-verb cmdlets (PUT/POST/DELETE/PATCH) expose the opt-in Change Safety parameters.
+    // The parameter values are read by the module-level HTTP pipeline step (in Az.Accounts)
+    // from the cmdlet's BoundParameters, so no runtime-wired delegate is required here.
     if (!this.state.project.azure) {
+      return;
+    }
+    // Change Safety is a management-plane concept; skip data-plane modules, which target a
+    // custom service endpoint (identified by an endpoint-resource-id-key-name). This matches
+    // the data-plane detection used in module-class.ts (isDataPlane).
+    if (this.state.project.endpointResourceIdKeyName) {
       return;
     }
     const httpMethod = (this.apiCall.requests?.[0]?.protocol.http?.method ?? '').toLowerCase();
