@@ -128,6 +128,7 @@ export class Project extends codeDomProject {
   public modelCmdletFolder!: string;
   public endpointResourceIdKeyName!: string;
   public endpointSuffixKeyName!: string;
+  public changeSafety!: boolean;
 
   public customFolder!: string;
   public utilsFolder!: string;
@@ -333,6 +334,11 @@ export class Project extends codeDomProject {
 
     // configuration for whether to use fixed array in generated code of model, default is false
     this.fixedArray = await this.state.getValue('fixed-array', false);
+
+    // Change Safety: opt-in per module. When true, azure management-plane write-verb cmdlets get the
+    // -AcquirePolicyToken / -ChangeReference parameters. Default false so the rollout is controlled
+    // (a module opts in, alongside bumping its Az.Accounts minimum), not organic on every regeneration.
+    this.changeSafety = await this.state.getValue('change-safety', false);
 
     // File paths
     this.csproj = await this.state.getValue('csproj');

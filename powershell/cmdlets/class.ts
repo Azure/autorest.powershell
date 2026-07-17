@@ -1630,6 +1630,11 @@ export class CmdletClass extends Class {
     // write-verb cmdlets (PUT/POST/DELETE/PATCH) expose the opt-in Change Safety parameters.
     // The parameter values are read by the module-level HTTP pipeline step (in Az.Accounts)
     // from the cmdlet's BoundParameters, so no runtime-wired delegate is required here.
+    // Opt-in per module via `change-safety: true` in the module readme (default off), so the
+    // 180+ module rollout is deliberate rather than triggered by any unrelated regeneration.
+    if (!this.state.project.changeSafety) {
+      return;
+    }
     if (!this.state.project.azure) {
       return;
     }
