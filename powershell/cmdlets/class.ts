@@ -1644,12 +1644,12 @@ export class CmdletClass extends Class {
       return;
     }
 
-    const acquirePolicyToken = this.add(new Property('AcquirePolicyToken', SwitchParameter, { attributes: [], description: 'Acquire a policy evaluation token for this change and include it on the write request.' }));
-    acquirePolicyToken.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "Acquire a policy evaluation token for this change and include it on the write request."'] }));
+    const acquirePolicyToken = this.add(new Property('AcquirePolicyToken', SwitchParameter, { attributes: [], description: 'Acquire an Azure Policy token automatically for this resource operation.' }));
+    acquirePolicyToken.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "Acquire an Azure Policy token automatically for this resource operation."'] }));
     acquirePolicyToken.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Azure`] }));
 
-    const changeReference = this.add(new Property('ChangeReference', dotnet.String, { attributes: [], description: 'A caller-supplied reference that correlates this change with an external change-management record.' }));
-    changeReference.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "A caller-supplied reference that correlates this change with an external change-management record."'] }));
+    const changeReference = this.add(new Property('ChangeReference', dotnet.String, { attributes: [], description: 'The change reference resource ID for this resource operation.' }));
+    changeReference.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "The change reference resource ID for this resource operation."'] }));
     changeReference.add(new Attribute(ValidateNotNull));
     changeReference.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Azure`] }));
   }
