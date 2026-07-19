@@ -13,7 +13,10 @@ Packages contained in the image.
 
 # Code Generation vs Build vs Run
 ## Code Generation
-`autorest`
+```
+$env:autorest_registry="https://pkgs.dev.azure.com/azclitools/public/_packaging/public-npm-proxy/npm/registry/"
+autorest
+```
 ## Build
 `pwsh build-module.ps1`
 ## Run
