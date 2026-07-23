@@ -1627,12 +1627,12 @@ export class CmdletClass extends Class {
   }
   private implementChangeSafetyParameters() {
     // Change Safety (codegen-owned static parameters): only azure management-plane (ARM)
-    // write-verb cmdlets (PUT/POST/DELETE/PATCH) expose the opt-in Change Safety parameters.
-    // The parameter values are read by the module-level HTTP pipeline step (in Az.Accounts)
-    // from the cmdlet's BoundParameters, so no runtime-wired delegate is required here.
-    // Opt-in per module via `change-safety: true` in the module readme (default off), so the
-    // 180+ module rollout is deliberate rather than triggered by any unrelated regeneration.
-    if (!this.state.project.changeSafety) {
+    // write cmdlets expose the opt-in Change Safety parameters. The parameter values are read
+    // by the module-level HTTP pipeline step (in Az.Accounts) from the cmdlet's BoundParameters,
+    // so no runtime-wired delegate is required here.
+    // Opt-in per module via `enable-change-safety: true` in the module readme (default off), so
+    // the 180+ module rollout is deliberate rather than triggered by any unrelated regeneration.
+    if (!this.state.project.enableChangeSafety) {
       return;
     }
     if (!this.state.project.azure) {
@@ -1644,8 +1644,15 @@ export class CmdletClass extends Class {
     if (this.state.project.endpointResourceIdKeyName) {
       return;
     }
-    const httpMethod = (this.apiCall.requests?.[0]?.protocol.http?.method ?? '').toLowerCase();
-    if (!['put', 'post', 'delete', 'patch'].includes(httpMethod)) {
+    // Gate on the PowerShell verb rather than sniffing the HTTP method off requests[0]. A cmdlet's
+    // callGraph can contain multiple operations (e.g. a GetPut Update = GET + PUT) and a single
+    // operation can carry multiple requests, so requests[0] is not a reliable signal for whether
+    // the cmdlet mutates. The verb encodes the mutating intent computed across the whole call graph
+    // and, unlike the raw HTTP method, correctly treats POST "list"-style operations (surfaced as
+    // Get) as reads.
+    const verb = (this.operation.details.csharp.verb ?? '').toLowerCase();
+    const readOnlyVerbs = ['get', 'test', 'find', 'search', 'measure', 'show', 'ping', 'trace', 'resolve', 'read'];
+    if (readOnlyVerbs.includes(verb)) {
       return;
     }
 

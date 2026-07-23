@@ -128,7 +128,7 @@ export class Project extends codeDomProject {
   public modelCmdletFolder!: string;
   public endpointResourceIdKeyName!: string;
   public endpointSuffixKeyName!: string;
-  public changeSafety!: boolean;
+  public enableChangeSafety!: boolean;
 
   public customFolder!: string;
   public utilsFolder!: string;
@@ -338,7 +338,7 @@ export class Project extends codeDomProject {
     // Change Safety: opt-in per module. When true, azure management-plane write-verb cmdlets get the
     // -AcquirePolicyToken / -ChangeReference parameters. Default false so the rollout is controlled
     // (a module opts in, alongside bumping its Az.Accounts minimum), not organic on every regeneration.
-    this.changeSafety = await this.state.getValue('change-safety', false);
+    this.enableChangeSafety = await this.state.getValue('enable-change-safety', false);
 
     // File paths
     this.csproj = await this.state.getValue('csproj');
