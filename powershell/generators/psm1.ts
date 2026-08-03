@@ -63,7 +63,7 @@ export async function generatePsm1(project: Project) {
     } else {
       requestHandler += `
   # Tweaks the pipeline per call (Change Safety policy-token step)
-  $instance.PolicyTokenHandler = $VTable.PolicyTokenHandler`;
+  $instance.AddChangeSafetyPolicyTokenHandler = $VTable.AddChangeSafetyPolicyTokenHandler`;
     }
     azureInitialize = `
   # ----------------------------------------------------------------------------------

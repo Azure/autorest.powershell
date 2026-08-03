@@ -253,7 +253,7 @@ export class NewModuleClass extends Class {
       pipelineChangeDelegate.fullDefinition)); /* appendStep */
 
     // Change Safety: dedicated append-only delegate for the policy-token pipeline step.
-    const acquirePolicyTokenDelegate = new Alias('AcquirePolicyTokenDelegate', System.Action(
+    const changeSafetyPolicyTokenDelegate = new Alias('ChangeSafetyPolicyTokenDelegate', System.Action(
       InvocationInfo,  /* invocationInfo */
       pipelineChangeDelegate.fullDefinition)); /* appendStep */
 
@@ -311,7 +311,7 @@ export class NewModuleClass extends Class {
 
     namespace.add(newRequestPipelineDelegate);
     if (!isDataPlane) {
-      namespace.add(acquirePolicyTokenDelegate);
+      namespace.add(changeSafetyPolicyTokenDelegate);
     }
 
     const incomingSignalDelegate = namespace.add(new Alias('SignalDelegate', this.incomingSignalFunc));
@@ -322,7 +322,7 @@ export class NewModuleClass extends Class {
     /* AzAccounts VTable properties  */
     const OnModuleLoad = this.add(new Property('OnModuleLoad', moduleLoadPipelineDelegate, { description: 'The delegate to call when this module is loaded (supporting a commmon module).' }));
     const OnNewRequest = new Property('OnNewRequest', newRequestPipelineDelegate, { description: 'The delegate to call before each new request (supporting a commmon module).' });
-    const PolicyTokenHandler = new Property('PolicyTokenHandler', acquirePolicyTokenDelegate, { description: 'Change Safety: delegate called after OnNewRequest to (conditionally) add the policy-token pipeline step.' });
+    const AddChangeSafetyPolicyTokenHandler = new Property('AddChangeSafetyPolicyTokenHandler', changeSafetyPolicyTokenDelegate, { description: 'Change Safety: delegate called after OnNewRequest to (conditionally) add the policy-token pipeline step.' });
     const AddRequestUserAgentHandler = new Property('AddRequestUserAgentHandler', newRequestPipelineDelegate, { description: 'The delegate to call before each new request to add request user agent.' });
     const AddPatchRequestUriHandler = new Property('AddPatchRequestUriHandler', newRequestPipelineDelegate, { description: 'The delegate to call before each new request to patch request uri.' });
     const AddAuthorizeRequestHandler = new Property('AddAuthorizeRequestHandler', authorizeRequestDelegate, { description: 'The delegate to call before each new request to add authorization.' });
@@ -338,7 +338,7 @@ export class NewModuleClass extends Class {
       this.add(AddAuthorizeRequestHandler);
     } else {
       this.add(OnNewRequest);
-      this.add(PolicyTokenHandler);
+      this.add(AddChangeSafetyPolicyTokenHandler);
     }
     const GetParameterValue = this.add(new Property('GetParameterValue', getParameterDelegate, { description: 'The delegate to call to get parameter data from a common module.' }));
     const EventListener = this.add(new Property('EventListener', eventListenerDelegate, { description: 'A delegate that gets called for each signalled event' }));
@@ -413,7 +413,7 @@ export class NewModuleClass extends Class {
       } else {
         yield `${OnNewRequest.value}?.Invoke( ${$this.pInvocationInfo.use}, ${$this.pCorrelationId},${$this.pProcessRecordId}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); } );`;
         if ($this.state.project.enableChangeSafety) {
-          yield `${PolicyTokenHandler.value}?.Invoke( ${$this.pInvocationInfo.use}, (step)=> { ${pip}.Append(step); } );`;
+          yield `${AddChangeSafetyPolicyTokenHandler.value}?.Invoke( ${$this.pInvocationInfo.use}, (step)=> { ${pip}.Append(step); } );`;
         }
       }
       yield Return(pip);
