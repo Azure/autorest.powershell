@@ -47,10 +47,7 @@ export async function generatePsm1(project: Project) {
     const localModulesPath = relative(project.baseFolder, project.dependencyModuleFolder);
     let requestHandler = `
   # Tweaks the pipeline per call
-  $instance.OnNewRequest = $VTable.OnNewRequest
-
-  # Tweaks the pipeline per call (Change Safety policy-token step)
-  $instance.PolicyTokenHandler = $VTable.PolicyTokenHandler`;
+  $instance.OnNewRequest = $VTable.OnNewRequest`;
     if (project.endpointResourceIdKeyName) {
       // for data plane, we should append different functions instead.
       requestHandler = `
@@ -63,6 +60,10 @@ export async function generatePsm1(project: Project) {
   # Tweaks the pipeline per call
   $instance.AddAuthorizeRequestHandler = $VTable.AddAuthorizeRequestHandler
     `;
+    } else {
+      requestHandler += `
+  # Tweaks the pipeline per call (Change Safety policy-token step)
+  $instance.PolicyTokenHandler = $VTable.PolicyTokenHandler`;
     }
     azureInitialize = `
   # ----------------------------------------------------------------------------------
