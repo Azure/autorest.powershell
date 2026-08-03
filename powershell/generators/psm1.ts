@@ -60,7 +60,7 @@ export async function generatePsm1(project: Project) {
   # Tweaks the pipeline per call
   $instance.AddAuthorizeRequestHandler = $VTable.AddAuthorizeRequestHandler
     `;
-    } else {
+    } else if (project.enableChangeSafety) {
       requestHandler += `
   # Tweaks the pipeline per call (Change Safety policy-token step)
   $instance.AddChangeSafetyPolicyTokenHandler = $VTable.AddChangeSafetyPolicyTokenHandler`;

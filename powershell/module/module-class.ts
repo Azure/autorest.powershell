@@ -310,7 +310,7 @@ export class NewModuleClass extends Class {
     }
 
     namespace.add(newRequestPipelineDelegate);
-    if (!isDataPlane) {
+    if (!isDataPlane && this.state.project.enableChangeSafety) {
       namespace.add(changeSafetyPolicyTokenDelegate);
     }
 
@@ -338,7 +338,9 @@ export class NewModuleClass extends Class {
       this.add(AddAuthorizeRequestHandler);
     } else {
       this.add(OnNewRequest);
-      this.add(AddChangeSafetyPolicyTokenHandler);
+      if (this.state.project.enableChangeSafety) {
+        this.add(AddChangeSafetyPolicyTokenHandler);
+      }
     }
     const GetParameterValue = this.add(new Property('GetParameterValue', getParameterDelegate, { description: 'The delegate to call to get parameter data from a common module.' }));
     const EventListener = this.add(new Property('EventListener', eventListenerDelegate, { description: 'A delegate that gets called for each signalled event' }));
