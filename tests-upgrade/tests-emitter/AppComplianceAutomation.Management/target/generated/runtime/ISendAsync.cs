@@ -356,6 +356,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime
         /// <returns>A clone of the HttpRequestMessage</returns>
         internal static HttpRequestMessage Clone(this HttpRequestMessage original, System.Uri requestUri = null, System.Net.Http.HttpMethod method = null)
         {
+            var isSameOrigin = requestUri == null ||
+                (original.RequestUri != null && original.RequestUri.IsAbsoluteUri && requestUri.IsAbsoluteUri &&
+                original.RequestUri.Scheme.Equals(requestUri.Scheme, System.StringComparison.OrdinalIgnoreCase) &&
+                original.RequestUri.Host.Equals(requestUri.Host, System.StringComparison.OrdinalIgnoreCase) &&
+                original.RequestUri.Port == requestUri.Port &&
+                requestUri.Scheme.Equals(System.Uri.UriSchemeHttps, System.StringComparison.OrdinalIgnoreCase));
             var clone = new HttpRequestMessage
             {
                 Method = method ?? original.Method,
@@ -376,6 +382,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime
                 */
                 if (!"x-ms-unique-id".Equals(header.Key) && !"x-ms-client-request-id".Equals(header.Key) && !"CommandName".Equals(header.Key) && !"FullCommandName".Equals(header.Key) && !"ParameterSetName".Equals(header.Key) && !"User-Agent".Equals(header.Key))
                 {
+                    if (!isSameOrigin && ("Authorization".Equals(header.Key, System.StringComparison.OrdinalIgnoreCase) || "Proxy-Authorization".Equals(header.Key, System.StringComparison.OrdinalIgnoreCase) || "Cookie".Equals(header.Key, System.StringComparison.OrdinalIgnoreCase)))
+                    {
+                        continue;
+                    }
                     clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
