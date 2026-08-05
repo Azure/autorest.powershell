@@ -17,6 +17,7 @@ import { suite, test } from '@testdeck/mocha';
     assert.match(runtime, /original\.RequestUri\.Scheme\.Equals\(requestUri\.Scheme/);
     assert.match(runtime, /original\.RequestUri\.Host\.Equals\(requestUri\.Host/);
     assert.match(runtime, /original\.RequestUri\.Port == requestUri\.Port/);
+    assert.match(runtime, /requestUri\.Scheme\.Equals\(System\.Uri\.UriSchemeHttps/);
     assert.match(runtime, /!isSameOrigin && \("Authorization"\.Equals/);
     assert.match(runtime, /"Proxy-Authorization"\.Equals/);
     assert.match(runtime, /"Cookie"\.Equals/);

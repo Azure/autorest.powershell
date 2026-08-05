@@ -360,7 +360,8 @@ namespace Microsoft.Rest.ClientRuntime
                 (original.RequestUri != null && original.RequestUri.IsAbsoluteUri && requestUri.IsAbsoluteUri &&
                 original.RequestUri.Scheme.Equals(requestUri.Scheme, System.StringComparison.OrdinalIgnoreCase) &&
                 original.RequestUri.Host.Equals(requestUri.Host, System.StringComparison.OrdinalIgnoreCase) &&
-                original.RequestUri.Port == requestUri.Port);
+                original.RequestUri.Port == requestUri.Port &&
+                requestUri.Scheme.Equals(System.Uri.UriSchemeHttps, System.StringComparison.OrdinalIgnoreCase));
             var clone = new HttpRequestMessage
             {
                 Method = method ?? original.Method,
