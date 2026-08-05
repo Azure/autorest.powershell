@@ -1,5 +1,5 @@
 import { Message } from '@autorest/extension-base';
-import { comment } from '@azure-tools/codegen';
+import { comment, safeEval } from '@azure-tools/codegen';
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
 export interface TspWriteFileOptions {
@@ -66,12 +66,36 @@ export class TspHostImpl implements TspHost {
     if (artifactType === 'binary-file') {
       writeFileSync(filename, Buffer.from(content, 'base64'));
     } else {
+      // Apply `transform` directives here since the AutoRest text-transform pipeline step is not run in the TypeSpec flow.
+      content = this.applyTransformDirectives(content, filename, artifactType);
       if (artifactType === 'source-file-csharp' && filename.endsWith('.cs')) {
         const header = comment('Copyright (c) Microsoft Corporation. All rights reserved.\nLicensed under the MIT License. See License.txt in the project root for license information.\nChanges may cause incorrect behavior and will be lost if the code is regenerated.', '//');
         content = header + '\n' + content;
       }
       writeFileSync(filename, content);
     }
+  }
+
+  private applyTransformDirectives(content: string, filename: string, artifactType?: string): string {
+    if (!artifactType) {
+      return content;
+    }
+    const directives = this.configurations['directive'];
+    if (!directives) {
+      return content;
+    }
+    for (const directive of (Array.isArray(directives) ? directives : [directives])) {
+      if (!directive || !directive.transform) {
+        continue;
+      }
+      const from = directive.from;
+      const froms = from === undefined ? [] : (Array.isArray(from) ? from : [from]);
+      if (!froms.includes(artifactType)) {
+        continue;
+      }
+      content = safeEval<string>(`(() => { ${directive.transform} })()`, { $: content, $documentPath: filename });
+    }
+    return content;
   }
   UpdateConfigurationFile(filename: string, content: string): void {
     // Shall not be called 
