@@ -356,12 +356,20 @@ namespace Microsoft.Rest.ClientRuntime
         /// <returns>A clone of the HttpRequestMessage</returns>
         internal static HttpRequestMessage Clone(this HttpRequestMessage original, System.Uri requestUri = null, System.Net.Http.HttpMethod method = null)
         {
-            var isSameOrigin = requestUri == null ||
-                (original.RequestUri != null && original.RequestUri.IsAbsoluteUri && requestUri.IsAbsoluteUri &&
-                original.RequestUri.Scheme.Equals(requestUri.Scheme, System.StringComparison.OrdinalIgnoreCase) &&
-                original.RequestUri.Host.Equals(requestUri.Host, System.StringComparison.OrdinalIgnoreCase) &&
-                original.RequestUri.Port == requestUri.Port &&
-                requestUri.Scheme.Equals(System.Uri.UriSchemeHttps, System.StringComparison.OrdinalIgnoreCase));
+            // Resolve a relative target against the original request so same-origin relative nextLinks are not misclassified as cross-origin.
+            var effectiveTargetUri = requestUri;
+            if (effectiveTargetUri != null && !effectiveTargetUri.IsAbsoluteUri && original.RequestUri != null && original.RequestUri.IsAbsoluteUri)
+            {
+                System.Uri.TryCreate(original.RequestUri, effectiveTargetUri, out effectiveTargetUri);
+            }
+            // Keep credentials only for a same-origin (scheme+host+port) https target. A null target (no retarget, e.g. retry)
+            // or an unresolved relative target preserves existing behavior and keeps the headers.
+            var isSameOrigin = effectiveTargetUri == null || !effectiveTargetUri.IsAbsoluteUri ||
+                (original.RequestUri != null && original.RequestUri.IsAbsoluteUri &&
+                original.RequestUri.Scheme.Equals(effectiveTargetUri.Scheme, System.StringComparison.OrdinalIgnoreCase) &&
+                original.RequestUri.Host.Equals(effectiveTargetUri.Host, System.StringComparison.OrdinalIgnoreCase) &&
+                original.RequestUri.Port == effectiveTargetUri.Port &&
+                effectiveTargetUri.Scheme.Equals(System.Uri.UriSchemeHttps, System.StringComparison.OrdinalIgnoreCase));
             var clone = new HttpRequestMessage
             {
                 Method = method ?? original.Method,
