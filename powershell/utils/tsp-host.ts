@@ -66,7 +66,7 @@ export class TspHostImpl implements TspHost {
     if (artifactType === 'binary-file') {
       writeFileSync(filename, Buffer.from(content, 'base64'));
     } else {
-      // Apply `transform` directives here since the AutoRest text-transform pipeline step is not run in the TypeSpec flow.
+      // Apply `transform` directives.
       content = this.applyTransformDirectives(content, filename, artifactType);
       if (artifactType === 'source-file-csharp' && filename.endsWith('.cs')) {
         const header = comment('Copyright (c) Microsoft Corporation. All rights reserved.\nLicensed under the MIT License. See License.txt in the project root for license information.\nChanges may cause incorrect behavior and will be lost if the code is regenerated.', '//');
@@ -93,7 +93,12 @@ export class TspHostImpl implements TspHost {
       if (!froms.includes(artifactType)) {
         continue;
       }
-      content = safeEval<string>(`(() => { ${directive.transform} })()`, { $: content, $documentPath: filename });
+      // A transform may either `return` a new value or reassign `$` in place; fall back to `$` when nothing is returned.
+      const code = `(() => { let $ = __tsp_content__; const __tsp_ret__ = (() => { ${directive.transform}\n })(); return __tsp_ret__ === undefined ? $ : __tsp_ret__; })()`;
+      const result = safeEval<string | undefined>(code, { __tsp_content__: content, $documentPath: filename });
+      if (typeof result === 'string') {
+        content = result;
+      }
     }
     return content;
   }
