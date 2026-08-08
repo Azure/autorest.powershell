@@ -8,6 +8,7 @@
     "debug": "node --max_old_space_size=4096 --inspect-brk ./powershell/dist/main",
     "prepare": "(pwsh -v || npm --silent run show-error) && pwsh -noprofile ./.scripts/verify-install.ps1",
     "show-error": "echo ====== &echo ====== & echo ====== & echo REQUIRED: Install PowerShell-core 6.1 or greater (see readme.md) & echo ====== & echo ====== & echo ====== & exit 1",
-    "pack": "rush publish --publish --pack --include-all --tag preview"
+    "pack": "rush publish --publish --pack --include-all --tag preview",
+    "login": "npm install @microsoft/artifacts-npm-credprovider -g --registry https://pkgs.dev.azure.com/artifacts-public/PublicTools/_packaging/AzureArtifacts/npm/registry/ && artifacts-npm-credprovider -c ./common/config/rush/.npmrc"
   }
 }
