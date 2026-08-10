@@ -91,6 +91,7 @@ The following directives cover the most common tweaking scenarios for cmdlet gen
 - [Cmdlet Aliasing](#Cmdlet-Aliasing)
 - [Cmdlet Suppression (Removal and Hiding)](#Cmdlet-Suppression)
 - [Suppress ShouldProcess (-WhatIf / -Confirm)](#Suppress-ShouldProcess)
+- [Client-Side Pagination](#Client-Side-Pagination)
 - [Parameter Rename](#Parameter-Rename)
 - [Parameter Aliasing](#Parameter-Aliasing)
 - [Parameter Hiding](#Parameter-Hiding)
@@ -246,6 +247,40 @@ Notes:
 - Only applies to `command` targets.
 - Has no effect if the cmdlet does not already support ShouldProcess.
 - Use sparingly; only when you are certain the underlying operation is non-mutating.
+
+### Client-Side Pagination
+AutoRest normally exposes server-side pagination parameters directly to users. For list-style cmdlets, you can enable client-side pagination to automatically fetch all pages and return a complete result set in a single call.
+
+With client-side pagination enabled, the generated cmdlet will:
+- Hide pagination parameters like `Skip` and `Top`.
+- Iterate through the service's pagination responses automatically.
+- Return the complete collection to the user.
+
+```yaml $false
+# Enable automatic pagination for a list operation
+directive:
+  - where:
+      verb: Get
+      subject: Item
+    set:
+      clientside-pagination: true
+```
+
+Regex example:
+```yaml $false
+# Enable client-side pagination for all Get-*List cmdlets
+directive:
+  - where:
+      verb: Get
+      subject: (.*)List$
+    set:
+      clientside-pagination: true
+```
+
+Notes:
+- Only applies to `command` targets.
+- This hides pagination parameters from the cmdlet; leave this directive off if users need manual paging control.
+- Use for small to medium result sets where fetching everything is practical; avoid for large datasets where automatic pagination could be costly.
 
 ### Parameter Rename
 To select a parameter you need to provide the `parameter-name`. Furthermore, if you want to target specific cmdlets you can provide the `subject-prefix`, `subject`, `verb`, and/or `variant` (i.e. parameter-set). For example:
