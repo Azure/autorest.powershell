@@ -15,7 +15,7 @@ import {
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While, LiteralStatement, Not, ElseIf
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
-import { NullableBoolean, Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute, NotSuggestDefaultParameterSetAttribute } from '../internal/powershell-declarations';
+import { NullableBoolean, Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, IDynamicParameters, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute, NotSuggestDefaultParameterSetAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@autorest/extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
@@ -459,6 +459,9 @@ export class CmdletClass extends Class {
 
     // implement part of the IContext
     this.implementIContext();
+
+    // Change Safety: emit codegen-owned inline dynamic parameters on write-verb cmdlets
+    this.implementChangeSafetyParameters();
 
     // add constructors
     this.implementConstructors();
@@ -1621,6 +1624,56 @@ export class CmdletClass extends Class {
     const extensibleParametersProp = new Property('ExtensibleParameters', System.Collections.Generic.IDictionary(System.String, System.Object), { description: 'Accessor for extensibleParameters.' });
     extensibleParametersProp.get = toExpression(`${extensibleParameters.value} `);
     this.add(extensibleParametersProp);
+  }
+  private implementChangeSafetyParameters() {
+    // Change Safety (codegen-owned inline dynamic parameters): only azure management-plane (ARM)
+    // write cmdlets expose the opt-in Change Safety parameters. They are surfaced via an inline
+    // IDynamicParameters implementation (the same dynamic-parameter mechanism SDK cmdlets use),
+    // emitted directly in the generated cmdlet -- no runtime-wired VTable delegate. PowerShell
+    // binds the returned parameters into BoundParameters, where the module-level HTTP pipeline
+    // step (in Az.Accounts) reads them.
+    // Opt-in per module via `enable-change-safety: true` in the module readme (default off), so
+    // the 180+ module rollout is deliberate rather than triggered by any unrelated regeneration.
+    if (!this.state.project.enableChangeSafety) {
+      return;
+    }
+    if (!this.state.project.azure) {
+      return;
+    }
+    // Change Safety is a management-plane concept; skip data-plane modules, which target a
+    // custom service endpoint (identified by an endpoint-resource-id-key-name). This matches
+    // the data-plane detection used in module-class.ts (isDataPlane).
+    if (this.state.project.endpointResourceIdKeyName) {
+      return;
+    }
+    // Gate on the PowerShell verb rather than sniffing the HTTP method off requests[0]. A cmdlet's
+    // callGraph can contain multiple operations (e.g. a GetPut Update = GET + PUT) and a single
+    // operation can carry multiple requests, so requests[0] is not a reliable signal for whether
+    // the cmdlet mutates. The verb encodes the mutating intent computed across the whole call graph
+    // and, unlike the raw HTTP method, correctly treats POST "list"-style operations (surfaced as
+    // Get) as reads.
+    const verb = (this.operation.details.csharp.verb ?? '').toLowerCase();
+    const readOnlyVerbs = ['get', 'test', 'find', 'search', 'measure', 'show', 'ping', 'trace', 'resolve', 'read'];
+    if (readOnlyVerbs.includes(verb)) {
+      return;
+    }
+
+    // Emit an inline IDynamicParameters implementation. GetDynamicParameters builds the
+    // RuntimeDefinedParameterDictionary locally with names + help text that mirror
+    // azure-powershell-common's ChangeSafetyParameters (there is no compile-time link across repos;
+    // a contract pin test in Accounts.Test keeps these literals in sync). This matches how SDK
+    // cmdlets surface -AcquirePolicyToken / -ChangeReference, so the two are indistinguishable.
+    this.interfaces.push(IDynamicParameters);
+    const getDynamicParameters = this.add(new Method('GetDynamicParameters', dotnet.Object, {
+      description: 'Returns the Change Safety dynamic parameters (-AcquirePolicyToken / -ChangeReference) for this write cmdlet.',
+      returnsDescription: 'A <see cref="System.Management.Automation.RuntimeDefinedParameterDictionary" /> containing the Change Safety parameters.'
+    }));
+    getDynamicParameters.add(function* () {
+      yield 'var parameters = new global::System.Management.Automation.RuntimeDefinedParameterDictionary();';
+      yield 'parameters.Add("AcquirePolicyToken", new global::System.Management.Automation.RuntimeDefinedParameter("AcquirePolicyToken", typeof(global::System.Management.Automation.SwitchParameter), new global::System.Collections.ObjectModel.Collection<global::System.Attribute> { new global::System.Management.Automation.ParameterAttribute { HelpMessage = "Acquire an Azure Policy token automatically for this resource operation.", ParameterSetName = global::System.Management.Automation.ParameterAttribute.AllParameterSets } }));';
+      yield 'parameters.Add("ChangeReference", new global::System.Management.Automation.RuntimeDefinedParameter("ChangeReference", typeof(string), new global::System.Collections.ObjectModel.Collection<global::System.Attribute> { new global::System.Management.Automation.ParameterAttribute { HelpMessage = "The change reference resource ID for this resource operation.", ParameterSetName = global::System.Management.Automation.ParameterAttribute.AllParameterSets } }));';
+      yield 'return parameters;';
+    });
   }
   private implementIEventListener() {
     const $this = this;

@@ -48,6 +48,11 @@ export async function generatePsm1(project: Project) {
     let requestHandler = `
   # Tweaks the pipeline per call
   $instance.OnNewRequest = $VTable.OnNewRequest`;
+    if (project.enableChangeSafety) {
+      requestHandler += `
+  # Tweaks the pipeline per call (Change Safety policy-token step)
+  $instance.AddChangeSafetyPolicyTokenHandler = $VTable.AddChangeSafetyPolicyTokenHandler`;
+    }
     if (project.endpointResourceIdKeyName) {
       // for data plane, we should append different functions instead.
       requestHandler = `
