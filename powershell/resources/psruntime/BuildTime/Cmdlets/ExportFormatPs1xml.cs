@@ -25,7 +25,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     private static readonly bool IsAzure = Convert.ToBoolean(@"${$project.azure}");
 
-    private static string SelectedBySuffix = @"${$project.autoSwitchView? "#Multiple" : ""}";
+    private static string SelectedBySuffix = @"${$project.autoSwitchView? ""#Multiple"" : """"}";
     
     protected override void ProcessRecord()
     {
