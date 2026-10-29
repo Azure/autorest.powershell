@@ -208,7 +208,7 @@ export function getSchemaForType(
       builtinType.description = doc;
     }
     schemaCache.set(type, builtinType);
-    return builtinType;
+    return builtinType; 
   }
 
   if (type.kind === "ModelProperty") {
@@ -1304,9 +1304,12 @@ function getSchemaForArrayModel(
     // };
     schema = new ArraySchema("", getDoc(program, type) || (indexer.value && "name" in indexer.value && typeof indexer.value.name === "string"
       ? "Array of " + indexer.value.name
-      : ""), getSchemaForType(dpgContext, indexer.value!));
+      : ""), new AnySchema(""));
+    // Recursive properties must be able to reference this array while its element is being converted.
+    schemaCache.set(type, schema);
+    schema.elementType = getSchemaForType(dpgContext, indexer.value!);
     // circle reference, resolve it later
-    if (!getSchemaForType(dpgContext, indexer.value!)) {
+    if (!schema.elementType) {
       schema.delayType = indexer.value!;
     }
     if (
@@ -1920,5 +1923,3 @@ export function getModelInlineSigniture(
   schemaSignature += `}`;
   return schemaSignature;
 }
-
-
