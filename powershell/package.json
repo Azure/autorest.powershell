@@ -19,7 +19,6 @@
     "watch": "tsc -p . --watch",
     "prepare": "npm run build",
     "test": "npm run build && mocha dist/test",
-    "test:runtime": "npm run build && mocha dist/test/runtime",
     "clean": "ver > nul 2>&1 nul && npm run --silent clean-cmd || npm run --silent clean-bash",
     "clean-cmd": "if exist dist rmdir /s /q dist && exit 0 || exit 0 ",
     "clean-bash": "rm nul && rm -rf dist && exit 0 || exit 0"

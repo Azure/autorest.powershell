@@ -23,19 +23,12 @@ module runtime are required for isolation; updating only one preserves the old
 header inheritance behavior. The generator does not maintain a feature-specific
 header blacklist.
 
-The `powershell` package keeps its TypeScript unit tests under `test/`, run with
-`npm test`. Generated-runtime integration tests live under `test/runtime/` and
-run separately with `npm run test:runtime`. Their fixtures and PowerShell runner
-are under `test/resources/runtime/`.
-
-The runtime suite generates the local LRO fixture and compiles the complete
-generated module once, then reports each C# scenario as a separate Mocha test.
-Cases can be selected with `npm run test:runtime -- --grep <case-name>`.
-They exercise cloning and a mocked PUT/poll/poll/final-GET flow, not the actual
-Azure PowerShell enrichment pipeline. Fixtures use the documented metadata key
-independently of the runtime constant to verify the cross-library contract.
-The runtime command requires AutoRest, PowerShell Core, and the .NET SDK.
-The SDK GitHub workflow runs both suites before its SDK comparison suite.
+The existing [TypeSpec emitter comparisons](../tests-upgrade/tests-emitter/EmitterTest.ps1)
+check the generated runtime and LRO API source against committed expectations.
+Intentional generator changes require regenerating the affected expectations.
+The existing [SDK compatibility comparisons](../tests-upgrade/tests-sdk1-support/AutoRestSupportSdkTest.ps1)
+compare generated SDK source with reference output. These are generated-source
+checks; they do not compile or execute HTTP cloning or LRO request flows.
 
 ### Notes
 

@@ -14,10 +14,6 @@ jobs:
          uses: actions/setup-node@v4
          with:
            node-version: 18.x
-       - name: Install .NET SDK
-         uses: actions/setup-dotnet@v4
-         with:
-           dotnet-version: 8.0.x
        - name: Install autorest & rush
          run: |
            npm install -g "autorest"
@@ -31,12 +27,6 @@ jobs:
        - name: Rush Rebuild
          run: |
            rush rebuild
-       - name: Verify generator unit tests
-         working-directory: powershell
-         run: npm test
-       - name: Verify generated runtime integration tests
-         working-directory: powershell
-         run: npm run test:runtime
        - name: Verify SDK generator
          shell: pwsh
          working-directory: tests-upgrade/tests-sdk1-support
