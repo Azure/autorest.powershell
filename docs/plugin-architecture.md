@@ -23,6 +23,12 @@ module runtime are required for isolation; updating only one preserves the old
 header inheritance behavior. The generator does not maintain a feature-specific
 header blacklist.
 
+The `powershell` package's `npm test` command generates the local LRO fixture,
+compiles the complete generated module with its runtime regression cases, and
+executes both cloning checks and a mocked PUT/poll/poll/final-GET flow.
+It requires AutoRest, PowerShell Core, and the .NET SDK. The existing SDK GitHub
+workflow runs this command before its SDK comparison suite.
+
 ### Notes
 
 The generator requires the use of the `@autorest/remodeler` component that transforms the 

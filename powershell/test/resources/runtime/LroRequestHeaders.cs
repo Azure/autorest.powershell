@@ -1,7 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-public static class Tests
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Azure.PowerShell.Cmdlets.LroHeaders.Runtime;
+
+public static class LroRequestHeaderTests
 {
     private const string ScopedHeader = "x-operation-token";
     private static readonly Uri PollUri = new Uri("https://example.invalid/status");
@@ -160,6 +167,78 @@ public static class Tests
             {
                 Require(exception.Message.Contains(Extensions.RequestScopedHeadersKey), "Invalid metadata failure lacks context.");
             }
+        }
+    }
+
+    public static void GeneratedLroReappliesPipelineWithoutLeakingScopedHeaders()
+    {
+        var sender = new LroSender();
+        var result = new Microsoft.Azure.PowerShell.Cmdlets.LroHeaders.LroHeaders()
+            .WidgetsCreateWithResult("00000000-0000-0000-0000-000000000000", "widget", null, new Listener(), sender)
+            .GetAwaiter().GetResult();
+
+        Require(result != null, "Generated LRO did not return the final resource.");
+        Require(sender.Calls == 4, "Expected a PUT, two polling GETs, and a final GET.");
+    }
+
+    private sealed class Listener : IEventListener
+    {
+        public CancellationToken Token => CancellationToken.None;
+        public Action Cancel => () => { throw new Exception("Unexpected cancellation."); };
+        public Task Signal(string id, CancellationToken token, Func<EventData> createMessage) => Task.CompletedTask;
+    }
+
+    private sealed class LroSender : ISendAsync
+    {
+        public int Calls { get; private set; }
+
+        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, IEventListener callback)
+        {
+            Calls++;
+            Require(Calls <= 4, "Generated LRO failed to terminate.");
+            Require(!request.Headers.Contains("x-ms-client-request-id"), "Telemetry was inherited rather than reapplied.");
+            request.Headers.Add("x-ms-client-request-id", "request-" + Calls);
+
+            if (Calls == 1)
+            {
+                Require(request.Method == HttpMethod.Put, "Initial request must be PUT.");
+                request.Headers.Add(ScopedHeader, "synthetic");
+                request.Headers.Add("x-api-required", "shared");
+                request.Properties["request-context"] = "context";
+                request.Properties[Extensions.RequestScopedHeadersKey] = Array.AsReadOnly(new[] { ScopedHeader });
+            }
+            else
+            {
+                Require(request.Method == HttpMethod.Get, "Follow-up request must be GET.");
+                Require(request.Content == null, "Follow-up GET inherited write content.");
+                Require(!request.Headers.Contains(ScopedHeader), "Generated LRO inherited the write's scoped header.");
+                Require(!request.Headers.Contains("x-poll-only"), "Generated LRO inherited polling enrichment.");
+                Require(!request.Properties.ContainsKey(Extensions.RequestScopedHeadersKey), "Follow-up GET inherited scope metadata.");
+                Require(request.Headers.Contains("x-api-required"), "Shared API header was lost.");
+                Require((string)request.Properties["request-context"] == "context", "Shared request context was lost.");
+                Require(Calls == 4
+                    ? request.RequestUri.AbsolutePath.EndsWith("/widgets/widget", StringComparison.Ordinal)
+                    : request.RequestUri.AbsolutePath == "/status", "Unexpected polling or final resource URI.");
+
+                if (Calls == 2 || Calls == 3)
+                {
+                    request.Headers.Add("x-poll-only", "poll-value");
+                    request.Properties[Extensions.RequestScopedHeadersKey] = Array.AsReadOnly(new[] { "x-poll-only" });
+                }
+            }
+
+            var response = new HttpResponseMessage(Calls == 1 ? HttpStatusCode.Accepted : HttpStatusCode.OK)
+            {
+                RequestMessage = request,
+                Content = new StringContent(Calls == 2
+                    ? "{\"status\":\"InProgress\"}"
+                    : "{\"name\":\"widget\",\"properties\":{\"provisioningState\":\"Succeeded\"}}")
+            };
+            if (Calls == 1)
+            {
+                response.Headers.Add("Azure-AsyncOperation", "https://management.azure.com/status");
+            }
+            return Task.FromResult(response);
         }
     }
 
