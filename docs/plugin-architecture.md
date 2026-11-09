@@ -1,5 +1,35 @@
 # AutoRest PowerShell Architecture 
 
+## LRO follow-up request headers
+
+Generated LRO polling and final GET requests use `CloneForFollowUpGetAndDispose`.
+This preserves the existing request context and unmarked headers, but excludes
+headers declared request-scoped by the pipeline component that adds them.
+The follow-up GET is sent through the pipeline again for authentication,
+telemetry, and applicable per-request enrichment. Original write headers are
+not modified, and retry and pagination cloning retain their existing behavior.
+
+The cross-assembly contract is an `IEnumerable<string>` of HTTP header names in
+`HttpRequestMessage.Properties["Microsoft.Azure.PowerShell.RequestScopedHeaders"]`.
+Names are matched case-insensitively. Writers should publish immutable snapshots
+because retry clones share property values. LRO follow-ups do not inherit this
+metadata; a handler adding a new request-scoped header must declare it again on
+that request. Invalid metadata types fail explicitly.
+
+The shared Azure PowerShell common library exposes
+`RequestHeaderScope.MarkRequestScoped(request, headerName)` for producers,
+including the policy-token stamper. Both an updated producer and regenerated
+module runtime are required for isolation; updating only one preserves the old
+header inheritance behavior. The generator does not maintain a feature-specific
+header blacklist.
+
+The existing [TypeSpec emitter comparisons](../tests-upgrade/tests-emitter/EmitterTest.ps1)
+check the generated runtime and LRO API source against committed expectations.
+Intentional generator changes require regenerating the affected expectations.
+The existing [SDK compatibility comparisons](../tests-upgrade/tests-sdk1-support/AutoRestSupportSdkTest.ps1)
+compare generated SDK source with reference output. These are generated-source
+checks; they do not compile or execute HTTP cloning or LRO request flows.
+
 ### Notes
 
 The generator requires the use of the `@autorest/remodeler` component that transforms the 
