@@ -31,9 +31,12 @@ jobs:
        - name: Rush Rebuild
          run: |
            rush rebuild
-       - name: Verify generator and generated runtime tests
+       - name: Verify generator unit tests
          working-directory: powershell
          run: npm test
+       - name: Verify generated runtime integration tests
+         working-directory: powershell
+         run: npm run test:runtime
        - name: Verify SDK generator
          shell: pwsh
          working-directory: tests-upgrade/tests-sdk1-support

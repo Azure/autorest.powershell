@@ -8,8 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.PowerShell.Cmdlets.LroHeaders.Runtime;
 
-public static class LroRequestHeaderTests
+public static class RequestHeaderScopeTests
 {
+    private const string RequestScopedHeadersKey = "Microsoft.Azure.PowerShell.RequestScopedHeaders";
     private const string ScopedHeader = "x-operation-token";
     private static readonly Uri PollUri = new Uri("https://example.invalid/status");
 
@@ -20,7 +21,7 @@ public static class LroRequestHeaderTests
         {
             Require(poll.Method == HttpMethod.Get && poll.RequestUri == PollUri, "Expected polling GET.");
             Require(!poll.Headers.Contains(ScopedHeader), "Polling GET inherited request-scoped header.");
-            Require(!poll.Properties.ContainsKey(Extensions.RequestScopedHeadersKey), "Polling GET inherited scope metadata.");
+            Require(!poll.Properties.ContainsKey(RequestScopedHeadersKey), "Polling GET inherited scope metadata.");
             Require(poll.Content == null, "Polling GET inherited write content.");
         }
     }
@@ -31,7 +32,7 @@ public static class LroRequestHeaderTests
         using (var poll = write.CloneForFollowUpGetAndDispose(PollUri))
         {
             poll.Headers.Add("x-poll-only", "poll-value");
-            poll.Properties[Extensions.RequestScopedHeadersKey] = Array.AsReadOnly(new[] { "x-poll-only" });
+            poll.Properties[RequestScopedHeadersKey] = Array.AsReadOnly(new[] { "x-poll-only" });
             using (var final = poll.CloneForFollowUpGetAndDispose(new Uri("https://example.invalid/resource")))
             {
                 Require(!final.Headers.Contains(ScopedHeader) && !final.Headers.Contains("x-poll-only"), "Final GET inherited request-scoped headers.");
@@ -40,24 +41,24 @@ public static class LroRequestHeaderTests
         }
     }
 
-    public static void RetryPreservesScopedHeaders()
+    public static void RetryClonePreservesScopedHeaders()
     {
         using (var write = NewWrite())
         using (var retry = write.Clone())
         {
             Require(retry.Method == HttpMethod.Put && retry.Headers.Contains(ScopedHeader), "Retry lost original write semantics.");
-            Require(retry.Properties[Extensions.RequestScopedHeadersKey] == write.Properties[Extensions.RequestScopedHeadersKey], "Retry lost scope snapshot.");
+            Require(retry.Properties[RequestScopedHeadersKey] == write.Properties[RequestScopedHeadersKey], "Retry lost scope snapshot.");
         }
     }
 
-    public static void ContentRetryPreservesScope()
+    public static void ContentRetryClonePreservesScope()
     {
         using (var write = NewWrite())
         using (var retry = write.CloneWithContent().GetAwaiter().GetResult())
         {
             Require(retry.Headers.Contains(ScopedHeader), "Content retry lost scoped header.");
             Require(retry.Content.ReadAsStringAsync().GetAwaiter().GetResult() == "write-body", "Content retry lost body.");
-            Require(retry.Properties.ContainsKey(Extensions.RequestScopedHeadersKey), "Content retry lost scope metadata.");
+            Require(retry.Properties.ContainsKey(RequestScopedHeadersKey), "Content retry lost scope metadata.");
         }
     }
 
@@ -68,7 +69,7 @@ public static class LroRequestHeaderTests
         using (var poll = retry.CloneForFollowUpGetAndDispose(PollUri))
         {
             Require(write.Headers.Contains(ScopedHeader), "Original write header was mutated.");
-            Require(write.Properties.ContainsKey(Extensions.RequestScopedHeadersKey), "Original write scope was mutated.");
+            Require(write.Properties.ContainsKey(RequestScopedHeadersKey), "Original write scope was mutated.");
             Require(write.Content.ReadAsStringAsync().GetAwaiter().GetResult() == "write-body", "Original write content was changed or disposed.");
         }
     }
@@ -77,7 +78,7 @@ public static class LroRequestHeaderTests
     {
         using (var write = NewWrite())
         {
-            write.Properties[Extensions.RequestScopedHeadersKey] = Array.AsReadOnly(new[] { "X-OPERATION-TOKEN", "x-operation-token" });
+            write.Properties[RequestScopedHeadersKey] = Array.AsReadOnly(new[] { "X-OPERATION-TOKEN", "x-operation-token" });
             using (var poll = write.CloneForFollowUpGetAndDispose(PollUri))
             {
                 Require(!poll.Headers.Contains(ScopedHeader), "Scope matching must ignore case.");
@@ -93,6 +94,21 @@ public static class LroRequestHeaderTests
             using (var poll = write.CloneForFollowUpGetAndDispose(PollUri))
             {
                 Require(poll.Headers.Contains(ScopedHeader), "Unmarked headers must not be blacklisted.");
+            }
+        }
+    }
+
+    public static void MultipleScopedHeadersAreExcluded()
+    {
+        using (var write = NewWrite())
+        {
+            write.Headers.Add("x-second-scoped", "second");
+            write.Headers.Add("x-shared", "shared");
+            write.Properties[RequestScopedHeadersKey] = Array.AsReadOnly(new[] { ScopedHeader, "x-second-scoped" });
+            using (var poll = write.CloneForFollowUpGetAndDispose(PollUri))
+            {
+                Require(!poll.Headers.Contains(ScopedHeader) && !poll.Headers.Contains("x-second-scoped"), "Follow-up GET must exclude every scoped header.");
+                Require(poll.Headers.Contains("x-shared"), "Unmarked header was lost when excluding multiple scoped headers.");
             }
         }
     }
@@ -141,13 +157,13 @@ public static class LroRequestHeaderTests
         }
     }
 
-    public static void PaginationRetainsExistingBehavior()
+    public static void OrdinaryGetClonePreservesScope()
     {
         using (var write = NewWrite())
         using (var page = write.CloneAndDispose(PollUri, HttpMethod.Get))
         {
             Require(page.Headers.Contains(ScopedHeader), "Ordinary GET clone behavior changed.");
-            Require(page.Properties.ContainsKey(Extensions.RequestScopedHeadersKey), "Ordinary clone lost scope metadata.");
+            Require(page.Properties.ContainsKey(RequestScopedHeadersKey), "Ordinary clone lost scope metadata.");
         }
     }
 
@@ -155,7 +171,7 @@ public static class LroRequestHeaderTests
     {
         using (var write = NewWrite())
         {
-            write.Properties[Extensions.RequestScopedHeadersKey] = 42;
+            write.Properties[RequestScopedHeadersKey] = 42;
             try
             {
                 using (var poll = write.CloneForFollowUpGetAndDispose(PollUri))
@@ -165,12 +181,12 @@ public static class LroRequestHeaderTests
             }
             catch (InvalidOperationException exception)
             {
-                Require(exception.Message.Contains(Extensions.RequestScopedHeadersKey), "Invalid metadata failure lacks context.");
+                Require(exception.Message.Contains(RequestScopedHeadersKey), "Invalid metadata failure lacks context.");
             }
         }
     }
 
-    public static void GeneratedLroReappliesPipelineWithoutLeakingScopedHeaders()
+    public static void GeneratedLroExcludesScopedHeadersFromPollingAndFinalGet()
     {
         var sender = new LroSender();
         var result = new Microsoft.Azure.PowerShell.Cmdlets.LroHeaders.LroHeaders()
@@ -205,7 +221,7 @@ public static class LroRequestHeaderTests
                 request.Headers.Add(ScopedHeader, "synthetic");
                 request.Headers.Add("x-api-required", "shared");
                 request.Properties["request-context"] = "context";
-                request.Properties[Extensions.RequestScopedHeadersKey] = Array.AsReadOnly(new[] { ScopedHeader });
+                request.Properties[RequestScopedHeadersKey] = Array.AsReadOnly(new[] { ScopedHeader });
             }
             else
             {
@@ -213,7 +229,7 @@ public static class LroRequestHeaderTests
                 Require(request.Content == null, "Follow-up GET inherited write content.");
                 Require(!request.Headers.Contains(ScopedHeader), "Generated LRO inherited the write's scoped header.");
                 Require(!request.Headers.Contains("x-poll-only"), "Generated LRO inherited polling enrichment.");
-                Require(!request.Properties.ContainsKey(Extensions.RequestScopedHeadersKey), "Follow-up GET inherited scope metadata.");
+                Require(!request.Properties.ContainsKey(RequestScopedHeadersKey), "Follow-up GET inherited scope metadata.");
                 Require(request.Headers.Contains("x-api-required"), "Shared API header was lost.");
                 Require((string)request.Properties["request-context"] == "context", "Shared request context was lost.");
                 Require(Calls == 4
@@ -223,7 +239,7 @@ public static class LroRequestHeaderTests
                 if (Calls == 2 || Calls == 3)
                 {
                     request.Headers.Add("x-poll-only", "poll-value");
-                    request.Properties[Extensions.RequestScopedHeadersKey] = Array.AsReadOnly(new[] { "x-poll-only" });
+                    request.Properties[RequestScopedHeadersKey] = Array.AsReadOnly(new[] { "x-poll-only" });
                 }
             }
 
@@ -248,7 +264,7 @@ public static class LroRequestHeaderTests
         request.Content = new StringContent("write-body");
         request.Headers.Add(ScopedHeader, "synthetic");
         request.Headers.Add("Authorization", "Bearer synthetic");
-        request.Properties[Extensions.RequestScopedHeadersKey] = Array.AsReadOnly(new[] { ScopedHeader });
+        request.Properties[RequestScopedHeadersKey] = Array.AsReadOnly(new[] { ScopedHeader });
         return request;
     }
 

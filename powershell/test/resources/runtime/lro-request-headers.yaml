@@ -26,7 +26,7 @@ paths:
         type: string
     put:
       operationId: Widgets_Create
-      description: Creates a widget with asynchronous polling and a final GET.
+      description: Creates a widget to test request-scoped headers during polling and the final GET.
       x-ms-long-running-operation: true
       x-ms-long-running-operation-options:
         final-state-via: original-uri
