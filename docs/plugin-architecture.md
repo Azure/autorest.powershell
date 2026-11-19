@@ -1,5 +1,14 @@
 # AutoRest PowerShell Architecture 
 
+## LRO follow-up request headers
+
+Generated LRO polling and final GETs preserve shared request context without
+inheriting headers declared request-scoped by their producers. Each follow-up
+traverses the pipeline again for authentication, telemetry, and applicable
+per-request enrichment. Retry and pagination cloning retain their existing
+behavior. See the [developer contract](./development.md#generated-runtime-request-scoped-headers)
+for implementation and integration details.
+
 ### Notes
 
 The generator requires the use of the `@autorest/remodeler` component that transforms the 

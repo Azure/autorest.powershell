@@ -1329,7 +1329,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool
                             operationLocation = _response.GetFirstHeader(@"Operation-Location");
                         }
                         var _uri = global::System.String.IsNullOrEmpty(asyncOperation) ? global::System.String.IsNullOrEmpty(location) ? global::System.String.IsNullOrEmpty(operationLocation) ? _originalUri : operationLocation : location : asyncOperation;
-                        request = request.CloneAndDispose(new global::System.Uri(_uri), Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Method.Get);
+                        request = request.CloneForFollowUpGetAndDispose(new global::System.Uri(_uri));
 
                         // and let's look at the current response body and see if we have some information we can give back to the listener
                         var content = await _response.Content.ReadAsStringAsync();
@@ -1388,7 +1388,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool
                         }
                         // we are done polling, do a request on final target?
                         // create a new request with the final uri
-                        request = request.CloneAndDispose(new global::System.Uri(_originalUri), Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Method.Get);
+                        request = request.CloneForFollowUpGetAndDispose(new global::System.Uri(_originalUri));
 
                         // drop the old response
                         _response?.Dispose();
@@ -1485,7 +1485,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool
                             operationLocation = _response.GetFirstHeader(@"Operation-Location");
                         }
                         var _uri = global::System.String.IsNullOrEmpty(asyncOperation) ? global::System.String.IsNullOrEmpty(location) ? global::System.String.IsNullOrEmpty(operationLocation) ? _originalUri : operationLocation : location : asyncOperation;
-                        request = request.CloneAndDispose(new global::System.Uri(_uri), Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Method.Get);
+                        request = request.CloneForFollowUpGetAndDispose(new global::System.Uri(_uri));
 
                         // and let's look at the current response body and see if we have some information we can give back to the listener
                         var content = await _response.Content.ReadAsStringAsync();
@@ -1544,7 +1544,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool
                         }
                         // we are done polling, do a request on final target?
                         // create a new request with the final uri
-                        request = request.CloneAndDispose(new global::System.Uri(_originalUri), Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Method.Get);
+                        request = request.CloneForFollowUpGetAndDispose(new global::System.Uri(_originalUri));
 
                         // drop the old response
                         _response?.Dispose();
@@ -1756,7 +1756,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool
                             operationLocation = _response.GetFirstHeader(@"Operation-Location");
                         }
                         var _uri = global::System.String.IsNullOrEmpty(asyncOperation) ? global::System.String.IsNullOrEmpty(location) ? global::System.String.IsNullOrEmpty(operationLocation) ? _originalUri : operationLocation : location : asyncOperation;
-                        request = request.CloneAndDispose(new global::System.Uri(_uri), Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Method.Get);
+                        request = request.CloneForFollowUpGetAndDispose(new global::System.Uri(_uri));
 
                         // and let's look at the current response body and see if we have some information we can give back to the listener
                         var content = await _response.Content.ReadAsStringAsync();
@@ -1815,7 +1815,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool
                         }
                         // we are done polling, do a request on final target?
                         // create a new request with the final uri
-                        request = request.CloneAndDispose(new global::System.Uri(_finalUri), Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Method.Get);
+                        request = request.CloneForFollowUpGetAndDispose(new global::System.Uri(_finalUri));
 
                         // drop the old response
                         _response?.Dispose();
@@ -4312,7 +4312,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool
                             operationLocation = _response.GetFirstHeader(@"Operation-Location");
                         }
                         var _uri = global::System.String.IsNullOrEmpty(asyncOperation) ? global::System.String.IsNullOrEmpty(location) ? global::System.String.IsNullOrEmpty(operationLocation) ? _originalUri : operationLocation : location : asyncOperation;
-                        request = request.CloneAndDispose(new global::System.Uri(_uri), Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Method.Get);
+                        request = request.CloneForFollowUpGetAndDispose(new global::System.Uri(_uri));
 
                         // and let's look at the current response body and see if we have some information we can give back to the listener
                         var content = await _response.Content.ReadAsStringAsync();
@@ -4371,7 +4371,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool
                         }
                         // we are done polling, do a request on final target?
                         // create a new request with the final uri
-                        request = request.CloneAndDispose(new global::System.Uri(_originalUri), Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Method.Get);
+                        request = request.CloneForFollowUpGetAndDispose(new global::System.Uri(_originalUri));
 
                         // drop the old response
                         _response?.Dispose();
@@ -4468,7 +4468,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool
                             operationLocation = _response.GetFirstHeader(@"Operation-Location");
                         }
                         var _uri = global::System.String.IsNullOrEmpty(asyncOperation) ? global::System.String.IsNullOrEmpty(location) ? global::System.String.IsNullOrEmpty(operationLocation) ? _originalUri : operationLocation : location : asyncOperation;
-                        request = request.CloneAndDispose(new global::System.Uri(_uri), Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Method.Get);
+                        request = request.CloneForFollowUpGetAndDispose(new global::System.Uri(_uri));
 
                         // and let's look at the current response body and see if we have some information we can give back to the listener
                         var content = await _response.Content.ReadAsStringAsync();
@@ -4527,7 +4527,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool
                         }
                         // we are done polling, do a request on final target?
                         // create a new request with the final uri
-                        request = request.CloneAndDispose(new global::System.Uri(_originalUri), Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Method.Get);
+                        request = request.CloneForFollowUpGetAndDispose(new global::System.Uri(_originalUri));
 
                         // drop the old response
                         _response?.Dispose();
@@ -4739,7 +4739,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool
                             operationLocation = _response.GetFirstHeader(@"Operation-Location");
                         }
                         var _uri = global::System.String.IsNullOrEmpty(asyncOperation) ? global::System.String.IsNullOrEmpty(location) ? global::System.String.IsNullOrEmpty(operationLocation) ? _originalUri : operationLocation : location : asyncOperation;
-                        request = request.CloneAndDispose(new global::System.Uri(_uri), Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Method.Get);
+                        request = request.CloneForFollowUpGetAndDispose(new global::System.Uri(_uri));
 
                         // and let's look at the current response body and see if we have some information we can give back to the listener
                         var content = await _response.Content.ReadAsStringAsync();
@@ -4798,7 +4798,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool
                         }
                         // we are done polling, do a request on final target?
                         // create a new request with the final uri
-                        request = request.CloneAndDispose(new global::System.Uri(_finalUri), Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Method.Get);
+                        request = request.CloneForFollowUpGetAndDispose(new global::System.Uri(_finalUri));
 
                         // drop the old response
                         _response?.Dispose();

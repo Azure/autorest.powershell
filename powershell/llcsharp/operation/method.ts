@@ -572,7 +572,7 @@ export class CallMethod extends Method {
               asyncOperation));
             yield uriLocal;
 
-            yield `${reqParameter.use} = ${reqParameter.use}.CloneAndDispose(${System.Uri.new(uriLocal)}, ${ClientRuntime.Method.Get});`;
+            yield `${reqParameter.use} = ${reqParameter.use}.CloneForFollowUpGetAndDispose(${System.Uri.new(uriLocal)});`;
 
             yield EOL;
             yield '// and let\'s look at the current response body and see if we have some information we can give back to the listener';
@@ -675,7 +675,7 @@ export class CallMethod extends Method {
 
   private * finalGet(eventListener: EventListener, finalLocation: ExpressionOrLiteral, reqParameter: Variable, response: Variable) {
     yield '// create a new request with the final uri';
-    yield reqParameter.assign(`${valueOf(reqParameter)}.CloneAndDispose(${System.Uri.new(finalLocation)}, ${ClientRuntime.Method.Get})`);
+    yield reqParameter.assign(`${valueOf(reqParameter)}.CloneForFollowUpGetAndDispose(${System.Uri.new(finalLocation)})`);
 
     yield EOL;
     yield '// drop the old response';
