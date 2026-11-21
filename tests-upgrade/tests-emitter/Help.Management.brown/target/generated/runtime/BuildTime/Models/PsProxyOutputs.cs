@@ -285,7 +285,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.PowerShell
             if (!VariantGroup.IsInternal && IsAzure && !VariantGroup.IsModelCmdlet)
             {
                 return $@"
-{Indent}{Indent}$context = Get-AzContext
+{Indent}{Indent}$context = if ($PSBoundParameters.ContainsKey('DefaultProfile')) {{ Get-AzContext -DefaultProfile $PSBoundParameters['DefaultProfile'] }} else {{ Get-AzContext }}
 {Indent}{Indent}if (-not $context -and -not $testPlayback) {{
 {Indent}{Indent}{Indent}throw ""No Azure login detected. Please run 'Connect-AzAccount' to log in.""
 {Indent}{Indent}}}
@@ -381,6 +381,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Help.Runtime.PowerShell
                     sb.AppendLine($"{Indent}{Indent}if (({variantListString}) -contains $parameterSet -and -not $PSBoundParameters.ContainsKey('{parameterName}'){setCondition}) {{");
                     sb.AppendLine($"{Indent}{Indent}{Indent}if ($testPlayback) {{");
                     sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = . (Join-Path $PSScriptRoot '..' 'utils' 'Get-SubscriptionIdTestSafe.ps1')");
+                    if (IsAzure)
+                    {
+                        // Take the subscription from the context passed via -DefaultProfile, not from the global context
+                        sb.AppendLine($"{Indent}{Indent}{Indent}}} elseif ($PSBoundParameters.ContainsKey('DefaultProfile')) {{");
+                        sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = (Get-AzContext -DefaultProfile $PSBoundParameters['DefaultProfile']).Subscription.Id");
+                    }
                     sb.AppendLine($"{Indent}{Indent}{Indent}}} else {{");
                     sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = {defaultInfo.Script}");
                     sb.AppendLine($"{Indent}{Indent}{Indent}}}");
