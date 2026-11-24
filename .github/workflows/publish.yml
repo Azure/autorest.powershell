@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Azure login
-      uses: azure/login@v2
+      uses: azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6 # v2.3.1
       with:
         client-id: ${{ secrets.ADO_SP_ClientID }}
         tenant-id: ${{ secrets.ADO_SP_TenantID }}
@@ -21,7 +21,7 @@ jobs:
         enable-AzPSSession: true
 
     - name: Call Azure Pipeline to Publish
-      uses: azure/powershell@v2
+      uses: azure/powershell@53dd145408794f7e80f97cfcca04155c85234709 # v2.0.0
       env: 
         AdoOrg: ${{secrets.ADO_ORGANIZATION}}
         AdoProject: ${{secrets.ADO_PROJECT}}
