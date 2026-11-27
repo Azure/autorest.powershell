@@ -109,29 +109,6 @@ autorest --use:/path/to/autorest.powershell <...arguments>
 
 COMING SOON.
 
-## Generated runtime request-scoped headers
-
-Generated LRO polling and final GET requests use `CloneForFollowUpGetAndDispose`.
-The helper excludes request-scoped headers and their scope metadata while
-preserving unmarked headers and shared request context, subject to existing
-telemetry and cross-origin credential rules. It does not strip headers from the
-original request. Ordinary cloning, including retry and pagination cloning,
-retains its existing behavior.
-
-The cross-assembly contract is an `IEnumerable<string>` of HTTP header names in
-`HttpRequestMessage.Properties["Microsoft.Azure.PowerShell.RequestScopedHeaders"]`.
-Names are matched case-insensitively. Writers should publish immutable snapshots
-because retry clones share property values. LRO follow-ups do not inherit this
-metadata; a handler adding a new request-scoped header must declare it again on
-that request. Invalid metadata types fail explicitly.
-
-The shared Azure PowerShell common library exposes
-`RequestHeaderScope.MarkRequestScoped(request, headerName)` for producers,
-including the policy-token stamper. Both an updated producer and regenerated
-module runtime are required for isolation; updating only one preserves the old
-header inheritance behavior. The generator does not maintain a feature-specific
-header blacklist.
-
 # Contributing
 
 
